@@ -1,0 +1,30 @@
+---
+alwaysApply: true
+---
+
+# Agent Workflow and Git Rules
+
+## Before changing code
+1. Read repository instructions such as `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, package scripts, TypeScript configuration, lint configuration, and relevant feature files.
+2. Identify the active area: Web, Mobile, backend, shared package, or monorepo package.
+3. Identify existing patterns in affected code before proposing an implementation.
+4. Ask a clarifying question only when an unsupported assumption would affect behavior, security, data, UX, or architecture.
+5. Use the smallest safe implementation plan.
+
+## While changing code
+1. Modify only files required for the requested behavior.
+2. Preserve local architecture and existing conventions.
+3. Add tests only where they protect changed behavior and fit the repository strategy.
+4. Do not install dependencies, apply migrations, alter deployment configuration, or perform destructive actions without explicit approval.
+
+## After changing code
+1. Review the diff for scope creep, secrets, debug statements, accessibility regressions, and accidental formatting changes.
+2. Run required verification.
+3. Report changed files, behavioral impact, verification status, and known limitations in 2–3 concise sentences.
+
+## Git
+- Use conventional commits: `type(scope): description`.
+- Allowed commit types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`.
+- Keep commits focused on one coherent change.
+- Do not mention AI, assistants, prompts, or generated code in commit messages.
+- Do not create commits, push branches, open pull requests, merge changes, delete branches, rebase, reset, or modify remotes without explicit approval.

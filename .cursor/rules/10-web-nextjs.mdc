@@ -1,0 +1,38 @@
+---
+globs: "src/**/*.ts, src/**/*.tsx, app/**/*.ts, app/**/*.tsx, pages/**/*.ts, pages/**/*.tsx, prisma/**"
+alwaysApply: false
+---
+
+# Web and Next.js Rules
+
+## Stack
+- Preserve the installed Node.js, Next.js, React, TypeScript, and package-manager versions.
+- Use pnpm when `pnpm-lock.yaml` exists.
+- Do not upgrade framework versions without explicit approval.
+- Use the repository's established styling, data-fetching, API, and state-management patterns.
+
+## Next.js
+- When the repository uses the App Router, follow App Router conventions.
+- Default to Server Components.
+- Add `"use client"` only when browser APIs, event handlers, client state, or a client-only library require it.
+- Keep secrets, privileged logic, database access, and server-only code out of Client Components.
+- Use the existing route-handler, server-action, tRPC, REST, or GraphQL convention.
+- Include loading, empty, error, and unauthorized states when applicable.
+- Preserve semantic HTML, labels, keyboard navigation, focus handling, and visible focus states.
+
+## Structure
+- `src/app/` contains routes, layouts, route-level UI, and route handlers.
+- `src/components/` contains reusable UI components.
+- `src/lib/` contains shared utilities, validation, types, and safe business logic.
+- `src/server/` contains server-only services, database logic, authentication helpers, and integrations.
+- `prisma/` contains Prisma schema, migrations, and seed logic.
+- `tests/` contains E2E tests, integration tests, fixtures, factories, and test setup.
+Use the existing repository structure if it differs. Do not reorganize folders only to match this rule.
+
+## Imports and performance
+- Use configured path aliases such as `@/components`, `@/lib`, and `@/server`.
+- Do not use relative imports that traverse more than one parent directory.
+- Avoid circular dependencies.
+- Avoid unnecessary client-side JavaScript, client state, and rendering work.
+- Prevent layout shift by reserving space for media and asynchronous content.
+- Do not introduce caching, memoization, virtualization, or optimization complexity without a concrete reason.

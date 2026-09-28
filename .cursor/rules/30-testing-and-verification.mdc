@@ -1,0 +1,26 @@
+---
+alwaysApply: true
+---
+
+# Testing and Verification Rules
+
+## Tests
+- Do not modify an existing test unless the requested behavior intentionally changes.
+- If an existing test fails after a change, investigate and fix the implementation rather than weakening the test.
+- Test behavior and user-visible outcomes, not implementation details.
+- Add or update tests for changed business logic, authorization, API behavior, bug fixes, and critical user flows when the repository supports tests in that area.
+- Use existing factories and fixtures.
+- Never place real user data, secrets, credentials, or production-like private information in tests.
+- Do not mock code owned by this repository when an integration-level test is practical.
+- Mock external services, time, nondeterministic boundaries, and unavailable infrastructure when appropriate.
+
+## Verification
+Before reporting implementation work as complete, run the applicable repository commands:
+- `pnpm test`
+- `pnpm lint`
+- `pnpm typecheck`
+- Relevant Playwright or mobile E2E tests for changed critical flows
+- `pnpm build` when changes affect builds, routing, configuration, deployment, or production behavior
+If a command does not exist, use the documented repository equivalent.
+- Report tests and checks that were not run, including the reason.
+- Do not claim a task is done while required checks are failing.

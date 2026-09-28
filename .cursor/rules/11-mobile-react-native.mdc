@@ -1,0 +1,24 @@
+---
+description: "React Native and Expo development standards for mobile application code, platform UI behavior, navigation, device permissions, and mobile testing."
+alwaysApply: false
+---
+
+# Mobile and React Native Rules
+
+- Use React Native and Expo conventions when the repository is a mobile project.
+- Preserve the existing navigation, styling, state-management, and native-module patterns.
+- Use functional components and hooks for new components.
+- Prefer local component state before introducing global state.
+- Elevate state only when multiple independent screens need synchronized data.
+- Avoid high-frequency global context updates.
+
+## UI and device behavior
+- Respect safe areas, keyboard behavior, accessibility labels, screen-reader flows, touch target sizes, and platform conventions.
+- Test meaningful UI changes on both iOS and Android when possible.
+- Handle offline, slow-network, loading, empty, permission-denied, and retry states when the feature depends on device or network resources.
+- Do not access camera, location, notifications, contacts, files, or other device capabilities without an explicit requirement and user-facing permission flow.
+
+## Styling
+- Use the project’s existing styling system: NativeWind, StyleSheet, Tamagui, or another established approach.
+- Reuse existing design tokens, colors, typography, spacing, and component primitives.
+- Do not introduce a new UI kit or styling system without approval.

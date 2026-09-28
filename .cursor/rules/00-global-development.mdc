@@ -1,0 +1,46 @@
+---
+alwaysApply: true
+---
+
+# Global Development Rules
+
+## Core principles
+- Prefer the simplest solution that fully satisfies the requested behavior.
+- Match the established patterns, architecture, naming, and formatting of the repository before introducing a new pattern.
+- Keep changes limited to the requested scope.
+- Do not refactor, rename, reformat, upgrade, or improve unrelated code.
+- Do not create abstractions unless they reduce real, measurable complexity.
+- Prefer clear duplication over premature abstraction.
+- Use strict TypeScript.
+- Do not use `any` unless there is no safe alternative.
+- Prefer named exports unless the framework or repository convention requires a default export.
+
+## Existing code takes priority
+- When editing an existing file, preserve its local conventions.
+- Do not convert callbacks to async/await, classes to hooks, or one state-management approach to another unless explicitly requested.
+- For new React code, use functional components and hooks by default.
+- Do not rewrite a file only to conform to a newer preference.
+
+## Naming
+- Use PascalCase for React components, classes, types, interfaces, and enums.
+- Use camelCase for functions, variables, object properties, and instances.
+- Use SCREAMING_SNAKE_CASE for environment variables and true constants.
+- Use kebab-case for folders and non-component file names unless the repository uses a different convention.
+
+## Comments
+- Do not add comments by default.
+- Add comments only for non-obvious intent, business constraints, security decisions, browser or device workarounds, or external-system behavior.
+- Never comment what the code obviously does.
+- Never mention tickets, tasks, AI generation, temporary fixes, or implementation history in source comments.
+
+## Dependencies
+- Check existing dependencies before suggesting or adding a package.
+- Do not add a dependency when existing project tooling or a few maintainable lines of code solve the problem.
+- Do not introduce duplicate libraries for state, forms, validation, styling, routing, dates, or UI.
+- Request approval before adding, removing, upgrading, or changing production dependencies.
+
+## Completion communication
+- When work is complete, summarize what changed and why in 2–3 sentences.
+- State which verification commands were run and whether they passed.
+- Clearly mention unexpected findings, known limitations, skipped checks, or judgment calls.
+- Never claim work is complete if required verification failed or was not run.

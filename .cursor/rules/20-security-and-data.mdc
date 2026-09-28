@@ -1,0 +1,35 @@
+---
+alwaysApply: true
+---
+
+# Security and Data Rules
+
+## Secrets and privacy
+- Never commit `.env` files, API keys, tokens, credentials, private certificates, production data, or personal user data.
+- Never log passwords, authentication tokens, session identifiers, API keys, payment data, or private user content.
+- Never include real credentials in comments, examples, screenshots, fixtures, or tests.
+- Use environment variables for secrets.
+- Keep server-only secrets and privileged operations off the client.
+
+## Input and authorization
+- Validate untrusted input at system boundaries: forms, route parameters, query strings, request bodies, webhooks, files, third-party API responses, and environment configuration.
+- Authenticate and authorize protected operations on the server.
+- Never rely only on hidden UI, client-side routing, or client-provided role values for authorization.
+- Return safe and actionable user-facing errors.
+- Never expose stack traces, SQL errors, internal identifiers, credentials, or provider error details to users.
+
+## Error handling
+- Handle failures that can occur at external boundaries: network calls, database operations, file access, payments, third-party APIs, browser APIs, and device APIs.
+- Trust validated internal contracts.
+- Do not add speculative null checks, broad catch blocks, or fallback logic for impossible internal states.
+- Do not silently swallow errors.
+- Preserve useful error context for logging while showing users a concise, actionable message.
+
+## Database
+- Use the database access layer already established by the repository.
+- In Prisma projects, use the approved Prisma client and keep database operations in the server/database layer.
+- Do not write raw SQL unless the ORM cannot reasonably express the required operation.
+- Never construct queries from untrusted strings.
+- Use transactions for multi-write operations that must succeed or fail together.
+- Apply tenant, account, and authorization scoping to reads and mutations where applicable.
+- Do not create destructive migrations, data deletions, production backfills, or schema changes without explicit approval and a rollback plan.
