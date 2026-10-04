@@ -1,0 +1,9 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+allowBuilds:
+  '@playwright/browser-chromium': true
+  '@playwright/browser-firefox': true
+  '@playwright/browser-webkit': true
+  esbuild: true
+  protobufjs: true

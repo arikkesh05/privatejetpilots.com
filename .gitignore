@@ -33,3 +33,6 @@ test-results/.claude/
 
 .claude
 .claude/
+
+# Local Media Scratch (frame/video extraction intermediates)
+temp-frames/

@@ -1,0 +1,23 @@
+{
+  "name": "pjp-design-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm --recursive --filter \"./packages/*\" run build",
+    "typecheck": "pnpm --recursive --filter \"./packages/*\" run typecheck",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "verify:visual": "node tools/verify-visual/audit.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "packageManager": "pnpm@12.6.0",
+  "type": "module",
+  "devDependencies": {
+    "@executeautomation/playwright-mcp-server": "^1.0.12",
+    "@modelcontextprotocol/server-sequential-thinking": "^2026.8.31",
+    "typescript": "^7.0.2"
+  }
+}

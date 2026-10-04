@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: auto;
+    background-color: #0a0a0a;
+    color: #e5e2e1;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Preflight paints every element with a cool grey default border (#e5e7eb).
+     On this deck separation is drawn with champagne hairlines, so the fallback
+     border is the warm outline token instead. */
+  *,
+  ::before,
+  ::after {
+    border-color: #4d4636;
+  }
+
+  /* Keyboard focus must stay visible on the obsidian field, where the browser's
+     default ring is effectively invisible. */
+  :focus-visible {
+    outline: 2px solid #cbb079;
+    outline-offset: 2px;
+  }
+}
+
+/* =========================================================================
+   PJP // PRIVATE JET PILOTS — editorial component layer (Syne / champagne on obsidian)
+   ========================================================================= */
+
+/* Quiet Champagne CTA — a hairline and a whisper of warmth, never a filled
+   saturated block. The solid variant is reserved for the single most important
+   action on any one surface. */
+.champagne-btn {
+  background: rgba(203, 176, 121, 0.06);
+  border: 1px solid rgba(203, 176, 121, 0.45);
+  color: #e0cca0;
+  transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, color 0.4s ease;
+}
+.champagne-btn:hover {
+  background: rgba(203, 176, 121, 0.12);
+  border-color: rgba(203, 176, 121, 0.72);
+  color: #f0e2c4;
+}
+.champagne-btn:active {
+  background: rgba(203, 176, 121, 0.16);
+}
+
+.champagne-btn-solid {
+  background: #cbb079;
+  border: 1px solid #cbb079;
+  color: #14110a;
+  transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+}
+.champagne-btn-solid:hover {
+  background: #e0cca0;
+  border-color: #e0cca0;
+}
+.champagne-btn-solid:active {
+  background: #b89c66;
+}
+
+/* Panel surface — warm charcoal on obsidian, defined by a champagne hairline
+   rather than a coloured glow. */
+.glass-cockpit {
+  background: rgba(18, 18, 18, 0.82);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(203, 176, 121, 0.14);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-cockpit:hover {
+  border-color: rgba(203, 176, 121, 0.32);
+  transform: translateY(-2px);
+}
+
+.glass-cockpit-active {
+  background: rgba(18, 18, 18, 0.92);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(203, 176, 121, 0.22);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Editorial image frame — a slow, restrained scale. No sheen sweep, no tilt. */
+.editorial-frame {
+  overflow: hidden;
+}
+.editorial-frame img {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.editorial-frame:hover img {
+  transform: scale(1.03);
+}
+
+
+
+/* Concierge Card Hover Icons */
+.concierge-card {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.concierge-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(203, 176, 121, 0.34);
+}
+.concierge-card:hover .icon-box {
+  border-color: rgba(203, 176, 121, 0.5);
+  color: #e0cca0;
+}
+.icon-box {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Continuous ambient pulses (nav border glow, equalizer fallback loop and the
+   pitch-ladder drift) were retired for the editorial benchmark: motion on this
+   deck is user-initiated or scroll-linked, never perpetual ornament. */
+
+/* Audio notification toast styles were removed with the telemetry toast itself:
+   no component renders that node, so the deck carries no floating status strip. */
+
+/* Live telemetry readouts refresh continuously; digits must not reflow the layout */
+.font-telemetry,
+.font-telemetry-sm,
+.font-telemetry-md,
+.font-telemetry-lg,
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Ambient vignette — a soft radial falloff around the hero frame, gathering
+   obsidian toward the edges only. It works alongside the left-hand wash (which
+   carries the display type) so the exposed right half of the photograph keeps
+   its own contrast instead of being flattened by a global scrim. */
+.hero-vignette {
+  background: radial-gradient(
+    120% 95% at 50% 42%,
+    rgba(10, 10, 10, 0) 0%,
+    rgba(10, 10, 10, 0.22) 58%,
+    rgba(10, 10, 10, 0.78) 100%
+  );
+}
+
+/* Band legibility — the editorial type that renders directly on the live frame
+   has to clear AA over photography it cannot control. Tailwind's `drop-shadow-*`
+   utilities each write the same `--tw-drop-shadow` custom property, so stacking
+   two of them silently collapses to whichever declaration lands last; the
+   two-layer halo (a tight contact shadow plus a wide ambient one) is therefore
+   composed here as a single `filter`. `.frame-ink-strong` carries the large
+   display titles, `.frame-ink-soft` the smaller flanking labels. */
+.frame-ink-strong {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85)) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.95));
+}
+.frame-ink-soft {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
+}
+
+/* Fleet glass cards — a cursor-following champagne-amber spotlight plus a soft
+   border luminance response on hover. The gradient position is driven by
+   --mouse-x / --mouse-y, written from a passive pointermove listener in
+   `FleetBento`, so nothing here invalidates layout or forces a reflow. */
+.fleet-card {
+  position: relative;
+  transition: border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fleet-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  background: radial-gradient(
+    500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(251, 191, 36, 0.07),
+    transparent 40%
+  );
+}
+.fleet-card:hover::after {
+  opacity: 1;
+}
+.fleet-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Nav micro-beacon — three amber bars that breathe only while interaction
+   sound is live, holding as a dim static lamp in standby. Because it is gated
+   on audio state (off by default) rather than running forever, it stays within
+   the deck's "no perpetual ornament" rule; the global reduced-motion rule
+   freezes the pulse at its resting keyframe. */
+.hud-beacon {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.hud-beacon span {
+  display: block;
+  width: 2px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(251, 191, 36, 0.5);
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+}
+.hud-beacon[data-live='true'] span {
+  background: rgba(251, 191, 36, 0.9);
+  animation: hud-beacon-pulse 1.15s ease-in-out infinite;
+}
+.hud-beacon[data-live='true'] span:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.hud-beacon[data-live='true'] span:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes hud-beacon-pulse {
+  0%,
+  100% {
+    height: 4px;
+    opacity: 0.65;
+  }
+  50% {
+    height: 12px;
+    opacity: 1;
+  }
+}
+
+
