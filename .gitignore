@@ -36,3 +36,9 @@ test-results/.claude/
 
 # Local Media Scratch (frame/video extraction intermediates)
 temp-frames/
+
+# Visual audit output — regenerated in full by every `audit.cjs` run
+# (one PNG per recorded frame, contrast-census.json, a11y-modal-snapshot.json,
+# summary.json). Exit codes come from the in-memory report, never from these
+# files, so tracking them only produces binary diff churn on every run.
+tools/verify-visual/evidence/
