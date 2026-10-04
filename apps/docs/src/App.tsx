@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { HudNavDock } from './components/HudNavDock';
 import { CockpitPortalHero } from './components/CockpitPortalHero';
+import { FuselageScroller } from './components/FuselageScroller';
 import { FleetBento } from './components/FleetBento';
 import { ConciergeProtocols } from './components/ConciergeProtocols';
 import { ExecutiveFooter } from './components/ExecutiveFooter';
@@ -73,6 +74,7 @@ export default function App(): React.JSX.Element {
       {/* Editorial presentation */}
       <main className="relative z-10 flex flex-col gap-24 pb-20">
         <CockpitPortalHero />
+        <FuselageScroller />
         <FleetBento onInspect={handleInspectCraft} />
         <ConciergeProtocols />
       </main>
