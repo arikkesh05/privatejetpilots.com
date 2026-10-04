@@ -480,13 +480,13 @@ export function JetCanvasScroller({ className }: JetCanvasScrollerProps = {}) {
               {/* Metadata rail — two label/value pairs, set flush right so the
                   eye reads them as instrument data rather than prose. */}
               <dl className="max-w-[13rem] md:max-w-xs text-right bg-gradient-to-t from-black/90 via-black/70 to-black/40 px-5 py-4 rounded-2xl backdrop-blur-sm">
-                <dt className="tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                <dt className="tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase font-medium text-on-surface frame-ink-soft">
                   Dispatch Capacity
                 </dt>
                 <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
                   &lt; 15 MIN CONFIRMATION
                 </dd>
-                <dt className="mt-4 tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                <dt className="mt-4 tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase font-medium text-on-surface frame-ink-soft">
                   Global Access
                 </dt>
                 <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
@@ -516,13 +516,13 @@ export function JetCanvasScroller({ className }: JetCanvasScrollerProps = {}) {
                 </p>
               </div>
               <dl className="max-w-[14rem] md:max-w-xs text-right bg-gradient-to-t from-black/90 via-black/70 to-black/40 px-5 py-4 rounded-2xl backdrop-blur-sm">
-                <dt className="tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                <dt className="tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase font-medium text-on-surface frame-ink-soft">
                   Crew Standard
                 </dt>
                 <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
                   DUAL-COMMAND ATP PILOTS
                 </dd>
-                <dt className="mt-4 tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                <dt className="mt-4 tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase font-medium text-on-surface frame-ink-soft">
                   Acoustics
                 </dt>
                 <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
