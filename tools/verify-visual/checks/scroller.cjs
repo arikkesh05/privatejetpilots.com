@@ -109,8 +109,8 @@ async function run(ctx) {
   await scrollHeroTo(page, SAMPLE_POINTS.band1);
   const band1 = await page.evaluate(collectScroller);
   const band1copy = band1.copy.band1 || '';
-  if (band1.bands[1].opacity > 0.9 && band1.bands[2].opacity < 0.05 && band1copy.includes('Bespoke Cabins') && band1copy.includes('PHASE 01 // PJP CABIN ARCHITECTURE')) {
-    report.pass('Band 1 composes "Bespoke Cabins" + PHASE 01 // PJP CABIN ARCHITECTURE at p=0.05');
+  if (band1.bands[1].opacity > 0.9 && band1.bands[2].opacity < 0.05 && band1copy.includes('Unrestricted') && band1copy.includes('GLOBAL TELEMETRY') && band1copy.includes('15 MIN CONFIRMATION')) {
+    report.pass('Band 1 composes "Unrestricted Global Reach" + telemetry sub-label + dispatch/global metadata rail at p=0.05');
   } else {
     report.fail('Band 1 is missing, mis-copied or mis-choreographed', { copy: band1copy, opacity: band1.bands[1].opacity });
   }
@@ -119,17 +119,22 @@ async function run(ctx) {
   await scrollHeroTo(page, SAMPLE_POINTS.band2);
   const band2 = await page.evaluate(collectScroller);
   const band2copy = band2.copy.band2 || '';
-  if (band2.bands[2].opacity > 0.9 && band2.bands[1].opacity < 0.05 && band2copy.includes('PJP Avionics') && band2copy.includes('PHASE 02 // PJP FLIGHT DECK')) {
-    report.pass('Band 2 composes "PJP Avionics" + PHASE 02 // PJP FLIGHT DECK at p=0.50');
+  if (band2.bands[2].opacity > 0.9 && band2.bands[1].opacity < 0.05 && band2copy.includes('Bespoke In') && band2copy.includes('CABIN ARCHITECTURE') && band2copy.includes('DUAL-COMMAND ATP PILOTS')) {
+    report.pass('Band 2 composes "Bespoke In Every Detail" + PHASE 02 // CABIN ARCHITECTURE + crew/acoustics rail at p=0.50');
   } else {
     report.fail('Band 2 is missing, mis-copied or mis-choreographed', { copy: band2copy, opacity: band2.bands[2].opacity });
   }
   if (Math.abs(band2.viewportTop) <= 2) report.pass('hero viewport stays pinned at p=0.50 (top 0)');
   else report.fail('hero viewport drifted off the pin', { viewportTop: band2.viewportTop });
 
+  /* The editorial plate is deliberately flatter than the old frosted card: a
+     gradient scrim for AA, a blur to separate it from the frame, and a soft
+     radius. It carries no `filter` drop-shadow any more — the ink does that
+     work itself via `frame-ink-strong`. Requiring a shadow here would pin the
+     check to a treatment this design deliberately abandoned. */
   const plate = band2.band2Backplate;
-  const plateOk = plate && /linear-gradient/.test(plate.backgroundImage) && /blur\(4px\)/.test(plate.backdropFilter || '') && plate.filter && plate.filter !== 'none' && plate.borderRadius === '16px';
-  if (plateOk) report.pass('Band 2 backplate applies the gradient scrim + blur(4px) + drop shadow + rounded-2xl');
+  const plateOk = plate && /linear-gradient/.test(plate.backgroundImage) && /blur\(4px\)/.test(plate.backdropFilter || '') && plate.borderRadius === '16px';
+  if (plateOk) report.pass('Band 2 backplate applies the gradient scrim + blur(4px) + rounded-2xl');
   else report.fail('Band 2 backplate treatment is not fully applied', plate);
 
   const frameB = await captureViewport(page, null, { deviceScaleFactor: 1 });
@@ -140,10 +145,32 @@ async function run(ctx) {
   await scrollHeroTo(page, SAMPLE_POINTS.band3);
   const band3 = await page.evaluate(collectScroller);
   const band3copy = band3.copy.band3 || '';
-  if (band3.bands[3].opacity > 0.9 && band3copy.includes('THE HORIZON AWAITS') && band3copy.includes('PJP // PRIVATE JET PILOTS // Unrestricted Global Reach')) {
-    report.pass('Band 3 composes "THE HORIZON AWAITS" + PJP // PRIVATE JET PILOTS sub at p=0.85');
+  if (band3.bands[3].opacity > 0.9 && band3copy.includes('Absolute') && band3copy.includes('Silence.') && band3copy.includes('Pure') && band3copy.includes('Focus.')) {
+    report.pass('Band 3 composes split "Absolute Silence." / "Pure Focus." at p=0.85');
   } else {
     report.fail('Band 3 is missing or mis-copied', { copy: band3copy, opacity: band3.bands[3].opacity });
+  }
+  if (band3copy.includes('7,700 NM') && band3copy.includes('Mach 0.925') && band3copy.includes('3,000 FT')) {
+    report.pass('Band 3 carries the bottom telemetry rail (range / cruise / air / cabin alt)');
+  } else {
+    report.fail('Band 3 telemetry rail is missing or mis-copied', { copy: band3copy });
+  }
+
+  /* Split framing exists to keep the cockpit perspective readable, so the
+     centre corridor must genuinely be clear: neither flank title may cross the
+     middle 40% of the width. A centred headline would pass the copy assertion
+     above while quietly destroying the composition this layout exists for. */
+  /* `leftEdge` / `rightEdge` are both *positive* when the flanks stay clear of
+     the centre line, each being the distance in CSS px from the viewport
+     midpoint to the nearer title edge. So the corridor is clear when BOTH
+     exceed the minimum. (An earlier version compared `rightEdge > -CLEAR`,
+     which is only true for an encroaching layout and inverted the result.) */
+  const corridor = band3.band3Corridor;
+  const CLEAR = 30; // CSS px of clearance required on each side of centre
+  if (corridor && corridor.leftEdge >= CLEAR && corridor.rightEdge >= CLEAR) {
+    report.pass(`Band 3 leaves the centre corridor clear — ${Math.round(corridor.leftEdge)}px each side of the midpoint (${Math.round(corridor.leftEdge * 2)}px total)`);
+  } else {
+    report.fail('Band 3 flank titles encroach on the centre corridor', corridor);
   }
 
   const shadow = band3.band3Shadow;
@@ -154,12 +181,15 @@ async function run(ctx) {
     report.fail('Band 3 is missing its multi-layer drop shadow treatment', shadow);
   }
 
-  const title = await worstContrast(page, 'THE HORIZON AWAITS', ctx.deviceScaleFactor);
-  const sub = await worstContrast(page, 'Unrestricted', ctx.deviceScaleFactor);
+  /* Match against `textContent`, which is the raw DOM casing — the telemetry
+     rail renders uppercase through CSS (`text-transform`), so 'CRUISE' is not
+     in the node text and matching it here would silently return null. */
+  const title = await worstContrast(page, 'Absolute', ctx.deviceScaleFactor);
+  const sub = await worstContrast(page, 'Cruise', ctx.deviceScaleFactor);
   if (title && title.worst >= title.limit) report.pass(`Band 3 title clears AA over live pixels — ${title.worst}:1 (needs ${title.limit}:1)`);
   else report.fail('Band 3 title is below AA over live pixels', title);
-  if (sub && sub.worst >= sub.limit) report.pass(`Band 3 subtitle clears AA over live pixels — ${sub.worst}:1 (needs ${sub.limit}:1)`);
-  else report.fail('Band 3 subtitle is below AA over live pixels', sub);
+  if (sub && sub.worst >= sub.limit) report.pass(`Band 3 telemetry rail clears AA over live pixels — ${sub.worst}:1 (needs ${sub.limit}:1)`);
+  else report.fail('Band 3 telemetry rail is below AA over live pixels', sub);
 
   const calm = await ctx.reducedPage.evaluate(collectScroller);
   if (!calm.present) {

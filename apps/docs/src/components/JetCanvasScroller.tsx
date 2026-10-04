@@ -339,10 +339,18 @@ export function JetCanvasScroller({ className }: JetCanvasScrollerProps = {}) {
         H3_FADE_DOWN_START,
       );
 
-      /* Sky exit — as #fleet enters, the sky cross-fades 1 → 0.15 → 0 while
-         a dusk tint (transparent → #0B0D10) breathes in behind the arriving
-         glass cards and then out again. The hand-off reads as a descent
-         through dusk atmosphere into twilight, never a cut to black. */
+      /* Sky exit — as #fleet enters, the sky cross-fades down while a dusk tint
+         (transparent → #0B0D10) breathes in behind the arriving glass cards.
+         The hand-off reads as a descent through dusk atmosphere into twilight,
+         never a cut to black.
+
+         Ordering matters more than easing here. The tint must be fully opaque
+         *before* the canvas reaches zero, otherwise there is a window where both
+         layers are partially transparent and the raw body colour (#0a0a0a)
+         flashes through between them — which is exactly the hard snap this
+         replaces. So the tint completes at 0.55, the canvas does not bottom out
+         until 0.75, and only then does the tint release to the deck's own
+         obsidian. Every frame of the transition has at least one opaque layer. */
       const skyExit = gsap.timeline({
         defaults: { ease: 'none' },
         scrollTrigger: {
@@ -352,13 +360,13 @@ export function JetCanvasScroller({ className }: JetCanvasScrollerProps = {}) {
           scrub: 0.8,
         },
       });
-      skyExit.to([canvas, vignette], { autoAlpha: 0.15, duration: 0.5 }, 0);
-      skyExit.to([canvas, vignette], { autoAlpha: 0, duration: 0.35 }, 0.5);
+      skyExit.to([canvas, vignette], { autoAlpha: 0.12, duration: 0.45 }, 0);
+      skyExit.to([canvas, vignette], { autoAlpha: 0, duration: 0.3 }, 0.45);
       skyExit.fromTo(
         tint,
         { autoAlpha: 0 },
         { autoAlpha: 1, duration: 0.5, immediateRender: false },
-        0.1,
+        0.05,
       );
       skyExit.to(tint, { autoAlpha: 0, duration: 0.15 }, 0.85);
 
@@ -452,78 +460,145 @@ export function JetCanvasScroller({ className }: JetCanvasScrollerProps = {}) {
         className={`relative w-full ${reduced ? '' : 'min-h-[500vh]'} ${className ?? ''}`}
       >
         <div ref={viewportRef} className="relative h-screen w-full">
-          {/* Band 1 — 0–25% · cabin push: bottom-left editorial stack,
-              narrative snippet opposite on the bottom-right flank. */}
+          {/* Band 1 — 0–25% · exterior cruise: a bottom-left editorial stack against a
+              right-aligned metadata rail. Both flanks carry localized gradient
+              backplates (the scrim the whole deck uses for ink over live
+              frames) rather than one plate spanning the frame, so the sky
+              between them stays open. */}
           <div data-band="1" ref={band1Ref} className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-6 md:px-12 pb-8 md:pb-10">
-              <div>
-                <h2 className="font-serif tracking-tight text-4xl md:text-5xl font-light text-white frame-ink-strong">
-                  Bespoke Cabins
+              <div className="bg-gradient-to-t from-black/90 via-black/70 to-black/40 px-5 py-4 rounded-2xl backdrop-blur-sm">
+                <h2 className="font-serif tracking-tight text-4xl md:text-6xl font-light leading-[0.95] text-on-surface frame-ink-strong">
+                  Unrestricted
+                  <br />
+                  Global Reach
                 </h2>
-                <p className="mt-3 tracking-[0.25em] text-xs font-medium text-on-surface bg-gradient-to-t from-black/90 via-black/65 to-black/45 px-3 py-1.5 rounded-xl backdrop-blur-sm drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] frame-ink-soft">
-                  PHASE 01 // PJP CABIN ARCHITECTURE
+                <p className="mt-4 tracking-[0.25em] text-[0.65rem] md:text-xs font-medium uppercase text-champagne-gold frame-ink-soft">
+                  PJP GLOBAL TELEMETRY // WORLDWIDE OPERATIONS
                 </p>
               </div>
-              {/* Flank copy rides a localized gradient backplate — the same
-                  treatment Band 2 uses. Raw `text-white/80` over the sunlit
-                  cabin measured 2.8:1 at its worst pixel; the scrim pulls the
-                  nominal surface down far enough for the AA 4.5:1 profile
-                  without greying the aisle or lifting the whole frame. Ink is
-                  `on-surface`, not `#fff` — the deck's brightest tone is
-                  champagne and pure white also trips the grade ceiling. */}
-              <p className="max-w-[11rem] md:max-w-xs text-right text-xs md:text-sm leading-relaxed text-on-surface bg-gradient-to-t from-black/90 via-black/65 to-black/45 p-4 rounded-2xl backdrop-blur-sm drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] frame-ink-soft">
-                Hand-stitched European leather. Whispered acoustics.
-              </p>
+              {/* Metadata rail — two label/value pairs, set flush right so the
+                  eye reads them as instrument data rather than prose. */}
+              <dl className="max-w-[13rem] md:max-w-xs text-right bg-gradient-to-t from-black/90 via-black/70 to-black/40 px-5 py-4 rounded-2xl backdrop-blur-sm">
+                <dt className="tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                  Dispatch Capacity
+                </dt>
+                <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
+                  &lt; 15 MIN CONFIRMATION
+                </dd>
+                <dt className="mt-4 tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                  Global Access
+                </dt>
+                <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
+                  5,000+ AIRPORTS WORLDWIDE
+                </dd>
+              </dl>
             </div>
           </div>
 
-          {/* Band 2 — 40–65% · flight deck: the stack is anchored low so the
-              type rests over the dark instrument deck and lower console rather
-              than the washed-out windshield clouds. A localized gradient
-              backplate keeps it razor-sharp over vivid sunset frames. */}
+          {/* Band 2 — 40–65% · threshold entry: same editorial grammar as Band 1 —
+              display stack left, specification rail right — so the two read as
+              one continuing system rather than two unrelated cards. */}
           <div
             data-band="2"
             ref={band2Ref}
             className="absolute inset-0 pointer-events-none opacity-0 invisible"
           >
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-6 md:px-12 pb-8 md:pb-10">
-              <div className="bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 rounded-2xl backdrop-blur-sm drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
-                <p className="text-xs tracking-[0.25em] text-amber-400">
-                  PHASE 02 // PJP FLIGHT DECK
-                </p>
-                <h2 className="mt-3 max-w-md font-serif text-4xl md:text-5xl text-white">
-                  PJP Avionics
+              <div className="bg-gradient-to-t from-black/90 via-black/70 to-black/40 px-5 py-4 rounded-2xl backdrop-blur-sm">
+                <h2 className="font-serif tracking-tight text-4xl md:text-6xl font-light leading-[0.95] text-on-surface frame-ink-strong">
+                  Bespoke In
+                  <br />
+                  Every Detail
                 </h2>
+                <p className="mt-4 tracking-[0.25em] text-[0.65rem] md:text-xs font-medium uppercase text-champagne-gold frame-ink-soft">
+                  PHASE 02 // CABIN ARCHITECTURE
+                </p>
               </div>
-              <p className="max-w-[12rem] md:max-w-xs text-right text-xs md:text-sm leading-relaxed text-white/80 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 rounded-2xl backdrop-blur-sm drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
-                Continuous synthetic vision with heads-up command.
-              </p>
+              <dl className="max-w-[14rem] md:max-w-xs text-right bg-gradient-to-t from-black/90 via-black/70 to-black/40 px-5 py-4 rounded-2xl backdrop-blur-sm">
+                <dt className="tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                  Crew Standard
+                </dt>
+                <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
+                  DUAL-COMMAND ATP PILOTS
+                </dd>
+                <dt className="mt-4 tracking-[0.2em] text-[0.6rem] md:text-[0.65rem] uppercase text-on-surface/70 frame-ink-soft">
+                  Acoustics
+                </dt>
+                <dd className="mt-1 text-xs md:text-sm text-on-surface frame-ink-soft">
+                  BESPOKE ULTRA-QUIET ISOLATION
+                </dd>
+              </dl>
             </div>
           </div>
 
-          {/* Band 3 — 75–95% · sky punch-through: centre-bottom, lowered so
-              the horizon stays open. */}
+          {/* Band 3 — 75–95% · cabin interior: split-framed. The centre of this frame is
+              the cockpit perspective itself, so no type is allowed to occupy
+              it. The two display lines are anchored to opposite flanks at the
+              vertical midpoint and the middle 40% of the width is left empty;
+              the telemetry bar runs along the very bottom, below the corridor.
+              The full-bleed wash carries the contrast budget for all three. */}
           <div
             data-band="3"
             ref={band3Ref}
             className="absolute inset-0 pointer-events-none opacity-0 invisible"
           >
-            <div className="absolute inset-x-0 bottom-[12%] flex flex-col items-center gap-3 md:gap-4 px-6 text-center">
-              {/* Band 3 rides the deck's established backplate language — the same
-                  frosted dark-glass scrim Bands 1 and 2 use. Against the
-                  high-key cabin interior the 179-frame sequence leaves under the
-                  centre-bottom, bare ink measured 2.12:1 on the title and 2.54:1
-                  on the subtitle; the gradient pulls the nominal surface down
-                  without touching the frames themselves or the horizon the band
-                  exists to reveal. `w-fit` keeps the plate tight to the type
-                  rather than washing a band across the full viewport. */}
-              <div className="w-fit max-w-full flex flex-col items-center gap-3 md:gap-4 bg-gradient-to-t from-black/90 via-black/70 to-black/50 px-8 py-6 rounded-2xl backdrop-blur-sm drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
-                <h2 className="text-5xl md:text-7xl font-extralight tracking-[0.15em] text-white frame-ink-strong">
-                  THE HORIZON AWAITS
-                </h2>
-                <p className="text-xs md:text-sm tracking-[0.2em] font-medium text-amber-200/90 frame-ink-soft">
-                  PJP // PRIVATE JET PILOTS // Unrestricted Global Reach
-                </p>
+            {/* Two stacked washes carry the contrast budget.
+                The radial one is anchored bottom-centre so the telemetry rail
+                sits on the densest part of it. The linear one darkens the left
+                and right thirds independently and stays *transparent through
+                the middle 40%*, which is what keeps the cockpit corridor open.
+                Measured over live pixels, the radial alone left the mid-height
+                flank titles at 2.51:1; these side pools take them past AA while
+                the centre pixel budget is unchanged. */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.55)_18%,transparent_30%,transparent_70%,rgba(0,0,0,0.55)_82%,rgba(0,0,0,0.82)_100%)]"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_85%_at_50%_100%,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.7)_38%,rgba(0,0,0,0.28)_62%,transparent_78%)]"
+            />
+            {/* Left flank */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[26%] pl-6 md:pl-12">
+              <h2
+                data-band3-title
+                className="font-serif text-3xl md:text-5xl lg:text-6xl font-light italic tracking-tight leading-[0.95] text-left text-on-surface frame-ink-strong"
+              >
+                Absolute
+                <br />
+                Silence.
+              </h2>
+            </div>
+            {/* Right flank — mirrored so the pair reads as one composed line
+                broken by the corridor rather than two unrelated captions. */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[26%] pr-6 md:pr-12">
+              <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl font-light italic tracking-tight leading-[0.95] text-right text-on-surface frame-ink-strong">
+                Pure
+                <br />
+                Focus.
+              </h2>
+            </div>
+            {/* Technical telemetry rail — hairline-ruled instrument strip,
+                deliberately subordinate to the display type. */}
+            <div className="absolute inset-x-0 bottom-0 px-6 md:px-12 pb-6 md:pb-8">
+              <div
+                data-band3-telemetry
+                className="border-t border-white/15 pt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 md:gap-x-5 tracking-[0.18em] text-[0.6rem] md:text-[0.7rem] uppercase text-on-surface/85 frame-ink-soft"
+              >
+                <span>Range: 7,700 NM</span>
+                <span aria-hidden="true" className="text-champagne-gold/60">
+                  |
+                </span>
+                <span>Cruise: Mach 0.925</span>
+                <span aria-hidden="true" className="text-champagne-gold/60">
+                  |
+                </span>
+                <span>Air: 100% Fresh / 120s</span>
+                <span aria-hidden="true" className="text-champagne-gold/60">
+                  |
+                </span>
+                <span>Cabin Alt: 3,000 FT</span>
               </div>
             </div>
           </div>

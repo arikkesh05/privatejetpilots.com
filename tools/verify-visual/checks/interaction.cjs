@@ -241,13 +241,33 @@ async function run(ctx) {
     return;
   }
   await trigger.click();
-  await page.waitForTimeout(600);
+  // Wait for the open transition to actually settle instead of assuming it
+  // finishes inside a fixed window. The dialog uses `transition-all
+  // duration-300`, and sampling at a hardcoded 600ms read a mid-tween
+  // `opacity: 0.992973` whenever the browser was loaded, which failed the
+  // strict `'1'` comparison below on a dialog that was in fact fully open.
+  await page
+    .waitForFunction(
+      () => {
+        const dialog = document.querySelector('[role="dialog"]');
+        if (!dialog) return false;
+        return Number.parseFloat(getComputedStyle(dialog).opacity) > 0.99;
+      },
+      undefined,
+      { timeout: 4000 },
+    )
+    .catch(() => {
+      /* handled by the assertion below, which reports the sampled state */
+    });
   const opened = await page.evaluate(dialogState);
   if (!opened) {
     report.fail('the cockpit dialog is not in the document');
     return;
   }
-  if (opened.opacity !== '1' || opened.ariaHidden === 'true') report.fail('the dialog opened but stays visually or semantically hidden', opened);
+  // `> 0.99` rather than string equality: the dialog's opacity transition may
+  // still be settling on the very last subpixel, and a dialog at 0.995 is
+  // visually open. Anything genuinely hidden (0, or aria-hidden) still fails.
+  if (Number.parseFloat(opened.opacity) <= 0.99 || opened.ariaHidden === 'true') report.fail('the dialog opened but stays visually or semantically hidden', opened);
   else report.pass('the cockpit dialog opens', opened);
   if (!opened.label) report.fail('the dialog has no accessible name', opened);
 

@@ -154,7 +154,14 @@ function collectTextNodes() {
   for (let i = 0; i < walker.snapshotLength; i += 1) {
     const el = walker.snapshotItem(i);
     if (!paints(el)) continue;
-    if (el.children.length > 0) continue;
+    /* Ink-bearing leaf text. `<br>` is a layout break, not ink of its own, so a
+       heading split across lines still paints a single run of type and must be
+       measured — treating it as a container would silently drop multi-line
+       display headlines out of both the census and the band contrast probes. */
+    const hasInkBearingChild = [...el.children].some(
+      (child) => (child.textContent || '').trim().length > 0,
+    );
+    if (hasInkBearingChild) continue;
     const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
     if (!text) continue;
     const tag = el.tagName.toLowerCase();
@@ -321,7 +328,7 @@ function collectScroller() {
   }
 
   const band3Title = document.querySelector('[data-band="3"] h2');
-  const band3Sub = document.querySelector('[data-band="3"] p');
+  const band3Sub = document.querySelector('[data-band3-telemetry]');
   const canvasStyle = canvas ? getComputedStyle(canvas) : null;
   const navStyle = header ? getComputedStyle(header) : null;
 
@@ -353,6 +360,23 @@ function collectScroller() {
       band2: textOf('[data-band="2"]'),
       band3: textOf('[data-band="3"]'),
     },
+    band3Corridor: (() => {
+      /* Measure the actual ink extents of the two flank titles against the
+         viewport centre, so "the corridor is clear" is a measurement rather
+         than an assumption. */
+      const titles = [...document.querySelectorAll('[data-band="3"] h2')]
+        .map((el) => el.getBoundingClientRect())
+        .sort((a, b) => a.left - b.left);
+      if (titles.length < 2) return null;
+      const [leftTitle, rightTitle] = titles;
+      const mid = window.innerWidth / 2;
+      return {
+        leftEdge: Number((mid - leftTitle.right).toFixed(2)),   // >0 means left title stops short of centre
+        rightEdge: Number((rightTitle.left - mid).toFixed(2)), // <0 means right title starts short of centre
+        viewportWidth: window.innerWidth,
+        titles: titles.length,
+      };
+    })(),
     band2Backplate: backplate,
     band3Shadow: {
       titleFilter: band3Title ? getComputedStyle(band3Title).filter : null,
