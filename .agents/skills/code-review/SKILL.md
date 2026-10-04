@@ -1,87 +1,120 @@
 ---
 name: code-review
-description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\"."
+description: Use before completing any sprint or claiming any code change is done - runs a 3-lens adversarial review (Privacy, React & WebGL Hygiene, Verification Evidence) synthesized from the ECC skills security-review and performance-optimizer plus adversarial verification
 ---
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+# Code Review — 3-Lens Adversarial Protocol (v2)
 
-- **Standards**: does the code conform to this repo's documented coding standards?
-- **Spec**: does the code faithfully implement the originating issue / spec?
+## Overview
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+**Core principle:** You are not the author at review time — you are the adversary. Assume the DOM is public, the render tree is hostile, and every claim is a lie until a terminal proves it.
 
-The issue tracker should have been provided to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`.
+**Violating the letter of any lens is violating the spirit of all three.**
 
-## Process
+## The Iron Law
 
-### 1. Pin the fixed point
+```
+NO TASK IS COMPLETE UNTIL ALL THREE LENSES PASS WITH FRESH EVIDENCE
+```
 
-Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). If they didn't specify one, ask for it.
+## When to Use
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+Before marking ANY task complete, including: new UI/pages/modals, data layer or type changes, WebGL/3D scene changes, share/deep-link/clipboard/geolocation features, and bug fixes (root cause via `systematic-debugging` is a precondition, not a substitute).
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here, not inside two parallel sub-agents.
+**Precondition:** interface polish invariants (touch targets, ARIA, focus, keyboard, reduced motion) are checked via `.agents/skills/interface-polish/` — they are a build-time skill. This review still **spot-checks** them, but does not re-litigate the full checklist.
 
-### 2. Identify the spec source
+## Provenance
 
-Look for the originating spec, in this order:
+This protocol synthesizes ECC engineering patterns:
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in `docs/agents/issue-tracker.md`.
-2. A path the user passed as an argument.
-3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+| Lens | Source | Adversarial Question |
+|------|--------|---------------------|
+| 1. Privacy | `security-review` | "What does this expose to the URL bar, the DOM, and the logs?" |
+| 2. React & WebGL Hygiene | `.agents/skills/performance-optimizer/` | "Does this state change remount the canvas, leak GPU memory, or fail silently?" |
+| 3. Evidence | Adversarial verification (`verification-before-completion` + ECC review context) | "What fresh terminal output proves this?" |
 
-### 3. Identify the standards sources
+Run the lenses **in order**; Lens 3 is always last — it is the gate, not a participant.
 
-Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
+---
 
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below: a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
+## LENS 1: PRIVACY
 
-- **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
-- **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation. Like any standard here, skip anything tooling already enforces.
+You are an attacker with DevTools, the URL bar, and `view-source`. Everything shipped to the client is public.
 
-Each smell reads *what it is* → *how to fix*; match it against the diff:
+### Hard Rule — Zero PII Leakage
+Raw exact coordinates, private emails, and phone numbers must **NEVER** appear in:
+- [ ] DOM attributes or `data-*` tags (e.g., no `data-lat="14.599512"`)
+- [ ] **Share URLs / query parameters** — use opaque gathering IDs, never lat/lng or contact fields in `?gathering=`
+- [ ] `console.log`, client-rendered payloads, or error messages
+- [ ] Client state or persisted storage (localStorage/sessionStorage)
 
-- **Mysterious Name**: a function, variable, or type whose name doesn't reveal what it does or holds. → rename it; if no honest name comes, the design's murky.
-- **Duplicated Code**: the same logic shape appears in more than one hunk or file in the change. → extract the shared shape, call it from both.
-- **Feature Envy**: a method that reaches into another object's data more than its own. → move the method onto the data it envies.
-- **Data Clumps**: the same few fields or params keep travelling together (a type wanting to be born). → bundle them into one type, pass that.
-- **Primitive Obsession**: a primitive or string standing in for a domain concept that deserves its own type. → give the concept its own small type.
-- **Repeated Switches**: the same `switch`/`if`-cascade on the same type recurs across the change. → replace with polymorphism, or one map both sites share.
-- **Shotgun Surgery**: one logical change forces scattered edits across many files in the diff. → gather what changes together into one module.
-- **Divergent Change**: one file or module is edited for several unrelated reasons. → split so each module changes for one reason.
-- **Speculative Generality**: abstraction, parameters, or hooks added for needs the spec doesn't have. → delete it; inline back until a real need shows.
-- **Message Chains**: long `a.b().c().d()` navigation the caller shouldn't depend on. → hide the walk behind one method on the first object.
-- **Middle Man**: a class or function that mostly just delegates onward. → cut it, call the real target direct.
-- **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
+Geospatial rule: only fuzzed/approximate coordinates reach the client, at the minimum precision the feature requires. Precise lat/lng stays server-side behind PostGIS queries (`src/lib/gatherings.ts` pattern).
 
-### 4. Spawn both sub-agents in parallel
+### Deep-Linking & Share URLs
+- [ ] Every input param is sanitized against a strict shape: `?gathering={id}` parsed, type-checked, matched against real records; invalid/unknown IDs degrade to a safe default — never rendered or trusted as data.
+- [ ] Share URLs are built exclusively from server-validated, non-PII identifiers.
+- [ ] Invalid deep-link handling is explicit and user-facing, not a blank panel.
 
-**Standards sub-agent prompt** should include:
+---
 
-- The full diff command and commit list.
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full (the sub-agent has no other access to it).
-- The brief: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls: documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+## LENS 2: REACT & WEBGL HYGIENE
 
-**Spec sub-agent prompt** should include:
+You are a hostile performance-optimizer auditor with the React Profiler and a GPU memory tracker open.
 
-- The diff command and commit list.
-- The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+### Render Boundary Integrity (HUD / Search)
+- [ ] State changes in HUD/Search components **never re-mount or re-render the Three.js canvas**: the canvas component is memoized (`memo`/stable `key`) and lives outside any state that changes per-keystroke or per-hover.
+- [ ] Hot-path state (search input, HUD counters) is kept in **local component state or refs**, lifted only as far as needed — no context/store cascades through the scene tree.
+- [ ] Search result handlers are stable (`useCallback`) so memoized children don't bust their props; heavy lists use `memo` + keys.
+- [ ] `useEffect` dependency arrays are exact — no re-subscription/re-init of the scene per render; no `setState` inside the render loop or rAF callback (that would cascade React re-renders per frame).
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+### WebGL Memory Hygiene
+- [ ] Every `BufferGeometry`, `Material`, `Texture`, and renderer created in an effect is **disposed** on cleanup — no orphans on hot reload or route change.
+- [ ] Every `addEventListener` (`resize`, `pointermove`, canvas events) has a matching removal with the **same handler reference**.
+- [ ] `requestAnimationFrame` loops cancelled on teardown; no leaked WebGL contexts on remount.
+- [ ] No per-frame allocations in the render loop (GC pressure = dropped frames on mobile).
 
-### 5. Aggregate
+### Retained Anti-Silent-Failure Checks (from v1 protocol — still mandatory)
+- [ ] `navigator.share` guarded: unavailable **or rejected** (`AbortError` = user cancel, non-error) → graceful clipboard fallback; failure is user-visible, never a dead click.
+- [ ] `navigator.clipboard.writeText` try/catch'd; permission denied / insecure context handled with a visible fallback.
+- [ ] No empty `catch {}` without a dated justification comment; every caught error recovers, reports, or degrades visibly.
+- [ ] Zero `any` evasions — no `as any`, `as unknown as T`, or un-justified `@ts-ignore`; nullable columns typed `| null` (never `undefined`) per the deterministic-schema rule.
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
+---
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+## LENS 3: EVIDENCE REQUIREMENT
 
-## Why two axes
+Claims without fresh output are lies. (Full standard: `.agents/skills/verification-before-completion/`.)
 
-A change can pass one axis and fail the other:
+### Mandatory Fresh Terminal Output
+Run all four **after the last code edit**, in this session, and paste real output into the report:
 
-- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
-- Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+1. [ ] `npx tsc --noEmit` — 0 type errors
+2. [ ] `npm run lint` — 0 lint warnings
+3. [ ] `npm run build` — clean production prerendering
+4. [ ] Test suite — all passing (`node --test tests/` convention; if no test applies to the change, state that explicitly with the reason)
 
-Reporting them separately stops one axis from masking the other.
+"Fresh" = executed after the final edit; earlier output is void. Any failure → fix, re-run **all four**, not just the failed one.
+
+### Canonical Memory Update
+- [ ] `MEMORY.md` updated: what shipped, files touched, gate results, gotchas for the next sprint.
+- [ ] `.clinerules` quality gates and both registered skills (`interface-polish`, this one) satisfied together — one without the other is incomplete.
+
+---
+
+## Red Flags — STOP and Re-run the Lens
+
+- "The coordinates are only in `data-` attributes for debugging" — That IS a leak. Remove.
+- "The canvas won't remount, I *think*" — Verify with a mount counter or React Profiler, not vibes.
+- "Disposal is handled somewhere else" — Then show me the cleanup function in this diff.
+- "I'll handle share fallback later" — The fallback IS the feature.
+- "tsc passed yesterday" — Yesterday's output is not evidence for today's tree.
+- "I reviewed my own code carefully" — Author review is not adversarial review. Apply the lens persona.
+
+## Quick Reference
+
+| Lens | Key Checks | Pass Criteria |
+|------|-----------|---------------|
+| **1. Privacy** | No PII in DOM/URLs/logs/storage, sanitized `?gathering={id}` | Zero client exposure of raw lat/lng, emails, phones |
+| **2. React & WebGL** | Canvas survives HUD/Search state changes, full disposal, rAF cancelled, no silent failures | Stable render tree, zero GPU leaks, zero quiet failures |
+| **3. Evidence** | Fresh tsc/lint/build/tests + `MEMORY.md` update | All gates exit 0 in the final run, memory current |
+
