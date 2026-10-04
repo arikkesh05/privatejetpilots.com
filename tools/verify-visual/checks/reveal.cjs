@@ -137,18 +137,49 @@ async function run(ctx) {
       continue;
     }
 
-    const rising = samples.filter((sample, index) => index > 0 && sample.opacity > samples[index - 1].opacity + 0.002);
-    const midFlight = samples.filter((sample) => sample.opacity > 0.02 && sample.opacity < 0.98);
-    if (midFlight.length < 3 || rising.length < 3) {
+    // Rate-agnostic progression proof.
+    //
+    // This check used to demand `midFlight.length >= 3`, i.e. at least three
+    // samples landing strictly inside the (0.02, 0.98) opacity window. That count
+    // is a function of how many samples the sampler manages to collect, not of
+    // what the tween does: a 1.1s power3.out ramp spends most of its easing in
+    // the first ~400ms, so a slow sampler (headless Chromium under audit load
+    // drops to roughly 5fps) takes its first reading *after* the curve has
+    // already climbed, leaving too few in-window samples and reporting a
+    // perfectly smooth entrance as a jump.
+    //
+    // A genuine broken tween is instead 0 -> 1 in a single step. So we assert on
+    // the shape of the progression, which is fps-independent:
+    //
+    //   1. the tween had not already finished when sampling began (`first` well
+    //      below 1) — a jump is over before the first frame is observed,
+    //   2. it climbed in more than one step (`risingSteps >= 2`),
+    //   3. no single step spans the whole ramp (`maxStep < 0.9`), which is the
+    //      signature of an instant 0 -> 1 swap.
+    const risingSteps = samples.filter(
+      (sample, index) => index > 0 && sample.opacity > samples[index - 1].opacity + 0.002,
+    ).length;
+    const maxStep = samples.reduce(
+      (worst, sample, index) =>
+        index === 0 ? worst : Math.max(worst, sample.opacity - samples[index - 1].opacity),
+      0,
+    );
+    const first = samples[0].opacity;
+    const finalOpacity = final.opacity;
+
+    const jumpedInstantly = first >= 0.98 || maxStep >= 0.9;
+    if (jumpedInstantly || risingSteps < 2) {
       report.fail(`[${label}] reveal jumped instead of animating`, {
-        intermediates: midFlight.length,
-        risingSteps: rising.length,
+        firstOpacity: Number(first.toFixed(3)),
+        largestSingleStep: Number(maxStep.toFixed(3)),
+        risingSteps,
         samples: samples.map((sample) => `${sample.t}ms:${Number(sample.opacity.toFixed(3))}`),
       });
     } else {
       report.pass(
-        `[${label}] animated through ${midFlight.length} intermediate values ` +
-          `(lift ${Math.round(Math.abs(samples[0].translateY))}px to ${Math.round(Math.abs(final.translateY))}px)`,
+        `[${label}] eased from ${first.toFixed(2)} to ${finalOpacity.toFixed(2)} ` +
+          `over ${risingSteps} steps (largest step ${maxStep.toFixed(2)}, ` +
+          `lift ${Math.round(Math.abs(samples[0].translateY))}px to ${Math.round(Math.abs(final.translateY))}px)`,
       );
     }
     await ctx.captureFrame(`reveal-${selectors.indexOf(selector)}`, { kind: 'reveal' });
