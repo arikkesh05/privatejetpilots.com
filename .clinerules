@@ -1,0 +1,58 @@
+# PJP MASTER AGENT PROTOCOL & EXECUTION FRAMEWORK
+
+## 1. AUTONOMOUS SKILLS CATALOG (.agents/skills/ & .claude/skills/)
+You have unrestricted access to all 29 specialized skills in `.agents/skills/`. Inspect and invoke their guidelines whenever relevant:
+- .agents/skills/accessibility-compliance-accessibility-audit/
+- .agents/skills/antigravity-design-expert/
+- .agents/skills/better-accessibility/
+- .agents/skills/better-colors/
+- .agents/skills/code-review/
+- .agents/skills/design-systems/
+- .agents/skills/diagnosing-bugs/
+- .agents/skills/emil-design-eng/
+- .agents/skills/excalidraw-diagram-generator/
+- .agents/skills/grill-me/
+- .agents/skills/handoff/
+- .agents/skills/interface-polish/
+- .agents/skills/mobile-android-design/
+- .agents/skills/mobile-ios-design/
+- .agents/skills/nextjs-turbopack/
+- .agents/skills/performance-optimizer/
+- .agents/skills/remotion-best-practices/
+- .agents/skills/review-animations/
+- .agents/skills/security-review/
+- .agents/skills/systematic-debugging/
+- .agents/skills/tailwind-design-system/
+- .agents/skills/tdd/
+- .agents/skills/tdd-workflow/
+- .agents/skills/test-driven-development/
+- .agents/skills/ui-ux-pro-max/
+- .agents/skills/vercel-composition-patterns/
+- .agents/skills/verification-before-completion/
+- .agents/skills/web-design-guidelines/
+- .agents/skills/webapp-testing/
+
+## 2. WORKSPACE CONVENTIONS & CURSOR RULES (.cursor/rules/)
+Strictly adhere to:
+- 00-global-development.mdc: Workspace hygiene, zero untyped code.
+- 10-web-nextjs.mdc: Next.js / React best practices, SSR hydration safety, zero layout shifts.
+- 11-mobile-react-native.mdc: Mobile architecture & cross-platform conventions.
+- 20-security-and-data.mdc: Strict data handling and zero credential leakage.
+- 30-testing-and-verification.mdc: Automated proof of completion before closing tasks.
+- 40-agent-workflow.mdc: Atomic commits, state-gated execution, and ref-only GSAP listeners.
+
+## 3. CORE ARCHITECTURE & SYSTEM MEMORY
+Cross-reference and preserve the directives in:
+- ARCHITECTURE.md (System design & scroll sequencing pipelines)
+- MEMORY.md (Project state, progress ledger, and constraints)
+
+## 4. CONNECTED MCP CAPABILITIES
+Utilize connected MCP tools whenever applicable:
+- sequential-thinking: For planning multi-phase refactors and debugging complex state logic.
+- playwright: For headless browser inspection, optical contrast probes, and verifying transitions.
+
+## 5. NON-NEGOTIABLE GATES
+On EVERY change:
+- pnpm --filter @pjp/docs typecheck must pass with exit code 0.
+- pnpm --filter @pjp/docs build must compile with exit code 0.
+- Zero console warnings or errors. Zero layout shifts.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Gauge, Wind, Volume2, ChefHat, Bath } from 'lucide-react';
@@ -8,6 +8,31 @@ import { Gauge, Wind, Volume2, ChefHat, Bath } from 'lucide-react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
+
+/* -------------------------------------------------------------------------- *
+ * Cinematic field — /videos/jet-cinematic/ (VP9 WebM first, H.264 MP4 fallback).
+ *
+ * This section owns its backdrop: the hero's fixed canvas has already handed off
+ * by here, so the cutaway paints its own field rather than relying on the sky.
+ * The loop is graded exactly as the deck grades its photography — monochrome,
+ * then a whisper of champagne soft-light — so no cool cast can survive into the
+ * rendered pixels and champagne stays the deck's only chroma.
+ *
+ * The poster still is painted unconditionally underneath: it covers the decode
+ * window, it *is* the reduced-motion rendering (the `<video>` never mounts once
+ * the preference resolves to `reduce`), and it stands in if the source ever
+ * fails to decode. Both layers are absolutely positioned, so nothing here enters
+ * the flow or widens the document.
+ * -------------------------------------------------------------------------- */
+
+const CINEMATIC_WEBM = '/videos/jet-cinematic/jet_cinematic_web.webm';
+const CINEMATIC_MP4 = '/videos/jet-cinematic/jet_cinematic_web.mp4';
+const CINEMATIC_POSTER = '/videos/jet-cinematic/poster.jpg';
+const CINEMATIC_ALT = 'A private jet banking above a sunlit cloud deck at cruise.';
+
+/** One grade for still and motion, so the hand-off between them is invisible. */
+const CINEMATIC_GRADE =
+  'absolute inset-0 h-full w-full object-cover object-center grayscale brightness-[0.85] contrast-[1.12]';
 
 /* -------------------------------------------------------------------------- *
  * Fuselage cutaway — the aircraft explored nose to tail.
@@ -313,6 +338,75 @@ export function FuselageScroller(): React.JSX.Element {
   const cameraRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
 
+  /* The motion preference is only known after the first effect pass, and the
+     video must not mount before that: a reduced-motion operator would otherwise
+     start — and then abort — the fetch, and an aborted request reads as a
+     failure to the deck's own audit. */
+  const [motionResolved, setMotionResolved] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    setMotionResolved(true);
+  }, []);
+
+  const cinemaLive = motionResolved && !reduced;
+
+  /* Decode only while the held frame is on screen — a decorative loop burning
+     frames off-screen is pure battery. Two non-obvious constraints shape this:
+
+     1. `muted` is re-asserted and `play()` is called explicitly: the `autoPlay`
+        attribute alone does not start playback in every embedding (the element
+        sits `autoplay=true, muted=true, paused=true` in headless Chromium),
+        which would leave the field frozen on its poster.
+     2. The field may only be *rested* once the source has fully buffered.
+        Chromium keeps one range stream open for a preloading video and cancels
+        it (`net::ERR_ABORTED`) if the element stops reading before the file is
+        drained — the video still plays perfectly, but the deck's console gate
+        counts the aborted request as a failure. So off-screen the loop keeps
+        playing until the local buffer covers the whole 21.2s, and only then
+        pauses; afterwards pause/resume and every loop seek touch no network. */
+  useEffect(() => {
+    if (!cinemaLive) return undefined;
+    const video = videoRef.current;
+    const section = sectionRef.current;
+    if (!video || !section) return undefined;
+
+    const drained = () => {
+      const { buffered } = video;
+      return (
+        video.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA &&
+        buffered.length > 0 &&
+        Number.isFinite(video.duration) &&
+        buffered.end(buffered.length - 1) >= video.duration - 0.05
+      );
+    };
+
+    let inView = false;
+    const sync = () => {
+      video.muted = true;
+      if (inView || !drained()) void video.play().catch(() => undefined);
+      else video.pause();
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        inView = entries[entries.length - 1].isIntersecting;
+        sync();
+      },
+      { threshold: 0 },
+    );
+    observer.observe(section);
+    video.addEventListener('progress', sync);
+    video.addEventListener('loadeddata', sync);
+    sync();
+
+    return () => {
+      observer.disconnect();
+      video.removeEventListener('progress', sync);
+      video.removeEventListener('loadeddata', sync);
+    };
+  }, [cinemaLive]);
+
   useEffect(() => {
     if (reduced) return;
     const section = sectionRef.current;
@@ -418,10 +512,44 @@ return (
           see the note in the effect above for why that matters here. */}
       <div ref={viewportRef} className={`${reduced ? '' : 'sticky top-0'} relative h-screen w-full overflow-hidden`}>
         {/* The section sits after the hero, where the canvas has already handed
-            off, so it paints its own field rather than relying on the sky. */}
+            off, so it paints its own field rather than relying on the sky: the
+            cinematic loop, graded monochrome + champagne, with the poster still
+            beneath it as decode window, reduced-motion rendering and failure
+            fallback alike. `<source>` order is deliberate — VP9 WebM first, H.264
+            MP4 as the fallback — and the element is muted, looping and inline so
+            it autoplays without ever entering the flow or widening the page. */}
+        <div aria-hidden="true" className="absolute inset-0 z-0">
+          <img alt={CINEMATIC_ALT} className={CINEMATIC_GRADE} decoding="async" src={CINEMATIC_POSTER} />
+          {cinemaLive && (
+            <video
+              ref={videoRef}
+              className={CINEMATIC_GRADE}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              poster={CINEMATIC_POSTER}
+            >
+              <source src={CINEMATIC_WEBM} type="video/webm" />
+              <source src={CINEMATIC_MP4} type="video/mp4" />
+            </video>
+          )}
+          {/* The deck's only chroma — identical to how the hero washes its
+              photography, so no cool cast can reach the rendered pixels. */}
+          <div className="absolute inset-0 bg-champagne/15 mix-blend-soft-light" />
+        </div>
+
+        {/* The obsidian wash over the field. The centre opens up so the loop
+            reads as a live backdrop behind the cutaway, while the flank bands
+            where the specification micro-labels sit stay at ≥0.91 alpha: the
+            worst case (a blown-out video pixel behind champagne gold ink) still
+            clears the 7:1 floor the fuselage contract enforces, and the frame
+            edges — including the source's watermark corner — ground to solid
+            #0A0A0A exactly as before. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,rgba(11,13,16,0.92)_0%,rgba(10,10,10,0.98)_60%,#0A0A0A_100%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,rgba(11,13,16,0.82)_0%,rgba(10,10,10,0.95)_34%,rgba(10,10,10,0.985)_62%,#0A0A0A_100%)]"
         />
 
         {/* The cutaway holds the centre column; the flanks carry copy. The camera
