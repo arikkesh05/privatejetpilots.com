@@ -45,6 +45,10 @@ const DEFAULT_OUT = path.join(__dirname, 'evidence');
 const CHECKS = [
   { name: 'reveal', title: 'REVEAL — entrance choreography', page: 'live' },
   { name: 'scroller', title: 'SCROLLER — pinned canvas hero, bands, optics', page: 'live' },
+  /* After `scroller`: the fuselage check opens its own short-lived contexts to
+     test breakpoints, and the hero's scrub must not be disturbed by the wall of
+     scrolling that follows. */
+  { name: 'fuselage', title: 'FUSELAGE — camera pan, zone order, corridor', page: 'live' },
   { name: 'contrast', title: 'CONTRAST — AAA census at every scroll station', page: 'reduced' },
   { name: 'style-census', title: 'STYLE CENSUS — tokens, tracking, radius, colour', page: 'reduced' },
   { name: 'interaction', title: 'INTERACTION — hover, focus, modal, accessibility', page: 'live' },

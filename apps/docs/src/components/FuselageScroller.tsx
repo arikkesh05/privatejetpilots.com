@@ -33,7 +33,7 @@ interface FuselageZone {
   /** Display headline, anchored to the left flank. */
   headline: string;
   /** Technical specification rail, anchored to the right flank. */
-  specs: string[];
+  specs: Array<{ label: string; value: string }>;
   /** Lucide glyph set against each specification line. */
   icon: typeof Gauge;
 }
@@ -44,14 +44,22 @@ const ZONES: FuselageZone[] = [
     id: 'deck',
     label: 'Zone 01 — Flight Deck & Radome',
     headline: 'Synthetic Command.',
-    specs: ['Dual-HUD display', 'Triple FMS', 'Cat IIIA low-visibility autoland'],
+    specs: [
+      { label: 'Primary', value: 'Dual-HUD display' },
+      { label: 'Navigation', value: 'Triple FMS' },
+      { label: 'Autoland', value: 'Cat IIIA low-visibility' },
+    ],
     icon: Gauge,
   },
   {
     id: 'galley',
     label: 'Zone 02 — Forward Galley & Crew Rest',
     headline: 'Michelin Culinary Prep.',
-    specs: ['Full convection ovens', 'Espresso bar', 'Dedicated crew privacy berth'],
+    specs: [
+      { label: 'Galley', value: 'Full convection ovens' },
+      { label: 'Beverage', value: 'Espresso bar' },
+      { label: 'Crew', value: 'Dedicated privacy berth' },
+    ],
     icon: ChefHat,
   },
   {
@@ -59,9 +67,9 @@ const ZONES: FuselageZone[] = [
     label: 'Zone 03 — Executive Club Cabin',
     headline: 'Ergonomic Architecture.',
     specs: [
-      'Handcrafted European leather',
-      '100% fresh air replenishment every 120s',
-      'Whisper-quiet acoustic dampening',
+      { label: 'Upholstery', value: 'Handcrafted European leather' },
+      { label: 'Air', value: '100% fresh air / 120s' },
+      { label: 'Acoustics', value: 'Whisper-quiet dampening' },
     ],
     icon: Wind,
   },
@@ -70,9 +78,9 @@ const ZONES: FuselageZone[] = [
     label: 'Zone 04 — Master Stateroom Suite',
     headline: 'Lie-Flat Serenity.',
     specs: [
-      'Queen permanent berth',
-      'Smart circadian lighting',
-      'Sound-isolated sliding acoustic bulkhead',
+      { label: 'Berth', value: 'Queen permanent' },
+      { label: 'Lighting', value: 'Smart circadian' },
+      { label: 'Isolation', value: 'Sliding acoustic bulkhead' },
     ],
     icon: Volume2,
   },
@@ -81,9 +89,9 @@ const ZONES: FuselageZone[] = [
     label: 'Zone 05 — En-Suite Spa & Aft Cargo',
     headline: 'Uncompromised Transit.',
     specs: [
-      'Stand-up vanity & shower suite',
-      'Full in-flight walk-in baggage access',
-      '195 cu ft volume',
+      { label: 'En-suite', value: 'Vanity & shower suite' },
+      { label: 'Baggage', value: 'Full walk-in access' },
+      { label: 'Volume', value: '195 cu ft' },
     ],
     icon: Bath,
   },
@@ -132,9 +140,9 @@ const FUSELAGE_PATH = [
   `C 380 250 415 ${STATIONS.radome} 500 ${STATIONS.nose} Z`,
 ].join(' ');
 
-/** Dim structural volume: hairline outline over a faint warm fill. */
-const VOLUME_FILL = 'rgba(255,255,255,0.045)';
-const HAIRLINE = 'rgba(255,255,255,0.2)';
+/** Dim structural volume: warm hairline outline over a faint champagne fill. */
+const VOLUME_FILL = 'rgba(245,208,97,0.05)';
+const HAIRLINE = 'rgba(252,230,177,0.42)';
 
 function FuselageSchematic({
   markerRefs,
@@ -145,7 +153,10 @@ function FuselageSchematic({
   return (
     <svg
       viewBox="0 0 1000 2200"
-      className="h-full max-h-[86vh] w-auto"
+      /* Taller than the viewport on purpose: the camera pan below translates
+         this element, so the drawing must overflow its frame for the move to
+         read as travelling down the aircraft rather than sliding a small icon. */
+      className="h-[125vh] w-auto shrink-0"
       aria-hidden="true"
       focusable="false"
     >
@@ -158,6 +169,13 @@ function FuselageSchematic({
           <stop offset="0%" stopColor="#F5D061" stopOpacity="0.2" />
           <stop offset="100%" stopColor="#F5D061" stopOpacity="0" />
         </radialGradient>
+{/* Localized warm wash, one per compartment, so the lit zone reads as a
+            distinct volume rather than a uniform tint over the whole hull. */}
+        <radialGradient id="zone-wash" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#F5D061" stopOpacity="0.26" />
+          <stop offset="55%" stopColor="#E0CCA0" stopOpacity="0.09" />
+          <stop offset="100%" stopColor="#CBB079" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* Ambient warm wash so the schematic is not floating on flat black. */}
@@ -168,7 +186,7 @@ function FuselageSchematic({
       <path d="M 620 760 L 910 1010 L 910 1060 L 620 900 Z" fill={VOLUME_FILL} stroke={HAIRLINE} strokeWidth="1.5" />
       <path d="M 380 1900 L 250 2030 L 750 2030 L 620 1900 Z" fill={VOLUME_FILL} stroke={HAIRLINE} strokeWidth="1.5" />
 
-      <path d={FUSELAGE_PATH} fill="url(#fuselage-wash)" stroke={HAIRLINE} strokeWidth="2" />
+      <path d={FUSELAGE_PATH} fill="url(#fuselage-wash)" stroke="rgba(245,208,97,0.6)" strokeWidth="2.6" />
 
       {/* Radome seam and flight-deck glazing. */}
       <path
@@ -179,15 +197,46 @@ function FuselageSchematic({
       />
       <path d="M 412 268 L 452 300 M 588 268 L 548 300" stroke="rgba(203,176,121,0.4)" strokeWidth="1.5" />
 
+{/* Flight deck — helm seats either side of a centre console, with the
+          glareshield arc and control columns that make it read as a cockpit. */}
+      <path
+        d="M 404 300 Q 500 276 596 300"
+        fill="none"
+        stroke="rgba(203,176,121,0.28)"
+        strokeWidth="1.4"
+      />
+      {[436, 512].map((x) => (
+        <g key={`helm${x}`}>
+          <rect x={x} y="316" width="52" height="44" rx="7" fill="rgba(203,176,121,0.09)" stroke="rgba(245,208,97,0.42)" strokeWidth="1.3" />
+          {/* control column */}
+          <line x1={x + 26} y1="316" x2={x + 26} y2="296" stroke="rgba(245,208,97,0.38)" strokeWidth="1.6" />
+          <circle cx={x + 26} cy="294" r="3.4" fill="none" stroke="rgba(245,208,97,0.5)" strokeWidth="1.3" />
+        </g>
+      ))}
+      <rect x="482" y="318" width="36" height="40" rx="4" fill="rgba(245,208,97,0.08)" stroke="rgba(245,208,97,0.34)" strokeWidth="1.2" />
+
       {/* Partition bulkheads — the acoustic boundaries the copy describes. */}
       {[STATIONS.bulkhead1, STATIONS.bulkhead2, STATIONS.bulkhead3, STATIONS.bulkhead4].map((y) => (
-        <line key={y} x1="382" y1={y} x2="618" y2={y} stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="7 9" />
+        <g key={y}>
+          <line x1="382" y1={y} x2="618" y2={y} stroke="rgba(203,176,121,0.34)" strokeWidth="1.6" />
+          {/* Door leaf, hinged inboard — the detail that makes it read as a
+              partition rather than a ruled line. */}
+          <line
+            x1="596"
+            y1={y}
+            x2="596"
+            y2={y + 34}
+            stroke="rgba(203,176,121,0.26)"
+            strokeWidth="1.2"
+          />
+          <circle cx="596" cy={y + 34} r="1.8" fill="rgba(245,208,97,0.5)" />
+        </g>
       ))}
 
 {/* Galley — counter runs either side of the aisle. */}
       {[412, 456].map((y) =>
         [420, 508].map((x) => (
-          <rect key={`g${x}-${y}`} x={x} y={y} width="56" height="30" rx="3" fill="rgba(255,255,255,0.05)" stroke={HAIRLINE} strokeWidth="1.2" />
+          <rect key={`g${x}-${y}`} x={x} y={y} width="56" height="30" rx="3" fill="rgba(245,208,97,0.07)" stroke="rgba(245,208,97,0.38)" strokeWidth="1.3" />
         )),
       )}
 
@@ -204,18 +253,35 @@ function FuselageSchematic({
 
       {/* Aft en-suite — vanity and shower footprints. */}
       {[424, 510].map((x) => (
-        <rect key={x} x={x} y={STATIONS.spa - 34} width="66" height="80" rx="5" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.2" />
+        <rect key={x} x={x} y={STATIONS.spa - 34} width="66" height="80" rx="5" fill="rgba(245,208,97,0.07)" stroke="rgba(245,208,97,0.38)" strokeWidth="1.3" />
       ))}
 
-      {/* Zone markers — scrubbed to the champagne active state. */}
+{/* Aft pressurised cargo bay — ribbed shell behind the en-suite. */}
+      <rect x="404" y="1888" width="192" height="62" rx="6" fill="rgba(203,176,121,0.05)" stroke="rgba(203,176,121,0.24)" strokeWidth="1.2" />
+      {[1910, 1932, 1954].map((y) => (
+        <line key={`rib${y}`} x1="404" y1={y} x2="596" y2={y} stroke="rgba(203,176,121,0.16)" strokeWidth="1" />
+      ))}
+
+      {/* Zone markers — scrubbed to the champagne active state. Each carries its
+          own localized ambient wash so the illuminated compartment always
+          matches the copy on the flanks. */}
       {ZONES.map((zone, index) => (
         <g
           key={zone.id}
           ref={(node) => {
             markerRefs.current[index] = node;
           }}
+          data-fuselage-marker={zone.id}
           opacity={index === 0 ? 1 : 0.34}
         >
+          <ellipse
+            cx="500"
+            cy={MARKER_Y[index]}
+            rx="230"
+            ry="120"
+            fill="url(#zone-wash)"
+            opacity={index === 0 ? 1 : 0.22}
+          />
           <circle cx="500" cy={MARKER_Y[index]} r="15" fill="rgba(245,208,97,0.1)" stroke="rgba(245,208,97,0.8)" strokeWidth="2" />
           <circle cx="500" cy={MARKER_Y[index]} r="4.5" fill="rgba(245,208,97,0.9)" />
           <line x1={X.left} y1={MARKER_Y[index]} x2="485" y2={MARKER_Y[index]} stroke="rgba(245,208,97,0.34)" strokeWidth="1.2" />
@@ -242,6 +308,9 @@ export function FuselageScroller(): React.JSX.Element {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const layerRefs = useRef<Array<HTMLDivElement | null>>([]);
   const markerRefs = useRef<Array<SVGGElement | null>>([]);
+  /* The camera: a wrapper the timeline translates in Y so the cutaway travels
+     nose-to-tail instead of sitting still while only the copy changes. */
+  const cameraRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -268,6 +337,23 @@ export function FuselageScroller(): React.JSX.Element {
          slice boundary and its schematic marker lights as the copy arrives,
          so the drawing and the type always describe the same station. */
       const slice = 1 / ZONES.length;
+
+      /* Camera pan — one continuous move down the whole track rather than five
+         discrete jumps, so the aircraft reads as a single object being
+         travelled. The SVG is 125vh inside a 100vh frame, so the available
+         travel is 25vh: at -2% the nose and flight deck sit high in frame
+         (Zone 1), and at -24% the tail cone and cargo bay are framed with the
+         nose off the top (Zone 5). `yPercent` is relative to the wrapper's
+         own height, which keeps the move identical at every breakpoint
+         without measuring anything. */
+      if (cameraRef.current) {
+        timeline.fromTo(
+          cameraRef.current,
+          { yPercent: -2 },
+          { yPercent: -24, ease: 'none', duration: 1 },
+          0,
+        );
+      }
 
       ZONES.forEach((_zone, index) => {
         const layer = layerRefs.current[index];
@@ -338,9 +424,18 @@ return (
           className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,rgba(11,13,16,0.92)_0%,rgba(10,10,10,0.98)_60%,#0A0A0A_100%)]"
         />
 
-        {/* The cutaway holds the centre column; the flanks carry copy. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <FuselageSchematic markerRefs={markerRefs} />
+        {/* The cutaway holds the centre column; the flanks carry copy. The camera
+            wrapper is the pan target — it is a plain block so the SVG keeps a
+            fixed 125vh and overflows the frame rather than being letterboxed
+            into it. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            ref={cameraRef}
+            data-fuselage-camera="true"
+            className="flex h-full w-full items-start justify-center"
+          >
+            <FuselageSchematic markerRefs={markerRefs} />
+          </div>
         </div>
 
         {/* Zone copy. Layers span the viewport absolutely so the schematic is
@@ -357,24 +452,35 @@ return (
               className={`pointer-events-none absolute inset-0 ${index === 0 ? '' : 'invisible opacity-0'}`}
             >
               <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-between gap-6 px-6 md:px-12">
-                {/* Left flank — display headline */}
-                <div className="w-[26%] max-w-[21rem]">
-                  <div className="frame-ink-strong rounded-2xl bg-gradient-to-t from-black/90 via-black/75 to-black/45 px-5 py-4 backdrop-blur-sm">
-                    <p className="font-label-caps text-label-caps uppercase text-champagne-gold">
-                      {zone.label}
-                    </p>
-                    <h2 className="mt-3 font-headline-lg text-headline-lg text-on-surface">
-                      {zone.headline}
-                    </h2>
-                  </div>
+                {/* Left flank — display serif, no container. The headline floats directly on
+                    the section wash; `frame-ink-strong` supplies the halo that
+                    keeps it above AA without a card behind it. */}
+                <div className="w-[27%] max-w-[22rem]">
+                  <p className="frame-ink-soft font-label-caps text-label-caps uppercase text-champagne-gold">
+                    {zone.label}
+                  </p>
+                  <h2 className="frame-ink-strong mt-4 font-headline-lg text-headline-lg text-on-surface">
+                    {zone.headline}
+                  </h2>
                 </div>
 
-                {/* Right flank — technical specification rail */}
-                <ul className="frame-ink-soft w-[26%] max-w-[21rem] space-y-2 rounded-2xl bg-gradient-to-t from-black/90 via-black/75 to-black/45 px-5 py-4 text-right backdrop-blur-sm">
+                {/* Right flank — technical rail. Micro-label above a crisp value,
+                    separated by a hairline rather than a card. */}
+                <ul className="frame-ink-soft w-[27%] max-w-[22rem] text-right">
                   {zone.specs.map((spec) => (
-                    <li key={spec} className="flex items-start justify-end gap-2 font-telemetry-sm text-telemetry-sm text-on-surface">
-                      <span>{spec}</span>
-                      <Icon size={13} strokeWidth={1.75} className="mt-0.5 shrink-0 text-champagne-dim" aria-hidden="true" />
+                    <li key={spec.label} className="border-t border-white/10 py-3 first:border-t-0 first:pt-0 last:pb-0">
+                      <p className="font-label-caps text-label-caps uppercase text-champagne-gold">
+                        {spec.label}
+                      </p>
+                      <p className="mt-1.5 flex items-start justify-end gap-2 font-telemetry-sm text-telemetry-sm text-on-surface">
+                        {/* `min-w-0` lets the flex item shrink below its content width,
+                            and `break-words` wraps the long specification values. Without
+                            both, a flex item's automatic minimum size lets a value like
+                            "Handcrafted European leather" spill out of the flank and into
+                            the reserved centre corridor at narrow widths. */}
+                        <span className="min-w-0 break-words">{spec.value}</span>
+                        <Icon size={13} strokeWidth={1.75} className="mt-0.5 shrink-0 text-champagne" aria-hidden="true" />
+                      </p>
                     </li>
                   ))}
                 </ul>

@@ -387,6 +387,81 @@ function collectScroller() {
   };
 }
 
+/**
+ * Fuselage cutaway probe (`FuselageScroller`).
+ *
+ * Reads the three quantities the section's contract actually rests on: where the
+ * camera currently sits, which zone copy is composed, and whether anything
+ * paints inside the reserved centre corridor. Everything is measured from the
+ * live computed transform and real client rects — never from the authored
+ * `yPercent`, so a regression in the tween shows up as a measurement here.
+ */
+function collectFuselage() {
+  const section = document.querySelector('[aria-label="Fuselage cutaway"]');
+  if (!section) return { present: false };
+  const camera = section.querySelector('[data-fuselage-camera]');
+  const svg = section.querySelector('svg');
+  const layers = [...section.querySelectorAll('[data-fuselage-zone]')];
+  const markers = [...section.querySelectorAll('[data-fuselage-marker]')];
+  const vh = window.innerHeight;
+
+  /* The corridor is the middle third of the width. The schematic lives there, so
+     any copy whose box reaches into it competes with the focal object — measured
+     over every text node in the section rather than the two known flanks, so a
+     future third flank cannot quietly cross the line either. */
+  const mid = window.innerWidth / 2;
+  const corridorWidth = window.innerWidth * 0.33;
+  const corridorLeft = mid - corridorWidth / 2;
+  const corridorRight = mid + corridorWidth / 2;
+  const intrusions = [];
+  const inked = [...section.querySelectorAll('h2, p, li, span, svg')];
+  for (const el of inked) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) continue;
+    if (rect.right <= 0 || rect.bottom <= 0 || rect.left >= window.innerWidth || rect.top >= vh) continue;
+    if (rect.top >= vh || rect.bottom <= 0) continue;
+    let opacity = 1;
+    let node = el;
+    while (node && node.nodeType === 1) {
+      opacity *= Number(getComputedStyle(node).opacity);
+      node = node.parentElement;
+    }
+    if (opacity < 0.05) continue;
+    /* The schematic itself owns the corridor; only copy is an obstruction. */
+    if (el.closest('svg') || !el.textContent.trim()) continue;
+    const overlap = Math.min(rect.right, corridorRight) - Math.max(rect.left, corridorLeft);
+    if (overlap > 1) {
+      intrusions.push({
+        text: el.textContent.trim().slice(0, 48),
+        zone: el.closest('[data-fuselage-zone]')?.getAttribute('data-fuselage-zone') || null,
+        overlap: Number(overlap.toFixed(1)),
+      });
+    }
+  }
+
+  return {
+    present: true,
+    vh,
+    viewportWidth: window.innerWidth,
+    trackHeight: section.offsetHeight,
+    svgHeight: svg ? svg.getBoundingClientRect().height : null,
+    svgWidth: svg ? svg.getBoundingClientRect().width : null,
+    camera: camera
+      ? {
+          transform: getComputedStyle(camera).transform,
+          top: Number(camera.getBoundingClientRect().top.toFixed(2)),
+        }
+      : null,
+    corridor: { left: corridorLeft, right: corridorRight, intrusions },
+    zones: layers.map((layer, index) => ({
+      id: layer.getAttribute('data-fuselage-zone'),
+      opacity: Number(Number(getComputedStyle(layer).opacity).toFixed(3)),
+      visibility: getComputedStyle(layer).visibility,
+      markerOpacity: markers[index] ? Number(Number(getComputedStyle(markers[index]).opacity).toFixed(3)) : null,
+    })),
+  };
+}
+
 /** Type loading and ligature rendering (promoted from the scratch typography probe). */
 function collectTypography() {
   const families = ['Syne', 'Inter', '"JetBrains Mono"', '"Material Symbols Outlined"'];
@@ -421,6 +496,7 @@ module.exports = {
   collectStyleCensus,
   collectAnimations,
   collectScroller,
+  collectFuselage,
   collectTypography,
 };
 
