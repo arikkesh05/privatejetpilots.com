@@ -42,3 +42,10 @@ temp-frames/
 # summary.json). Exit codes come from the in-memory report, never from these
 # files, so tracking them only produces binary diff churn on every run.
 tools/verify-visual/evidence/
+
+# Local asset staging & intermediates
+jet-cinematic/
+
+# Editor environments
+.vscode/
+.cursor/
