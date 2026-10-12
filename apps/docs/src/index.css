@@ -31,6 +31,20 @@
 }
 
 /* =========================================================================
+   PJP // VERIFIED EXCELLENCE — JESKO JETS OVAL ENTRY
+   ========================================================================= */
+
+.jesko-window-mask {
+  background: transparent;
+}
+
+.jesko-window-glass {
+  border-radius: inherit;
+  box-shadow: inset 2px 4px 16px rgba(255, 248, 237, 0.12);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 45%);
+}
+
+/* =========================================================================
    PJP // PRIVATE JET PILOTS — editorial component layer (Syne / champagne on obsidian)
    ========================================================================= */
 
