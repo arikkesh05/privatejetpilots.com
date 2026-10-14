@@ -2,32 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================================
+   PLAYFAIR DISPLAY SITE-WIDE TYPOGRAPHY
+   ========================================================================= */
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/PlayfairDisplay.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   html {
     scroll-behavior: auto;
     background-color: #0a0a0a;
     color: #e5e2e1;
+    font-family: 'Playfair Display', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
     overflow-x: hidden;
+    font-family: 'Playfair Display', Georgia, serif;
   }
 
-  /* Preflight paints every element with a cool grey default border (#e5e7eb).
-     On this deck separation is drawn with champagne hairlines, so the fallback
-     border is the warm outline token instead. */
   *,
   ::before,
   ::after {
     border-color: #4d4636;
   }
 
-  /* Keyboard focus must stay visible on the obsidian field, where the browser's
-     default ring is effectively invisible. */
   :focus-visible {
     outline: 2px solid #cbb079;
     outline-offset: 2px;
   }
+}
+
+/* =========================================================================
+   PJP // SMOKED-GLASS & BRUSHED METALLIC GOLD SHADER SUITE
+   ========================================================================= */
+
+.smoked-gold-pod {
+  background: linear-gradient(
+    135deg,
+    rgba(18, 16, 13, 0.72) 0%,
+    rgba(10, 10, 12, 0.86) 60%,
+    rgba(14, 12, 9, 0.78) 100%
+  );
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  box-shadow:
+    0 20px 45px -12px rgba(0, 0, 0, 0.88),
+    0 0 20px -2px rgba(212, 175, 55, 0.06),
+    inset 0 1px 1px 0 rgba(255, 224, 137, 0.22),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.smoked-gold-pod-active {
+  background: linear-gradient(
+    135deg,
+    rgba(24, 20, 14, 0.88) 0%,
+    rgba(13, 12, 12, 0.94) 50%,
+    rgba(20, 17, 11, 0.9) 100%
+  );
+  backdrop-filter: blur(36px) saturate(170%);
+  -webkit-backdrop-filter: blur(36px) saturate(170%);
+  border: 1px solid rgba(255, 215, 0, 0.75);
+  box-shadow:
+    0 24px 50px -10px rgba(0, 0, 0, 0.95),
+    0 0 32px 0 rgba(255, 215, 0, 0.28),
+    0 0 12px 0 rgba(212, 175, 55, 0.4),
+    inset 0 1px 2px 0 rgba(255, 238, 173, 0.48),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.smoked-gold-glint {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 224, 137, 0.2) 20%,
+    rgba(255, 215, 0, 0.9) 50%,
+    rgba(255, 224, 137, 0.2) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
 /* =========================================================================
@@ -45,12 +111,9 @@
 }
 
 /* =========================================================================
-   PJP // PRIVATE JET PILOTS — editorial component layer (Syne / champagne on obsidian)
+   PJP // EDITORIAL LUXURY LAYER
    ========================================================================= */
 
-/* Quiet Champagne CTA — a hairline and a whisper of warmth, never a filled
-   saturated block. The solid variant is reserved for the single most important
-   action on any one surface. */
 .champagne-btn {
   background: rgba(203, 176, 121, 0.06);
   border: 1px solid rgba(203, 176, 121, 0.45);
@@ -80,8 +143,6 @@
   background: #b89c66;
 }
 
-/* Panel surface — warm charcoal on obsidian, defined by a champagne hairline
-   rather than a coloured glow. */
 .glass-cockpit {
   background: rgba(18, 18, 18, 0.82);
   backdrop-filter: blur(20px);
@@ -100,7 +161,6 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Editorial image frame — a slow, restrained scale. No sheen sweep, no tilt. */
 .editorial-frame {
   overflow: hidden;
 }
@@ -111,9 +171,6 @@
   transform: scale(1.03);
 }
 
-
-
-/* Concierge Card Hover Icons */
 .concierge-card {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -129,14 +186,6 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Continuous ambient pulses (nav border glow, equalizer fallback loop and the
-   pitch-ladder drift) were retired for the editorial benchmark: motion on this
-   deck is user-initiated or scroll-linked, never perpetual ornament. */
-
-/* Audio notification toast styles were removed with the telemetry toast itself:
-   no component renders that node, so the deck carries no floating status strip. */
-
-/* Live telemetry readouts refresh continuously; digits must not reflow the layout */
 .font-telemetry,
 .font-telemetry-sm,
 .font-telemetry-md,
@@ -152,10 +201,7 @@
     transition-duration: 0.01ms !important;
   }
 }
-/* Ambient vignette — a soft radial falloff around the hero frame, gathering
-   obsidian toward the edges only. It works alongside the left-hand wash (which
-   carries the display type) so the exposed right half of the photograph keeps
-   its own contrast instead of being flattened by a global scrim. */
+
 .hero-vignette {
   background: radial-gradient(
     120% 95% at 50% 42%,
@@ -165,13 +211,6 @@
   );
 }
 
-/* Band legibility — the editorial type that renders directly on the live frame
-   has to clear AA over photography it cannot control. Tailwind's `drop-shadow-*`
-   utilities each write the same `--tw-drop-shadow` custom property, so stacking
-   two of them silently collapses to whichever declaration lands last; the
-   two-layer halo (a tight contact shadow plus a wide ambient one) is therefore
-   composed here as a single `filter`. `.frame-ink-strong` carries the large
-   display titles, `.frame-ink-soft` the smaller flanking labels. */
 .frame-ink-strong {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85)) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.95));
 }
@@ -179,10 +218,6 @@
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
 }
 
-/* Fleet glass cards — a cursor-following champagne-amber spotlight plus a soft
-   border luminance response on hover. The gradient position is driven by
-   --mouse-x / --mouse-y, written from a passive pointermove listener in
-   `FleetBento`, so nothing here invalidates layout or forces a reflow. */
 .fleet-card {
   position: relative;
   transition: border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -208,11 +243,6 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Nav micro-beacon — three amber bars that breathe only while interaction
-   sound is live, holding as a dim static lamp in standby. Because it is gated
-   on audio state (off by default) rather than running forever, it stays within
-   the deck's "no perpetual ornament" rule; the global reduced-motion rule
-   freezes the pulse at its resting keyframe. */
 .hud-beacon {
   display: inline-flex;
   align-items: flex-end;
@@ -249,5 +279,3 @@
     opacity: 1;
   }
 }
-
-

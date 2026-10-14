@@ -1,24 +1,74 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ExplodedAirframe, AirframeService } from './ExplodedAirframe';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const CinematicHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
+  const [activeService, setActiveService] = useState<AirframeService | null>(null);
 
   useLayoutEffect(() => {
     if (!containerRef.current || !pinRef.current) return;
 
     const ctx = gsap.context(() => {
-      // 1. Initial resting state setup
-      gsap.set('.js-airframe-stage', { yPercent: 120, autoAlpha: 0 });
-      gsap.set('.js-sky-overlay', { autoAlpha: 0 });
-      gsap.set('.js-blueprint-layer', { autoAlpha: 0 });
-      gsap.set('.js-editorial-flanks', { scale: 1, autoAlpha: 1 });
-      gsap.set('.js-pjp-watermark', { scale: 1, autoAlpha: 1 });
+      // 1. Initial State Setup
+      gsap.set('.js-airframe-stage', { yPercent: 130, scale: 1.15, autoAlpha: 0 });
+      gsap.set('.js-jet-shadow', { scale: 1.3, opacity: 0.05, filter: 'blur(30px)' });
+      gsap.set('.js-solid-jet', { opacity: 1 });
+      gsap.set('.js-blueprint-layer', { opacity: 0 });
+      gsap.set('.js-studio-floor', { opacity: 0 });
+
+      // Airframe Components initial intact resting alignment
+      gsap.set('.js-part-cockpit', { x: 0, y: 0 });
+      gsap.set('.js-part-wing-left', { x: 0, y: 0 });
+      gsap.set('.js-part-wing-right', { x: 0, y: 0 });
+      gsap.set('.js-part-engine-left', { x: 0, y: 0 });
+      gsap.set('.js-part-engine-right', { x: 0, y: 0 });
+      gsap.set('.js-part-tail', { x: 0, y: 0 });
+      gsap.set('.js-part-cabin', { opacity: 1 });
+
+      // Parts start non-interactive during arrival
+      gsap.set(
+        [
+          '.js-part-cockpit',
+          '.js-part-wing-left',
+          '.js-part-wing-right',
+          '.js-part-engine-left',
+          '.js-part-engine-right',
+          '.js-part-tail',
+          '.js-part-cabin',
+        ],
+        { pointerEvents: 'none' }
+      );
+
+      // Flank HUD Badges initial hidden positions
+      gsap.set('.js-flank-left', { autoAlpha: 0, x: -50 });
+      gsap.set('.js-flank-right', { autoAlpha: 0, x: 50 });
+
+      // Sky Narrative master container & HUD Radar Vector initial states
+      gsap.set('.js-sky-narrative', { autoAlpha: 0, y: 40 });
+      gsap.set('.js-radar-beam', { left: '0%' });
+      gsap.set('.js-illuminated-layer', {
+        clipPath: 'inset(0% 100% 0% 0%)',
+      });
+
+      // Window resting stage & typography (Strictly layered at z-35)
+      gsap.set('.js-editorial-flanks', { autoAlpha: 1 });
+      gsap.set('.js-editorial-left', { x: 0, autoAlpha: 1 });
+      gsap.set('.js-editorial-right', { x: 0, autoAlpha: 1 });
+      gsap.set('.js-scroll-prompt', { autoAlpha: 1, y: 0 });
+      gsap.set('.js-bottom-telemetry', { autoAlpha: 1, y: 0 });
+      gsap.set('.js-pjp-watermark', { autoAlpha: 1, scale: 1, filter: 'blur(0px)' });
       gsap.set('.js-window-stage', { scale: 1, autoAlpha: 1, xPercent: 0, z: 0 });
+
+      // Act 2: Digital ID Live Specimen Choreography Initial States
+      gsap.set('.js-act2-headline', { autoAlpha: 0 });
+      gsap.set('.js-badge-text', { x: -60, autoAlpha: 0 });
+      gsap.set('.js-badge-card', { y: -130, rotateZ: -6, scale: 0.9, autoAlpha: 0 });
+      gsap.set('.js-corner-telemetry', { autoAlpha: 1 });
 
       // Sunshade motorized retraction on load
       gsap.fromTo(
@@ -27,146 +77,544 @@ export const CinematicHero: React.FC = () => {
         { yPercent: -105, duration: 1.6, ease: 'power3.inOut', delay: 0.2 }
       );
 
-      // Continuous ambient cloud drift
+      // Active high-altitude cloud stream
       gsap.to('.js-sky-drift', {
         xPercent: -8,
-        duration: 25,
+        yPercent: 2,
+        scale: 1.04,
+        duration: 9,
         repeat: -1,
         yoyo: true,
         ease: 'sine.inOut',
       });
 
-      // 2. Master Scroll Timeline
+      // 2. Master Scroll Timeline (Paced across 900vh runway)
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1,
+          scrub: 0.8,
         },
       });
 
-      // ── ACT 1: CABIN DIVE (0.00 -> 0.22) ──
-      // Typography fades out instantly on scroll so it NEVER lingers as giant text on reverse
+      // ── ACT 1: CABIN WINDOW DIVE (0.00 -> 0.13) ──
       tl.to(
-        '.js-editorial-flanks',
-        {
-          autoAlpha: 0,
-          scale: 1.8,
-          duration: 0.04,
-          ease: 'power2.out',
-          immediateRender: false,
-        },
+        '.js-editorial-left',
+        { x: -110, autoAlpha: 0, duration: 0.08, ease: 'power2.out' },
+        0
+      );
+      tl.to(
+        '.js-editorial-right',
+        { x: 110, autoAlpha: 0, duration: 0.08, ease: 'power2.out' },
+        0
+      );
+      tl.to(
+        '.js-scroll-prompt',
+        { autoAlpha: 0, y: 24, duration: 0.05, ease: 'power1.out' },
+        0
+      );
+      tl.to(
+        '.js-bottom-telemetry',
+        { autoAlpha: 0, y: 20, duration: 0.05, ease: 'power1.out' },
         0
       );
 
-      // Watermark scales slightly and clears before clouds appear
       tl.to(
         '.js-pjp-watermark',
         {
-          scale: 2.2,
           autoAlpha: 0,
-          duration: 0.08,
+          scale: 1.35,
+          filter: 'blur(8px)',
+          duration: 0.07,
           ease: 'power1.out',
-          immediateRender: false,
         },
-        0
+        0.01
       );
 
-      // Window Stage: Scales purely without killing GPU texture memory
-      tl.fromTo(
-        '.js-window-stage',
-        { scale: 1, z: 0, xPercent: 0 },
-        {
-          scale: 6.5,
-          z: 100,
-          xPercent: -2,
-          duration: 0.22,
-          ease: 'none',
-          immediateRender: false,
-        },
-        0
-      );
-
-      // Fade out only at the very tail end once aperture already covers the screen
       tl.to(
         '.js-window-stage',
+        { scale: 6.5, z: 100, xPercent: -2, duration: 0.13, ease: 'power1.in' },
+        0
+      );
+
+      tl.to(
+        '.js-window-stage',
+        { autoAlpha: 0, duration: 0.03, ease: 'power1.in' },
+        0.10
+      );
+
+      // ── ACT 1.5: HUD RADAR VECTOR SWEEP (0.13 -> 0.30) ──
+      tl.fromTo(
+        '.js-sky-narrative',
+        { autoAlpha: 0, y: 40 },
+        { autoAlpha: 1, y: 0, duration: 0.04, ease: 'power2.out' },
+        0.13
+      );
+
+      tl.fromTo(
+        '.js-radar-beam',
+        { left: '0%' },
+        { left: '100%', duration: 0.14, ease: 'none' },
+        0.14
+      );
+
+      tl.fromTo(
+        '.js-illuminated-layer',
+        { clipPath: 'inset(0% 100% 0% 0%)' },
         {
-          autoAlpha: 0,
-          duration: 0.02,
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: 0.14,
           ease: 'none',
-          immediateRender: false,
         },
-        0.21
+        0.14
       );
 
-      // ── ACT 1.5: ATMOSPHERIC SHIFT (0.22 -> 0.35) ──
-      tl.fromTo(
-        '.js-sky-overlay',
-        { autoAlpha: 0 },
-        { autoAlpha: 0.65, duration: 0.12, ease: 'none', immediateRender: false },
-        0.22
+      // CLEAR SKY NARRATIVE BEFORE DIGITAL ID
+      tl.to(
+        '.js-sky-narrative',
+        { autoAlpha: 0, y: -50, duration: 0.05, ease: 'power2.in' },
+        0.28
       );
 
-      // ── ACT 2: AIRFRAME ENTRANCE (0.32 -> 0.60) ──
+      // ── ACT 1.8: TRANSITION TO LUXURY STUDIO FLOOR (0.28 -> 0.38) ──
       tl.fromTo(
-        '.js-airframe-stage',
-        { yPercent: 120, autoAlpha: 0, scale: 0.92 },
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-          scale: 1,
-          duration: 0.28,
-          ease: 'power2.out',
-          immediateRender: false,
-        },
+        '.js-studio-floor',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.10, ease: 'power1.inOut' },
+        0.28
+      );
+
+      // ── ACT 2: PJP DIGITAL ID ENTERS WITH LANYARD PHYSICS (0.31 -> 0.38) ──
+      tl.to(
+        '.js-act2-headline',
+        { autoAlpha: 1, duration: 0.02 },
+        0.31
+      );
+
+      tl.fromTo(
+        '.js-badge-text',
+        { x: -60, autoAlpha: 0 },
+        { x: 0, autoAlpha: 1, duration: 0.07, ease: 'power3.out' },
         0.32
       );
 
-      // ── ACT 3: TECHNICAL BLUEPRINT TRANSITION (0.60 -> 1.00) ──
       tl.fromTo(
-        '.js-blueprint-layer',
-        { autoAlpha: 0 },
-        { autoAlpha: 0.85, duration: 0.25, ease: 'power1.inOut', immediateRender: false },
-        0.65
+        '.js-badge-card',
+        { y: -130, rotateZ: -6, scale: 0.9, autoAlpha: 0 },
+        { y: 0, rotateZ: 0, scale: 1, autoAlpha: 1, duration: 0.09, ease: 'back.out(1.4)' },
+        0.32
+      );
+
+      // ── ACT 2.3: DIGITAL ID EXITS CLEANLY BEFORE JET ARRIVAL (0.43 -> 0.48) ──
+      tl.to(
+        '.js-badge-text',
+        { x: -80, autoAlpha: 0, duration: 0.05, ease: 'power2.in' },
+        0.43
       );
 
       tl.to(
+        '.js-badge-card',
+        { y: -120, rotateZ: 4, scale: 0.9, autoAlpha: 0, duration: 0.05, ease: 'power2.in' },
+        0.43
+      );
+
+      tl.to(
+        ['.js-act2-headline', '.js-corner-telemetry', '.js-bottom-telemetry'],
+        { autoAlpha: 0, duration: 0.03 },
+        0.47
+      );
+
+      // ── ACT 2.8: UNCLUTTERED JET ARRIVAL & TOUCHDOWN (0.48 -> 0.62) ──
+      tl.fromTo(
         '.js-airframe-stage',
-        { scale: 1.05, duration: 0.35, ease: 'none', immediateRender: false },
-        0.65
+        { yPercent: 130, scale: 1.15, autoAlpha: 0 },
+        {
+          yPercent: 0,
+          scale: 0.98,
+          autoAlpha: 1,
+          duration: 0.16,
+          ease: 'power2.out',
+        },
+        0.48
+      );
+
+      tl.fromTo(
+        '.js-jet-shadow',
+        { scale: 1.3, opacity: 0.05, filter: 'blur(30px)' },
+        {
+          scale: 0.96,
+          opacity: 0.65,
+          filter: 'blur(12px)',
+          duration: 0.16,
+          ease: 'power2.out',
+        },
+        0.48
+      );
+
+      // ── ACT 3: EXPLODED AIRFRAME SEPARATION (0.64 -> 0.84) ──
+      tl.to(
+        '.js-solid-jet',
+        { opacity: 0, duration: 0.12, ease: 'power1.inOut' },
+        0.64
+      );
+
+      tl.to(
+        '.js-part-cabin',
+        { opacity: 0.15, duration: 0.14, ease: 'power1.inOut' },
+        0.64
+      );
+
+      tl.fromTo(
+        '.js-blueprint-layer',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.14, ease: 'power1.inOut' },
+        0.64
+      );
+
+      tl.to(
+        '.js-part-cockpit',
+        { y: -60, duration: 0.16, ease: 'power2.out', immediateRender: false },
+        0.66
+      );
+
+      tl.to(
+        '.js-part-wing-left',
+        { x: -110, y: 18, duration: 0.16, ease: 'power2.out' },
+        0.66
+      );
+      tl.to(
+        '.js-part-wing-right',
+        { x: 110, y: 18, duration: 0.16, ease: 'power2.out' },
+        0.66
+      );
+
+      tl.to(
+        '.js-part-engine-left',
+        { x: -65, y: 28, duration: 0.16, ease: 'power2.out' },
+        0.68
+      );
+      tl.to(
+        '.js-part-engine-right',
+        { x: 65, y: 28, duration: 0.16, ease: 'power2.out' },
+        0.68
+      );
+
+      tl.to(
+        '.js-part-tail',
+        { y: 75, duration: 0.16, ease: 'power2.out' },
+        0.68
+      );
+
+      tl.fromTo(
+        '.js-flank-left',
+        { autoAlpha: 0, x: -50 },
+        { autoAlpha: 1, x: 0, duration: 0.14, ease: 'power2.out' },
+        0.72
+      );
+      tl.fromTo(
+        '.js-flank-right',
+        { autoAlpha: 0, x: 50 },
+        { autoAlpha: 1, x: 0, duration: 0.14, ease: 'power2.out' },
+        0.72
+      );
+
+      tl.set(
+        [
+          '.js-part-cockpit',
+          '.js-part-wing-left',
+          '.js-part-wing-right',
+          '.js-part-engine-left',
+          '.js-part-engine-right',
+          '.js-part-tail',
+          '.js-part-cabin',
+        ],
+        { pointerEvents: 'auto' },
+        0.74
+      );
+
+      // ── ACT 4: SMOOTH RUNWAY EXIT INTO ECOSYSTEM SECTION (0.88 -> 1.00) ──
+      tl.to(
+        ['.js-flank-left', '.js-flank-right', '.js-airframe-stage'],
+        { autoAlpha: 0, y: -40, duration: 0.12, ease: 'power2.in' },
+        0.88
       );
     }, pinRef.current);
 
     return () => ctx.revert();
   }, []);
 
+  const handleScrollToEcosystem = () => {
+    setActiveService(null);
+    const target = document.getElementById('ecosystem') || document.querySelector('section:nth-of-type(2)');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section
       ref={containerRef}
       className="relative w-full bg-[#090A0D] text-[#ECE7DF]"
-      style={{ height: '400vh' }}
+      style={{ height: '900vh' }}
     >
       <div
         ref={pinRef}
         className="sticky top-0 h-screen w-full overflow-hidden"
       >
-        {/* ── BASE BACKGROUND: Sky & Atmosphere ── */}
-        <div className="absolute inset-0 z-0 h-full w-full bg-[#0b131e] overflow-hidden">
+        {/* ── BASE LAYER 0 (z-0): Sky & Studio Floor ── */}
+        <div className="absolute inset-0 z-0 h-full w-full bg-[#08090b] overflow-hidden">
           <img
             src="/hero-sky.webp"
             alt=""
-            className="js-sky-drift absolute inset-0 h-full w-[115%] min-w-full object-cover object-center select-none"
+            className="js-sky-drift pointer-events-none select-none will-change-transform"
+            style={{
+              position: 'absolute',
+              top: '-10%',
+              left: '-25%',
+              width: '150%',
+              height: '120%',
+              maxWidth: 'none',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
           />
-          <div className="js-sky-overlay pointer-events-none absolute inset-0 bg-gradient-to-b from-[#090A0D]/40 via-[#141210]/60 to-[#090A0D]/90" />
+
+          <div
+            className="js-studio-floor pointer-events-none absolute inset-0 opacity-0"
+            style={{
+              background:
+                'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(245,197,66,0.18) 0%, rgba(32,28,24,0.75) 45%, #090A0D 80%)',
+            }}
+          />
         </div>
 
-        {/* ── LAYER 1: CABIN WINDOW STAGE (Act 1) ── */}
+        {/* ── LAYER 1 (z-15): THE HUD RADAR VECTOR SKY NARRATIVE ── */}
+        <div className="js-sky-narrative pointer-events-none absolute inset-0 z-15 flex flex-col justify-center px-8 lg:px-20 max-w-7xl mx-auto overflow-hidden">
+          
+          <div
+            className="absolute inset-0 pointer-events-none opacity-15"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)',
+              backgroundSize: '80px 80px',
+            }}
+          />
+
+          {/* 1. Base Ghosted Wireframe Layer */}
+          <div className="pointer-events-none w-full opacity-20 filter blur-[0.5px]">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-2.5 h-2.5 rounded-full bg-white/50" />
+              <p className="font-mono text-sm sm:text-base uppercase tracking-[0.34em] text-white/60 font-black">
+                OPERATIONAL NETWORK
+              </p>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-[4.2rem] font-bold text-white/40 tracking-[-0.02em] leading-[1.08] max-w-5xl font-playfair">
+              We’re not a directory <br />
+              We’re the network layer <br />
+              of aviation ops
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-white/30 font-light max-w-3xl mt-4 leading-relaxed font-playfair">
+              When an operator needs a crew before service, a management company loses a captain, or an aircraft is AOG at 2 a.m. — PJP synchronizes the flight deck in real-time.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pt-8 mt-6 border-t border-white/10">
+              <div>
+                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                  DIGITAL LOGBOOK
+                </p>
+                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">The Crew Profile</h3>
+                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Cross-checked against the FAA Airmen Registry (591k+ pilots).</p>
+              </div>
+              <div>
+                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                  LIVE DISPATCH
+                </p>
+                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">Real-Time Gigs</h3>
+                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Routing Part 91 & 135 seats and contract flying directly to profiles.</p>
+              </div>
+              <div>
+                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                  INSTANT ROSTER
+                </p>
+                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">Immediate Access</h3>
+                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Direct access to 26,500+ aviators and 78 operators globally.</p>
+              </div>
+              <div>
+                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                  UNIFIED BADGE
+                </p>
+                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">Ten Systems, One ID</h3>
+                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Encrypted logbooks, JumpSeat perks, and escrow payouts.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Illuminated Decoded Layer */}
+          <div className="js-illuminated-layer pointer-events-none absolute inset-0 flex flex-col justify-center px-8 lg:px-20 max-w-7xl mx-auto will-change-transform">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FFD700] shadow-[0_0_14px_#FFD700] animate-pulse" />
+              <p
+                className="font-mono text-sm sm:text-base uppercase tracking-[0.34em] font-black"
+                style={{
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 4px 14px rgba(245,158,11,0.55)) drop-shadow(0 2px 6px rgba(0,0,0,0.8))',
+                }}
+              >
+                OPERATIONAL NETWORK
+              </p>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-[4.2rem] font-bold text-white tracking-[-0.02em] leading-[1.08] max-w-5xl drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] font-playfair">
+              We’re not a directory <br />
+              We’re the{' '}
+              <span
+                className="font-bold inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 4px 14px rgba(245,158,11,0.55)) drop-shadow(0 2px 6px rgba(0,0,0,0.8))',
+                }}
+              >
+                network layer
+              </span>{' '}
+              <br />
+              of aviation ops
+            </h2>
+
+            <p className="text-base sm:text-lg lg:text-xl text-white font-light max-w-3xl mt-4 leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] font-playfair">
+              When an operator needs a crew before service, a management company loses a captain, or an aircraft is AOG at 2 a.m. — PJP synchronizes the flight deck in{' '}
+              <span
+                className="italic font-bold text-lg sm:text-xl lg:text-2xl inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 4px 14px rgba(245,158,11,0.55)) drop-shadow(0 2px 6px rgba(0,0,0,0.8))',
+                }}
+              >
+                real-time
+              </span>.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pt-8 mt-6 border-t border-white/30">
+              <div>
+                <p
+                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'drop-shadow(0 4px 14px rgba(245,158,11,0.55)) drop-shadow(0 2px 6px rgba(0,0,0,0.8))',
+                  }}
+                >
+                  DIGITAL LOGBOOK
+                </p>
+                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">The Crew Profile</h3>
+                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Cross-checked against the FAA Airmen Registry (591k+ pilots).</p>
+              </div>
+
+              <div>
+                <p
+                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'drop-shadow(0 4px 14px rgba(245,158,11,0.55)) drop-shadow(0 2px 6px rgba(0,0,0,0.8))',
+                  }}
+                >
+                  LIVE DISPATCH
+                </p>
+                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Real-Time Gigs</h3>
+                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Routing Part 91 & 135 seats and contract flying directly to profiles.</p>
+              </div>
+
+              <div>
+                <p
+                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  INSTANT ROSTER
+                </p>
+                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Immediate Access</h3>
+                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Direct access to 26,500+ aviators and 78 operators globally.</p>
+              </div>
+
+              <div>
+                <p
+                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  UNIFIED BADGE
+                </p>
+                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Ten Systems, One ID</h3>
+                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Encrypted logbooks, JumpSeat perks, and escrow payouts.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. The Glowing Radar Vector Beam */}
+          <div
+            className="js-radar-beam pointer-events-none absolute top-0 bottom-0 w-[2.5px] z-30 will-change-transform"
+            style={{
+              transform: 'translateX(-50%)',
+              background: 'linear-gradient(180deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.9) 15%, #FFD700 45%, #F59E0B 55%, rgba(56,189,248,0.9) 85%, rgba(56,189,248,0) 100%)',
+              boxShadow: '0 0 18px 3px rgba(255, 215, 0, 0.95), 0 0 35px 8px rgba(56, 189, 248, 0.55)',
+            }}
+          >
+            <div
+              className="absolute top-24 left-3 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.25em] font-bold px-2 py-0.5 rounded border backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+              style={{
+                background: 'rgba(10,12,18,0.85)',
+                color: '#FFD700',
+                borderColor: 'rgba(255,215,0,0.5)',
+              }}
+            >
+              VECTOR SCAN // FL410
+            </div>
+
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 border rounded-full flex items-center justify-center bg-black/60 backdrop-blur-sm"
+              style={{
+                borderColor: '#FFD700',
+                boxShadow: '0 0 14px rgba(255, 215, 0, 0.8)',
+              }}
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]" />
+            </div>
+
+            <div className="absolute bottom-16 left-3 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.25em] text-[#38bdf8] bg-black/80 px-2 py-0.5 rounded border border-[#38bdf8]/40 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              RADAR ACQUIRED
+            </div>
+          </div>
+        </div>
+
+        {/* ── LAYER 2 (z-20): EXPLODED AIRFRAME ASSEMBLY STAGE ── */}
+        <div className="js-airframe-stage pointer-events-auto absolute inset-0 z-20 flex items-center justify-center will-change-transform">
+          <ExplodedAirframe
+            activeServiceId={activeService?.id}
+            onSelectService={(service) => setActiveService(service)}
+          />
+        </div>
+
+        {/* ── LAYER 3 (z-30): CABIN WINDOW STAGE ── */}
         <div
-          className="js-window-stage pointer-events-none absolute inset-0 z-10 h-full w-full will-change-transform"
-          style={{ transformOrigin: '50% 50%', backfaceVisibility: 'hidden' }}
+          className="js-window-stage pointer-events-none absolute inset-0 z-30 h-full w-full will-change-transform"
+          style={{ transformOrigin: '50% 50%', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
         >
-          {/* Full-bleed cabin wall backing */}
           <img
             src="/hero-back.webp"
             alt=""
@@ -174,23 +622,29 @@ export const CinematicHero: React.FC = () => {
             style={{ zIndex: 1, backfaceVisibility: 'hidden' }}
           />
 
-          {/* Central Porthole Window Unit */}
           <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 2 }}>
             <div className="relative h-[68vh] w-[46vh] max-h-[640px] max-w-[440px] overflow-hidden rounded-[50%_/_42%]">
-              {/* Retractable Sunshade */}
               <div className="js-sunshade-unit absolute inset-0 bg-[#221c1a] flex items-end justify-center z-10">
                 <img src="/window-knob.webp" alt="" className="w-[82%] mb-3 select-none" />
               </div>
-              {/* Frosted Glass Watermark */}
-              <div className="js-pjp-watermark absolute inset-0 flex items-center justify-center z-0">
-                <span className="font-serif text-[10vh] font-light tracking-[0.3em] text-white/20 select-none">
+              
+              {/* Perfectly Centered Crisp White Watermark (Tightly bound inside glass) */}
+              <div className="js-pjp-watermark absolute inset-0 flex items-center justify-center z-0 select-none pointer-events-none will-change-transform">
+                <span
+                  className="font-normal leading-none select-none text-white/90"
+                  style={{
+                    fontSize: 'clamp(2rem, 5.8vh, 3.8rem)',
+                    letterSpacing: '0.12em',
+                    paddingLeft: '0.12em',
+                    textShadow: '0 2px 14px rgba(0, 0, 0, 0.45)',
+                  }}
+                >
                   P J P
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Front Bezel Plates */}
           <img
             src="/hero-front.webp"
             alt=""
@@ -205,73 +659,381 @@ export const CinematicHero: React.FC = () => {
           />
         </div>
 
-        {/* ── LAYER 2: FLANKING EDITORIAL HEADLINES ── */}
+        {/* ── LAYER 4 (z-35): ASYMMETRIC JESKO-STYLE EDITORIAL TYPOGRAPHY & SCROLL PILL ── */}
         <div
-          className="js-editorial-flanks pointer-events-none absolute inset-0 z-20 will-change-transform"
-          style={{ transformOrigin: '50% 50%' }}
+          className="js-editorial-flanks pointer-events-none absolute inset-0 flex flex-col justify-between p-8 lg:p-16 select-none"
+          style={{ zIndex: 35 }}
         >
-          {/* Left Flank */}
-          <div className="absolute left-8 lg:left-16 top-1/2 -translate-y-1/2 max-w-[280px] lg:max-w-[340px]">
-            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#C5A880]/80 mb-2">
-              Operational Network
-            </p>
-            <h1 className="font-sans text-3xl lg:text-5xl font-light uppercase tracking-tight text-white leading-[1.05]">
-              A Network <br /> in Motion
-            </h1>
+          <div className="h-14 sm:h-16" />
+
+          {/* Asymmetric Columns: Left headline UP, Right headline DOWN */}
+          <div className="flex-1 grid grid-cols-2 gap-8 w-full pointer-events-none">
+            {/* Left Flank: Anchored to Upper Third */}
+            <div className="flex flex-col justify-start">
+              <div className="js-editorial-left max-w-[340px] lg:max-w-[440px] pt-4 lg:pt-8 will-change-transform">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-tight text-white leading-[0.95] drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-playfair">
+                  Aviation <br />
+                  moves at <br />
+                  the speed of <br />
+                  connection
+                </h1>
+              </div>
+            </div>
+
+            {/* Right Flank: Anchored to Lower Third */}
+            <div className="flex flex-col justify-end pb-8 lg:pb-12 text-right">
+              <div className="js-editorial-right max-w-[340px] lg:max-w-[440px] ml-auto will-change-transform">
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-tight text-white leading-[0.95] drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-playfair">
+                  We’re the <br />
+                  network layer <br />
+                  of aviation ops
+                </h2>
+              </div>
+            </div>
           </div>
 
-          {/* Right Flank */}
-          <div className="absolute right-8 lg:right-16 top-1/2 -translate-y-1/2 max-w-[280px] lg:max-w-[340px] text-right">
-            <h2 className="font-sans text-3xl lg:text-5xl font-light uppercase tracking-tight text-[#C5A880] leading-[1.05] mb-2">
-              Verified <br /> Excellence
-            </h2>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
-              Pilots • Crew • Operators • Charter
-            </p>
+          {/* Bottom Row: Narrative Description on Left, Scroll Pill on Right */}
+          <div className="flex items-end justify-between w-full pt-4">
+            <div className="js-bottom-telemetry max-w-[320px] sm:max-w-[400px]">
+              <p className="text-xs sm:text-sm text-white/75 font-normal leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-playfair">
+                The operating network of private aviation. Pilots, operators, flight departments, mechanics, and brokers — synchronized in real-time.
+              </p>
+            </div>
+
+            <div className="js-scroll-prompt flex items-center gap-3 bg-white/10 border border-white/20 px-5 py-2.5 rounded-full backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+              <span className="font-mono text-xs uppercase tracking-[0.25em] text-white font-bold">
+                SCROLL DOWN
+              </span>
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #FFE27D 0%, #FFD700 60%, #F59E0B 100%)',
+                  boxShadow: '0 0 12px rgba(255,215,0,0.7)',
+                }}
+              >
+                <svg
+                  className="w-3 h-3 text-black animate-bounce"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ── LAYER 3: AIRFRAME STAGE (Acts 2 & 3) ── */}
-        <div className="js-airframe-stage pointer-events-none absolute inset-0 z-15 flex items-center justify-center will-change-transform">
-          <div className="relative h-[85vh] w-[85vw] max-w-[1100px] flex items-center justify-center">
-            <img
-              src="/jet-exterior.png"
-              alt="PJP Executive Jet"
-              className="absolute inset-0 h-full w-full object-contain select-none"
-            />
-            <img
-              src="/jet-blueprint.png"
-              alt="Airframe Blueprint"
-              className="js-blueprint-layer absolute inset-0 h-full w-full object-contain select-none"
-            />
+        {/* ── LAYER 5 (z-35): ACT 2 ARRIVAL - PJP DIGITAL ID LIVE SPECIMEN ── */}
+        <div className="js-act2-headline pointer-events-none absolute inset-0 z-35 flex items-center justify-center px-6 sm:px-10 lg:px-16 opacity-0">
+          <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16">
+            
+            {/* Left Column: Specimen Narrative & Editorial Typography */}
+            <div className="js-badge-text pointer-events-auto flex-1 max-w-xl text-left will-change-transform">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-[#CBB079]/10 border border-[#CBB079]/30 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#E0CCA0] font-semibold">
+                  PJP DIGITAL ID // LIVE SPECIMEN
+                </span>
+              </div>
+
+              <h2 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-white leading-[1.08] mb-6 font-playfair">
+                A verified identity <br />
+                you can{' '}
+                <span
+                  className="inline-block italic"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 30%, #FFD700 60%, #D4AF37 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textDecoration: 'underline',
+                    textDecorationColor: 'rgba(203, 176, 121, 0.4)',
+                    textUnderlineOffset: '8px',
+                  }}
+                >
+                  flash on the ramp.
+                </span>
+              </h2>
+
+              <p className="text-sm sm:text-base text-white/70 leading-relaxed font-normal mb-8 max-w-lg font-playfair">
+                Every PJP member gets a searchable, NFC-ready Digital ID. Scan the QR at any FBO — the badge goes live for 60 seconds with an illuminated clearance border, animated security hologram, and cryptographically-linked FAA credentials.
+              </p>
+
+              {/* Verified Checklist */}
+              <div className="space-y-3.5 mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full bg-[#22c55e]/20 border border-[#22c55e] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-2.5 h-2.5 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/80 font-mono tracking-wide">
+                    Cross-checked against 589k pilots in the FAA Airmen Registry
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full bg-[#CBB079]/20 border border-[#CBB079] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-2.5 h-2.5 text-[#CBB079]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/80 font-mono tracking-wide">
+                    Real-time ramp status — FBOs scan you in and out
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full bg-[#FFD700]/20 border border-[#FFD700] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-2.5 h-2.5 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/80 font-mono tracking-wide">
+                    NFC-ready — tap your phone to any reader
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons styled with PJP design system tokens */}
+              <div className="flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFE27D 0%, #FFD700 60%, #F59E0B 100%)',
+                    boxShadow: '0 4px 20px rgba(255, 215, 0, 0.3)',
+                  }}
+                  className="px-7 py-3 rounded-sm text-black font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all hover:scale-[1.02] active:scale-95"
+                >
+                  OPEN FULL BADGE ↗
+                </button>
+                <button
+                  type="button"
+                  className="px-7 py-3 rounded-sm border border-[#CBB079]/30 hover:border-[#CBB079]/70 text-[#E0CCA0] font-mono text-xs uppercase tracking-[0.2em] transition-all hover:bg-white/[0.04]"
+                >
+                  GET YOUR PJP ID
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: Tactical Lanyard Hanging Ramp Specimen Badge */}
+            <div className="js-badge-card pointer-events-auto relative group will-change-transform" style={{ perspective: '1200px' }}>
+              
+              {/* Tactical Lanyard Strap & Clip Assembly */}
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none">
+                <div
+                  className="w-7 h-9 border-x border-white/10"
+                  style={{
+                    background: 'repeating-linear-gradient(45deg, #18191d, #18191d 3px, #0e1014 3px, #0e1014 6px)',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.8)',
+                  }}
+                />
+                <div className="w-9 h-2.5 bg-gradient-to-r from-[#2c2d30] via-[#52555b] to-[#2c2d30] rounded-xs border border-white/20 shadow-md" />
+                <div className="w-3 h-3 border-2 border-[#CBB079]/50 rounded-full -mt-0.5" />
+              </div>
+
+              {/* Restrained Obsidian & Champagne Aura */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-[#FFD700]/15 via-[#22c55e]/20 to-[#CBB079]/15 rounded-2xl blur-xl opacity-60 group-hover:opacity-90 transition-opacity" />
+
+              {/* Physical Obsidian Smart Card Chassis */}
+              <div
+                className="relative w-[330px] sm:w-[370px] bg-[#0A0D10]/95 rounded-2xl p-6 backdrop-blur-2xl transition-all duration-500 ease-out group-hover:[transform:rotateX(6deg)_rotateY(-6deg)]"
+                style={{
+                  border: '1.5px solid rgba(203, 176, 121, 0.4)',
+                  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(34, 197, 94, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.03)',
+                }}
+              >
+                {/* Sweeping Holographic Foil Sheen */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden opacity-35 group-hover:opacity-60 transition-opacity"
+                  style={{
+                    background: 'linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.12) 48%, rgba(203,176,121,0.2) 52%, transparent 65%)',
+                  }}
+                />
+
+                {/* Top Badge Lanyard Punch Hole */}
+                <div className="w-12 h-2.5 mx-auto -mt-2 mb-4 bg-black/90 border border-white/20 rounded-full flex items-center justify-center">
+                  <div className="w-7 h-1 bg-[#CBB079]/40 rounded-full" />
+                </div>
+
+                {/* Header: Organization & Live Status Pill */}
+                <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#FFE27D] to-[#F59E0B] flex items-center justify-center font-bold text-[9px] text-black shadow-[0_0_10px_rgba(255,215,0,0.5)]">
+                      PJP
+                    </div>
+                    <div>
+                      <h4 className="font-mono text-[10px] tracking-[0.18em] uppercase text-white font-bold leading-none">
+                        PRIVATE JET PILOTS
+                      </h4>
+                      <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-[#CBB079]">
+                        CREW VERIFICATION CARD
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Live Ramp Active Beacon */}
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#22c55e]/15 border border-[#22c55e]/50">
+                    <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-ping" />
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-[#22c55e] font-bold">
+                      RAMP ACTIVE
+                    </span>
+                  </div>
+                </div>
+
+                {/* Pilot Portrait + FAA Registry Metadata */}
+                <div className="flex gap-4 mb-4">
+                  {/* Photo Frame with Crosshair Viewfinder */}
+                  <div className="relative w-24 h-28 rounded-lg overflow-hidden border border-white/15 bg-gradient-to-b from-[#14161c] to-[#0A0D10] flex-shrink-0 flex items-center justify-center">
+                    <div className="w-16 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                      <svg className="w-10 h-10 text-white/40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                      </svg>
+                    </div>
+                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-black/90 font-mono text-[8px] text-[#22c55e] border border-[#22c55e]/50 font-bold whitespace-nowrap">
+                      ● PILOT
+                    </div>
+                  </div>
+
+                  <div className="flex-1 space-y-1.5 text-left">
+                    <div>
+                      <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                        MEMBER ID
+                      </span>
+                      <span className="font-mono text-xs text-white font-bold tracking-wider">
+                        PJP-B-90001
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                        FAA CERTIFICATE
+                      </span>
+                      <span className="font-mono text-xs text-[#E0CCA0] font-bold">
+                        ATP 2822744
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                        SECURITY CLEARANCE
+                      </span>
+                      <span className="font-mono text-xs text-[#22c55e] font-semibold">
+                        EXP: JUL 2027
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pilot Name Banner */}
+                <div className="bg-white/[0.03] border border-white/10 rounded p-2.5 mb-4 text-left">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#CBB079] block mb-0.5">
+                    AUTHENTICATED FLIGHT CREW
+                  </span>
+                  <div className="text-xl font-bold tracking-tight text-white uppercase font-playfair">
+                    MICHAEL COURSEY, JEFF
+                  </div>
+                </div>
+
+                {/* Micro-Watermark Ribbon */}
+                <div className="overflow-hidden py-1 mb-4 border-y border-white/5 select-none opacity-40">
+                  <div className="font-mono text-[9px] uppercase tracking-[0.35em] text-white/40 whitespace-nowrap">
+                    CREW • CREW • CREW • CREW • CREW • CREW
+                  </div>
+                </div>
+
+                {/* Bottom Verification Section: Live QR Checksum */}
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 bg-white p-1 rounded border border-white/30 flex items-center justify-center">
+                      <svg className="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h4v2h-4v-2zm4-2h2v2h-2v-2zm-6 2h2v2h-2v-2zm6-4h2v2h-2v-2z" />
+                      </svg>
+                    </div>
+                    <div className="text-left">
+                      <span className="font-mono text-[8px] uppercase tracking-wider text-white/40 block">
+                        RAMP SHA-256
+                      </span>
+                      <span className="font-mono text-[10px] text-white font-bold block">
+                        VALIDATED
+                      </span>
+                      <span className="font-mono text-[8px] text-[#22c55e]">
+                        0.04s FBO SYNC
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                      CYCLE
+                    </span>
+                    <span className="text-2xl font-bold font-mono text-white tracking-wider">
+                      2027
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* ── LAYER 4: TELEMETRY HUD OVERLAYS ── */}
-        <div className="pointer-events-none absolute inset-0 z-30 flex flex-col justify-between p-6 pt-24 font-mono text-[10px] uppercase tracking-[0.2em] text-[#C5A880]/70 sm:p-10 sm:pt-28">
-          <div className="flex items-start justify-between">
+        {/* ── LAYER 6 (z-40): CORNER TELEMETRY HOOK (Clean container preserving GSAP targets) ── */}
+        <div className="js-corner-telemetry pointer-events-none absolute inset-0 z-40" />
+
+        {/* ── LAYER 7 (z-50): TACTICAL TELEMETRY INSPECTION DRAWER ── */}
+        {activeService && (
+          <aside className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-[#0a0c10]/95 border-l border-[#FFD700]/40 backdrop-blur-xl p-8 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.9)] animate-in slide-in-from-right duration-300">
             <div>
-              PJP // PRIVATE JET PILOTS
-              <br />
-              <span className="text-white/40">GLOBAL CORRIDORS</span>
+              <div className="flex items-center justify-between pb-6 border-b border-white/10 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFD700] animate-pulse" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#FFD700]">
+                    {activeService.serviceCode}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setActiveService(null)}
+                  className="font-mono text-xs text-white/50 hover:text-white uppercase tracking-wider px-2 py-1 rounded hover:bg-white/5 transition-colors"
+                >
+                  [ CLOSE ✕ ]
+                </button>
+              </div>
+
+              <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/40 mb-2">
+                COMPONENT // {activeService.partName}
+              </p>
+              <h3 className="text-3xl font-bold text-white mb-2 tracking-tight font-playfair">
+                {activeService.title}
+              </h3>
+              <p className="font-mono text-xs text-[#38bdf8] mb-6">
+                ● STATUS // {activeService.stat}
+              </p>
+
+              <div className="bg-white/[0.03] border border-white/10 rounded-sm p-4 mb-6">
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#FFD700] block mb-2">
+                  OPERATIONAL ARCHITECTURE
+                </span>
+                <p className="text-xs text-white/80 leading-relaxed font-light font-playfair">
+                  {activeService.description}
+                </p>
+              </div>
             </div>
-            <div className="text-right">
-              LAT 40.8501° N // LON 74.0608° W
-              <br />
-              <span className="text-white/40">CRUISING FL410</span>
+
+            <div className="space-y-3 pt-6 border-t border-white/10">
+              <button
+                onClick={handleScrollToEcosystem}
+                className="w-full py-3.5 bg-[#FFD700] hover:bg-[#ffe27d] text-black font-bold text-xs uppercase tracking-[0.2em] transition-all rounded-sm shadow-[0_4px_20px_rgba(255,215,0,0.3)] font-mono"
+              >
+                Inspect Ecosystem Matrix ↓
+              </button>
+              <button
+                onClick={() => setActiveService(null)}
+                className="w-full py-2.5 bg-transparent hover:bg-white/5 text-white/60 hover:text-white font-mono text-[10px] uppercase tracking-[0.2em] transition-colors rounded-sm"
+              >
+                Return to Airframe View
+              </button>
             </div>
-          </div>
-          <div className="flex items-end justify-between">
-            <div>
-              AIRFRAME // G650ER CLASS
-              <br />
-              <span className="text-white/40">STATUS // ACTIVE TRANSIT</span>
-            </div>
-            <div className="text-right text-white/30">
-              SCROLL TO EXPLORE
-            </div>
-          </div>
-        </div>
+          </aside>
+        )}
+
       </div>
     </section>
   );

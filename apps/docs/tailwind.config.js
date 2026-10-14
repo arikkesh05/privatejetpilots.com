@@ -8,6 +8,15 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      keyframes: {
+        'pjp-ticker': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+      },
+      animation: {
+        'pjp-ticker': 'pjp-ticker 45s linear infinite',
+      },
       colors: {
         /* --- Editorial obsidian field: warm near-black surfaces, no blue cast --- */
         background: '#0a0a0a',
@@ -57,7 +66,7 @@ export default {
         'error-container': '#93000a',
         'on-error-container': '#ffdad6',
 
-        /* --- Legacy shorthand aliases, retained so existing package code keeps resolving --- */
+        /* --- Legacy shorthand aliases --- */
         obsidian: {
           DEFAULT: '#0D0D0D',
           950: '#0E0E0E',
@@ -74,6 +83,8 @@ export default {
           amber: '#E8B938',
           dim: '#E7C355',
           dark: '#6F5800',
+          metallic: '#D4AF37',
+          specular: '#FFD700',
         },
         lilac: {
           DEFAULT: '#D9B8FF',
@@ -94,15 +105,12 @@ export default {
           outlineVariant: '#4D4636',
         },
 
-        /* --- Editorial restraint layer: liquid champagne on warm obsidian.
-               Replaces saturated gold fills and lilac radar accents. --- */
+        /* --- Editorial restraint layer --- */
         champagne: {
           DEFAULT: '#CBB079',
           bright: '#E0CCA0',
           dim: '#9A825A',
           hairline: 'rgba(203, 176, 121, 0.28)',
-          /* Editorial gold accents: the champagne highlight used on display
-             type and the primary action, per the retokening brief. */
           gold: '#F5D061',
           brass: '#DFC066',
         },
@@ -113,29 +121,29 @@ export default {
         },
       },
       fontFamily: {
-        /* Stitch typography aliases */
-        'display-lg': ['Syne'],
-        'headline-xl': ['Syne'],
-        'headline-xl-mobile': ['Syne'],
-        'headline-lg': ['Syne'],
-        'headline-md': ['Syne'],
-        'headline-sm': ['Syne'],
-        'body-lg': ['Inter'],
-        'body-md': ['Inter'],
-        'body-sm': ['Inter'],
-        'telemetry-lg': ['JetBrains Mono'],
-        'telemetry-md': ['JetBrains Mono'],
-        'telemetry-sm': ['JetBrains Mono'],
-        'label-caps': ['Inter'],
-        /* Legacy aliases */
-        display: ['Syne', 'sans-serif'],
-        headline: ['Syne', 'sans-serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        playfair: ['"Playfair Display"', 'Georgia', 'serif'],
+        luxyna: ['"Playfair Display"', 'Georgia', 'serif'],
+        'display-lg': ['"Playfair Display"', 'Georgia', 'serif'],
+        'headline-xl': ['"Playfair Display"', 'Georgia', 'serif'],
+        'headline-xl-mobile': ['"Playfair Display"', 'Georgia', 'serif'],
+        'headline-lg': ['"Playfair Display"', 'Georgia', 'serif'],
+        'headline-md': ['"Playfair Display"', 'Georgia', 'serif'],
+        'headline-sm': ['"Playfair Display"', 'Georgia', 'serif'],
+        'body-lg': ['"Playfair Display"', 'Georgia', 'serif'],
+        'body-md': ['"Playfair Display"', 'Georgia', 'serif'],
+        'body-sm': ['"Playfair Display"', 'Georgia', 'serif'],
+        'label-caps': ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        headline: ['"Playfair Display"', 'Georgia', 'serif'],
+        sans: ['"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        'telemetry-lg': ['JetBrains Mono', 'monospace'],
+        'telemetry-md': ['JetBrains Mono', 'monospace'],
+        'telemetry-sm': ['JetBrains Mono', 'monospace'],
         mono: ['JetBrains Mono', 'monospace'],
         telemetry: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        /* Editorial hero scale — light weight, generous negative space. */
         'display-hero': ['92px', { lineHeight: '1.02', letterSpacing: '-0.03em', fontWeight: '400' }],
         'display-hero-mobile': ['44px', { lineHeight: '1.08', letterSpacing: '-0.02em', fontWeight: '400' }],
         'display-lg': ['56px', { lineHeight: '64px', letterSpacing: '-0.02em', fontWeight: '700' }],
@@ -151,11 +159,7 @@ export default {
         'telemetry-lg': ['20px', { lineHeight: '28px', letterSpacing: '0.05em', fontWeight: '500' }],
         'telemetry-md': ['14px', { lineHeight: '20px', letterSpacing: '0.06em', fontWeight: '500' }],
         'telemetry-sm': ['11px', { lineHeight: '16px', letterSpacing: '0.08em', fontWeight: '500' }],
-        'label-caps': ['11px', { lineHeight: '16px', letterSpacing: '0.12em', fontWeight: '600' }],
-        /* Brand lockup — "PJP // PRIVATE JET PILOTS". Promoted from an off-scale
-           `text-[13px]` paired with `tracking-[0.3em]` that was re-spelled at two
-           call sites (nav dock, footer). Owning it here keeps the marks optically
-           identical and lets the census read the lockup off the scale. */
+        'label-caps': ['11px', { lineHeight: '16px', letterSpacing: '0.12em', fontWeight:'600' }],
         'brand-lockup': ['12px', { lineHeight: '16px', letterSpacing: '0.3em', fontWeight: '300' }],
       },
       spacing: {
@@ -179,4 +183,4 @@ export default {
     },
   },
   plugins: [],
-}
+};

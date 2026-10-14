@@ -1,5 +1,7 @@
 export * from "@pjp/tokens";
 export * from "@pjp/motion";
+export * from "./data/telemetry-airports.js";
+export * from "./telemetry/IcaoAvionicsTicker.js";
 
 export interface ReferoHUDStyle {
   background: string;
