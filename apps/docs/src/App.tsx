@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { IcaoAvionicsTicker } from '@pjp/ui';
 import { HudNavDock } from './components/HudNavDock';
 import { CinematicHero } from './components/CinematicHero';
 import { NetworkRoles } from './components/NetworkRoles';
@@ -68,10 +69,15 @@ export default function App(): React.JSX.Element {
           full 0→100% narrative arc, then hands directly into the network
           role selection. The luxury-charter brochure layer (FuselageScroller,
           FleetBento, ConciergeProtocols) is retired. */}
-      <main className="relative z-10 flex flex-col gap-24 pb-20">
+      <main className="relative z-10 flex flex-col gap-24 pb-12">
         <CinematicHero />
         <NetworkRoles />
       </main>
+
+      {/* Position B: Pre-Apron Approach Ribbon */}
+      <div className="relative z-20 w-full">
+        <IcaoAvionicsTicker />
+      </div>
 
       <ExecutiveFooter />
 
