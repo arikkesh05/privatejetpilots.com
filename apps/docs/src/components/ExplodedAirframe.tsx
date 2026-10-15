@@ -141,7 +141,7 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-between px-6 lg:px-14 select-none overflow-visible"
+      className="relative w-full h-full flex items-center justify-between px-3 sm:px-6 lg:px-14 select-none overflow-visible"
     >
       {/* ── JITTER AMBIENT BUBBLE 1 (Left Liquid Glow) ── */}
       <div className="js-ambient-bubble-left pointer-events-none absolute -left-10 top-1/4 w-80 h-80 rounded-full bg-gradient-to-tr from-[#FFD700]/14 via-[#D4AF37]/10 to-transparent blur-[90px] will-change-transform" />
@@ -150,15 +150,15 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
       <div className="js-ambient-bubble-right pointer-events-none absolute -right-10 top-1/3 w-80 h-80 rounded-full bg-gradient-to-bl from-[#D4AF37]/14 via-[#FFD700]/10 to-transparent blur-[90px] will-change-transform" />
 
       {/* ── LEFT FLANK: LUXURY GOLDEN SMOKED-GLASS PODS ── */}
-      <div className="js-flank-left z-40 flex flex-col justify-center gap-5 max-w-[280px] lg:max-w-[315px] pointer-events-auto">
+      <div className="js-flank-left z-40 flex flex-col justify-center gap-2.5 sm:gap-4 lg:gap-5 w-[47%] sm:w-[260px] lg:w-auto lg:max-w-[315px] pointer-events-auto">
         {leftServices.map((service, idx) => {
           const isSelected = hoveredPart === service.id || activeServiceId === service.id;
           return (
             <div
               key={service.id}
-              className={`js-floating-card relative group cursor-pointer transition-all duration-500 ease-out p-4.5 rounded-2xl will-change-transform overflow-hidden ${
+              className={`js-floating-card relative group cursor-pointer transition-all duration-500 ease-out p-2.5 sm:p-4 lg:p-4.5 rounded-xl sm:rounded-2xl will-change-transform overflow-hidden ${
                 isSelected
-                  ? 'smoked-gold-pod-active scale-[1.03]'
+                  ? 'smoked-gold-pod-active scale-[1.02] sm:scale-[1.03]'
                   : 'smoked-gold-pod hover:scale-[1.015] hover:border-[#D4AF37]/45'
               }`}
               onMouseEnter={() => setHoveredPart(service.id)}
@@ -172,9 +172,9 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FFD700]/[0.05] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
               {/* Header Telemetry Pill */}
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
                 <span
-                  className={`px-2.5 py-0.5 rounded-full font-mono text-[9px] font-semibold tracking-wider transition-all duration-300 ${
+                  className={`px-1.5 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full font-mono text-[8px] sm:text-[9px] font-semibold tracking-wider transition-all duration-300 ${
                     isSelected
                       ? 'bg-[#FFD700]/25 text-[#FFD700] border border-[#FFD700]/60 shadow-[0_0_12px_rgba(255,215,0,0.3)]'
                       : 'bg-white/[0.04] text-[#E0CCA0]/70 border border-[#D4AF37]/20 group-hover:border-[#D4AF37]/40'
@@ -183,9 +183,9 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
                   {service.serviceCode}
                 </span>
 
-                <div className="flex items-center gap-1.5 font-mono text-[9px] text-[#E0CCA0]/50">
+                <div className="flex items-center gap-1 sm:gap-1.5 font-mono text-[8px] sm:text-[9px] text-[#E0CCA0]/50">
                   <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full transition-all duration-300 ${
                       isSelected
                         ? 'bg-[#FFD700] shadow-[0_0_10px_#FFD700] scale-125'
                         : 'bg-[#D4AF37]/60 shadow-[0_0_6px_rgba(212,175,55,0.4)]'
@@ -195,25 +195,25 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
                 </div>
               </div>
 
-              {/* Title (Luxyna) */}
-              <h4 className="font-luxyna text-[15px] font-semibold text-white tracking-wide uppercase mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              {/* Title */}
+              <h4 className="font-luxyna text-xs sm:text-sm lg:text-[15px] font-semibold text-white tracking-wide uppercase mb-0.5 sm:mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] line-clamp-1 sm:line-clamp-none">
                 {service.title}
               </h4>
 
-              {/* Stat Metric (24K Specular Gold) */}
-              <p className="font-mono text-[10.5px] text-[#E0CCA0] font-medium tracking-wide mb-1.5 flex items-center gap-1.5">
-                <span className="inline-block w-1 h-1 rounded-full bg-[#FFD700] shadow-[0_0_6px_#FFD700]" />
-                {service.stat}
+              {/* Stat Metric */}
+              <p className="font-mono text-[8.5px] sm:text-[10px] lg:text-[10.5px] text-[#E0CCA0] font-medium tracking-wide mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5 truncate">
+                <span className="inline-block w-1 h-1 rounded-full bg-[#FFD700] shadow-[0_0_6px_#FFD700] shrink-0" />
+                <span className="truncate">{service.stat}</span>
               </p>
 
               {/* Description */}
-              <p className="font-sans text-xs text-white/75 leading-relaxed font-light">
+              <p className="font-sans text-[9px] sm:text-[11px] lg:text-xs text-white/75 leading-tight sm:leading-relaxed font-light line-clamp-2 sm:line-clamp-none">
                 {service.description}
               </p>
 
-              {/* Dynamic Laser Tether */}
+              {/* Dynamic Laser Tether (Desktop only) */}
               <div
-                className={`absolute top-1/2 -right-8 h-[1px] pointer-events-none transition-all duration-500 ${
+                className={`hidden lg:block absolute top-1/2 -right-8 h-[1px] pointer-events-none transition-all duration-500 ${
                   isSelected
                     ? 'w-14 bg-gradient-to-r from-[#FFD700] to-transparent shadow-[0_0_12px_#FFD700] opacity-100'
                     : 'w-8 bg-gradient-to-r from-[#D4AF37]/30 to-transparent opacity-40'
@@ -224,8 +224,8 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
         })}
       </div>
 
-      {/* ── CENTER AIRFRAME STAGE ── */}
-      <div className="relative flex-1 h-[85vh] max-h-[920px] max-w-[850px] mx-auto flex items-center justify-center">
+      {/* ── CENTER AIRFRAME STAGE (Decoupled on mobile so it never gets crushed to 0px) ── */}
+      <div className="absolute lg:relative inset-0 lg:inset-auto z-20 flex-1 h-full lg:h-[85vh] max-h-[920px] max-w-[850px] mx-auto flex items-center justify-center scale-[0.80] sm:scale-90 lg:scale-100 transition-transform pointer-events-none lg:pointer-events-auto">
         {/* Dynamic Contact Ground Shadow */}
         <div
           className="js-jet-shadow pointer-events-none absolute inset-0 scale-90 translate-y-12 rounded-full"
@@ -377,15 +377,15 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
       </div>
 
       {/* ── RIGHT FLANK: LUXURY GOLDEN SMOKED-GLASS PODS ── */}
-      <div className="js-flank-right z-40 flex flex-col justify-center gap-5 max-w-[280px] lg:max-w-[315px] pointer-events-auto text-right">
+      <div className="js-flank-right z-40 flex flex-col justify-center gap-2.5 sm:gap-4 lg:gap-5 w-[47%] sm:w-[260px] lg:w-auto lg:max-w-[315px] pointer-events-auto text-right">
         {rightServices.map((service, idx) => {
           const isSelected = hoveredPart === service.id || activeServiceId === service.id;
           return (
             <div
               key={service.id}
-              className={`js-floating-card relative group cursor-pointer transition-all duration-500 ease-out p-4.5 rounded-2xl will-change-transform overflow-hidden ${
+              className={`js-floating-card relative group cursor-pointer transition-all duration-500 ease-out p-2.5 sm:p-4 lg:p-4.5 rounded-xl sm:rounded-2xl will-change-transform overflow-hidden ${
                 isSelected
-                  ? 'smoked-gold-pod-active scale-[1.03]'
+                  ? 'smoked-gold-pod-active scale-[1.02] sm:scale-[1.03]'
                   : 'smoked-gold-pod hover:scale-[1.015] hover:border-[#D4AF37]/45'
               }`}
               onMouseEnter={() => setHoveredPart(service.id)}
@@ -398,9 +398,9 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
               {/* Ambient Hover Gradient Sheen */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FFD700]/[0.05] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* Dynamic Laser Tether */}
+              {/* Dynamic Laser Tether (Desktop only) */}
               <div
-                className={`absolute top-1/2 -left-8 h-[1px] pointer-events-none transition-all duration-500 ${
+                className={`hidden lg:block absolute top-1/2 -left-8 h-[1px] pointer-events-none transition-all duration-500 ${
                   isSelected
                     ? 'w-14 bg-gradient-to-l from-[#FFD700] to-transparent shadow-[0_0_12px_#FFD700] opacity-100'
                     : 'w-8 bg-gradient-to-l from-[#D4AF37]/30 to-transparent opacity-40'
@@ -408,11 +408,11 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
               />
 
               {/* Header Telemetry Pill */}
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5 font-mono text-[9px] text-[#E0CCA0]/50">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <div className="flex items-center gap-1 sm:gap-1.5 font-mono text-[8px] sm:text-[9px] text-[#E0CCA0]/50">
                   0{idx + 4}
                   <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full transition-all duration-300 ${
                       isSelected
                         ? 'bg-[#FFD700] shadow-[0_0_10px_#FFD700] scale-125'
                         : 'bg-[#D4AF37]/60 shadow-[0_0_6px_rgba(212,175,55,0.4)]'
@@ -421,7 +421,7 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
                 </div>
 
                 <span
-                  className={`px-2.5 py-0.5 rounded-full font-mono text-[9px] font-semibold tracking-wider transition-all duration-300 ${
+                  className={`px-1.5 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full font-mono text-[8px] sm:text-[9px] font-semibold tracking-wider transition-all duration-300 ${
                     isSelected
                       ? 'bg-[#FFD700]/25 text-[#FFD700] border border-[#FFD700]/60 shadow-[0_0_12px_rgba(255,215,0,0.3)]'
                       : 'bg-white/[0.04] text-[#E0CCA0]/70 border border-[#D4AF37]/20 group-hover:border-[#D4AF37]/40'
@@ -431,19 +431,19 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
                 </span>
               </div>
 
-              {/* Title (Luxyna) */}
-              <h4 className="font-luxyna text-[15px] font-semibold text-white tracking-wide uppercase mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              {/* Title */}
+              <h4 className="font-luxyna text-xs sm:text-sm lg:text-[15px] font-semibold text-white tracking-wide uppercase mb-0.5 sm:mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] line-clamp-1 sm:line-clamp-none">
                 {service.title}
               </h4>
 
-              {/* Stat Metric (24K Specular Gold) */}
-              <p className="font-mono text-[10.5px] text-[#E0CCA0] font-medium tracking-wide mb-1.5 flex items-center justify-end gap-1.5">
-                {service.stat}
-                <span className="inline-block w-1 h-1 rounded-full bg-[#FFD700] shadow-[0_0_6px_#FFD700]" />
+              {/* Stat Metric */}
+              <p className="font-mono text-[8.5px] sm:text-[10px] lg:text-[10.5px] text-[#E0CCA0] font-medium tracking-wide mb-1 sm:mb-1.5 flex items-center justify-end gap-1 sm:gap-1.5 truncate">
+                <span className="truncate">{service.stat}</span>
+                <span className="inline-block w-1 h-1 rounded-full bg-[#FFD700] shadow-[0_0_6px_#FFD700] shrink-0" />
               </p>
 
               {/* Description */}
-              <p className="font-sans text-xs text-white/75 leading-relaxed font-light">
+              <p className="font-sans text-[9px] sm:text-[11px] lg:text-xs text-white/75 leading-tight sm:leading-relaxed font-light line-clamp-2 sm:line-clamp-none">
                 {service.description}
               </p>
             </div>

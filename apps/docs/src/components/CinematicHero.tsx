@@ -390,7 +390,7 @@ export const CinematicHero: React.FC = () => {
         </div>
 
         {/* ── LAYER 1 (z-15): THE HUD RADAR VECTOR SKY NARRATIVE ── */}
-        <div className="js-sky-narrative pointer-events-none absolute inset-0 z-15 flex flex-col justify-center px-8 lg:px-20 max-w-7xl mx-auto overflow-hidden">
+        <div className="js-sky-narrative pointer-events-none absolute inset-0 z-15 flex flex-col justify-center px-4 sm:px-8 lg:px-20 max-w-7xl mx-auto overflow-hidden pt-14 sm:pt-0">
           
           <div
             className="absolute inset-0 pointer-events-none opacity-15"
@@ -403,60 +403,60 @@ export const CinematicHero: React.FC = () => {
 
           {/* 1. Base Ghosted Wireframe Layer */}
           <div className="pointer-events-none w-full opacity-20 filter blur-[0.5px]">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-white/50" />
-              <p className="font-mono text-sm sm:text-base uppercase tracking-[0.34em] text-white/60 font-black">
+            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/50" />
+              <p className="font-mono text-xs sm:text-base uppercase tracking-[0.24em] sm:tracking-[0.34em] text-white/60 font-black">
                 OPERATIONAL NETWORK
               </p>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-[4.2rem] font-bold text-white/40 tracking-[-0.02em] leading-[1.08] max-w-5xl font-playfair">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-[4.2rem] font-bold text-white/40 tracking-[-0.02em] leading-[1.08] max-w-5xl font-playfair">
               We’re not a directory <br />
               We’re the network layer <br />
               of aviation ops
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-white/30 font-light max-w-3xl mt-4 leading-relaxed font-playfair">
+            <p className="text-xs sm:text-base lg:text-xl text-white/30 font-light max-w-3xl mt-2 sm:mt-4 leading-relaxed font-playfair line-clamp-2 sm:line-clamp-none">
               When an operator needs a crew before service, a management company loses a captain, or an aircraft is AOG at 2 a.m. — PJP synchronizes the flight deck in real-time.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pt-8 mt-6 border-t border-white/10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 pt-4 sm:pt-8 mt-3 sm:mt-6 border-t border-white/10">
               <div>
-                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                <p className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] text-white/60 font-black mb-0.5 sm:mb-1.5">
                   DIGITAL LOGBOOK
                 </p>
-                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">The Crew Profile</h3>
-                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Cross-checked against the FAA Airmen Registry (591k+ pilots).</p>
+                <h3 className="text-xs sm:text-base font-bold text-white/40 mb-0.5 sm:mb-1 font-playfair">The Crew Profile</h3>
+                <p className="text-[10px] sm:text-xs text-white/30 leading-snug sm:leading-relaxed font-light font-playfair">Cross-checked against the FAA Airmen Registry (591k+ pilots).</p>
               </div>
               <div>
-                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                <p className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] text-white/60 font-black mb-0.5 sm:mb-1.5">
                   LIVE DISPATCH
                 </p>
-                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">Real-Time Gigs</h3>
-                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Routing Part 91 & 135 seats and contract flying directly to profiles.</p>
+                <h3 className="text-xs sm:text-base font-bold text-white/40 mb-0.5 sm:mb-1 font-playfair">Real-Time Gigs</h3>
+                <p className="text-[10px] sm:text-xs text-white/30 leading-snug sm:leading-relaxed font-light font-playfair">Routing Part 91 & 135 seats and contract flying directly to profiles.</p>
               </div>
               <div>
-                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                <p className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] text-white/60 font-black mb-0.5 sm:mb-1.5">
                   INSTANT ROSTER
                 </p>
-                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">Immediate Access</h3>
-                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Direct access to 26,500+ aviators and 78 operators globally.</p>
+                <h3 className="text-xs sm:text-base font-bold text-white/40 mb-0.5 sm:mb-1 font-playfair">Immediate Access</h3>
+                <p className="text-[10px] sm:text-xs text-white/30 leading-snug sm:leading-relaxed font-light font-playfair">Direct access to 26,500+ aviators and 78 operators globally.</p>
               </div>
               <div>
-                <p className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] text-white/60 font-black mb-1.5">
+                <p className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] text-white/60 font-black mb-0.5 sm:mb-1.5">
                   UNIFIED BADGE
                 </p>
-                <h3 className="text-base font-bold text-white/40 mb-1 font-playfair">Ten Systems, One ID</h3>
-                <p className="text-xs text-white/30 leading-relaxed font-light font-playfair">Encrypted logbooks, JumpSeat perks, and escrow payouts.</p>
+                <h3 className="text-xs sm:text-base font-bold text-white/40 mb-0.5 sm:mb-1 font-playfair">Ten Systems, One ID</h3>
+                <p className="text-[10px] sm:text-xs text-white/30 leading-snug sm:leading-relaxed font-light font-playfair">Encrypted logbooks, JumpSeat perks, and escrow payouts.</p>
               </div>
             </div>
           </div>
 
           {/* 2. Illuminated Decoded Layer */}
-          <div className="js-illuminated-layer pointer-events-none absolute inset-0 flex flex-col justify-center px-8 lg:px-20 max-w-7xl mx-auto will-change-transform">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FFD700] shadow-[0_0_14px_#FFD700] animate-pulse" />
+          <div className="js-illuminated-layer pointer-events-none absolute inset-0 flex flex-col justify-center px-4 sm:px-8 lg:px-20 max-w-7xl mx-auto will-change-transform pt-14 sm:pt-0">
+            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#FFD700] shadow-[0_0_14px_#FFD700] animate-pulse" />
               <p
-                className="font-mono text-sm sm:text-base uppercase tracking-[0.34em] font-black"
+                className="font-mono text-xs sm:text-base uppercase tracking-[0.24em] sm:tracking-[0.34em] font-black"
                 style={{
                   background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
                   WebkitBackgroundClip: 'text',
@@ -468,7 +468,7 @@ export const CinematicHero: React.FC = () => {
               </p>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl xl:text-[4.2rem] font-bold text-white tracking-[-0.02em] leading-[1.08] max-w-5xl drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] font-playfair">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-[4.2rem] font-bold text-white tracking-[-0.02em] leading-[1.08] max-w-5xl drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] font-playfair">
               We’re not a directory <br />
               We’re the{' '}
               <span
@@ -486,10 +486,10 @@ export const CinematicHero: React.FC = () => {
               of aviation ops
             </h2>
 
-            <p className="text-base sm:text-lg lg:text-xl text-white font-light max-w-3xl mt-4 leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] font-playfair">
+            <p className="text-xs sm:text-base lg:text-xl text-white font-light max-w-3xl mt-2 sm:mt-4 leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] font-playfair line-clamp-2 sm:line-clamp-none">
               When an operator needs a crew before service, a management company loses a captain, or an aircraft is AOG at 2 a.m. — PJP synchronizes the flight deck in{' '}
               <span
-                className="italic font-bold text-lg sm:text-xl lg:text-2xl inline-block"
+                className="italic font-bold text-sm sm:text-xl lg:text-2xl inline-block"
                 style={{
                   background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
                   WebkitBackgroundClip: 'text',
@@ -501,10 +501,10 @@ export const CinematicHero: React.FC = () => {
               </span>.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pt-8 mt-6 border-t border-white/30">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 pt-4 sm:pt-8 mt-3 sm:mt-6 border-t border-white/30">
               <div>
                 <p
-                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] font-black mb-0.5 sm:mb-1.5"
                   style={{
                     background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
                     WebkitBackgroundClip: 'text',
@@ -514,13 +514,13 @@ export const CinematicHero: React.FC = () => {
                 >
                   DIGITAL LOGBOOK
                 </p>
-                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">The Crew Profile</h3>
-                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Cross-checked against the FAA Airmen Registry (591k+ pilots).</p>
+                <h3 className="text-xs sm:text-base font-bold text-white mb-0.5 sm:mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">The Crew Profile</h3>
+                <p className="text-[10px] sm:text-xs text-white/85 leading-snug sm:leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Cross-checked against the FAA Airmen Registry (591k+ pilots).</p>
               </div>
 
               <div>
                 <p
-                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] font-black mb-0.5 sm:mb-1.5"
                   style={{
                     background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
                     WebkitBackgroundClip: 'text',
@@ -530,13 +530,13 @@ export const CinematicHero: React.FC = () => {
                 >
                   LIVE DISPATCH
                 </p>
-                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Real-Time Gigs</h3>
-                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Routing Part 91 & 135 seats and contract flying directly to profiles.</p>
+                <h3 className="text-xs sm:text-base font-bold text-white mb-0.5 sm:mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Real-Time Gigs</h3>
+                <p className="text-[10px] sm:text-xs text-white/85 leading-snug sm:leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Routing Part 91 & 135 seats and contract flying directly to profiles.</p>
               </div>
 
               <div>
                 <p
-                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] font-black mb-0.5 sm:mb-1.5"
                   style={{
                     background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
                     WebkitBackgroundClip: 'text',
@@ -545,13 +545,13 @@ export const CinematicHero: React.FC = () => {
                 >
                   INSTANT ROSTER
                 </p>
-                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Immediate Access</h3>
-                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Direct access to 26,500+ aviators and 78 operators globally.</p>
+                <h3 className="text-xs sm:text-base font-bold text-white mb-0.5 sm:mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Immediate Access</h3>
+                <p className="text-[10px] sm:text-xs text-white/85 leading-snug sm:leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Direct access to 26,500+ aviators and 78 operators globally.</p>
               </div>
 
               <div>
                 <p
-                  className="font-mono text-sm sm:text-base uppercase tracking-[0.24em] font-black mb-1.5"
+                  className="font-mono text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.2em] font-black mb-0.5 sm:mb-1.5"
                   style={{
                     background: 'linear-gradient(135deg, #FFFFFF 0%, #FFE57F 25%, #FFD700 55%, #F59E0B 85%, #D97706 100%)',
                     WebkitBackgroundClip: 'text',
@@ -560,8 +560,8 @@ export const CinematicHero: React.FC = () => {
                 >
                   UNIFIED BADGE
                 </p>
-                <h3 className="text-base font-bold text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Ten Systems, One ID</h3>
-                <p className="text-xs text-white/85 leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Encrypted logbooks, JumpSeat perks, and escrow payouts.</p>
+                <h3 className="text-xs sm:text-base font-bold text-white mb-0.5 sm:mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] font-playfair">Ten Systems, One ID</h3>
+                <p className="text-[10px] sm:text-xs text-white/85 leading-snug sm:leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] font-playfair">Encrypted logbooks, JumpSeat perks, and escrow payouts.</p>
               </div>
             </div>
           </div>
@@ -576,7 +576,7 @@ export const CinematicHero: React.FC = () => {
             }}
           >
             <div
-              className="absolute top-24 left-3 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.25em] font-bold px-2 py-0.5 rounded border backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+              className="absolute top-20 sm:top-24 left-3 whitespace-nowrap font-mono text-[8px] sm:text-[9px] uppercase tracking-[0.25em] font-bold px-2 py-0.5 rounded border backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
               style={{
                 background: 'rgba(10,12,18,0.85)',
                 color: '#FFD700',
@@ -587,7 +587,7 @@ export const CinematicHero: React.FC = () => {
             </div>
 
             <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 border rounded-full flex items-center justify-center bg-black/60 backdrop-blur-sm"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 border rounded-full flex items-center justify-center bg-black/60 backdrop-blur-sm"
               style={{
                 borderColor: '#FFD700',
                 boxShadow: '0 0 14px rgba(255, 215, 0, 0.8)',
@@ -596,7 +596,7 @@ export const CinematicHero: React.FC = () => {
               <div className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]" />
             </div>
 
-            <div className="absolute bottom-16 left-3 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.25em] text-[#38bdf8] bg-black/80 px-2 py-0.5 rounded border border-[#38bdf8]/40 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <div className="absolute bottom-12 sm:bottom-16 left-3 whitespace-nowrap font-mono text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#38bdf8] bg-black/80 px-2 py-0.5 rounded border border-[#38bdf8]/40 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
               RADAR ACQUIRED
             </div>
           </div>
@@ -623,7 +623,7 @@ export const CinematicHero: React.FC = () => {
           />
 
           <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 2 }}>
-            <div className="relative h-[68vh] w-[46vh] max-h-[640px] max-w-[440px] overflow-hidden rounded-[50%_/_42%]">
+            <div className="relative h-[50vh] w-[33vh] sm:h-[65vh] sm:w-[44vh] lg:h-[68vh] lg:w-[46vh] max-h-[640px] max-w-[440px] overflow-hidden rounded-[50%_/_42%]">
               <div className="js-sunshade-unit absolute inset-0 bg-[#221c1a] flex items-end justify-center z-10">
                 <img src="/window-knob.webp" alt="" className="w-[82%] mb-3 select-none" />
               </div>
@@ -633,7 +633,7 @@ export const CinematicHero: React.FC = () => {
                 <span
                   className="font-normal leading-none select-none text-white/90"
                   style={{
-                    fontSize: 'clamp(2rem, 5.8vh, 3.8rem)',
+                    fontSize: 'clamp(1.8rem, 5.5vh, 3.8rem)',
                     letterSpacing: '0.12em',
                     paddingLeft: '0.12em',
                     textShadow: '0 2px 14px rgba(0, 0, 0, 0.45)',
@@ -661,17 +661,18 @@ export const CinematicHero: React.FC = () => {
 
         {/* ── LAYER 4 (z-35): ASYMMETRIC JESKO-STYLE EDITORIAL TYPOGRAPHY & SCROLL PILL ── */}
         <div
-          className="js-editorial-flanks pointer-events-none absolute inset-0 flex flex-col justify-between p-8 lg:p-16 select-none"
+          className="js-editorial-flanks pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-8 lg:p-16 select-none"
           style={{ zIndex: 35 }}
         >
+          {/* Safe Nav Clearance */}
           <div className="h-14 sm:h-16" />
 
           {/* Asymmetric Columns: Left headline UP, Right headline DOWN */}
-          <div className="flex-1 grid grid-cols-2 gap-8 w-full pointer-events-none">
+          <div className="flex-1 grid grid-cols-2 gap-4 sm:gap-8 w-full pointer-events-none">
             {/* Left Flank: Anchored to Upper Third */}
             <div className="flex flex-col justify-start">
-              <div className="js-editorial-left max-w-[340px] lg:max-w-[440px] pt-4 lg:pt-8 will-change-transform">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-tight text-white leading-[0.95] drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-playfair">
+              <div className="js-editorial-left max-w-[200px] sm:max-w-[340px] lg:max-w-[440px] pt-2 sm:pt-4 lg:pt-8 will-change-transform">
+                <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold uppercase tracking-tight text-white leading-[0.98] sm:leading-[0.95] drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] font-playfair">
                   Aviation <br />
                   moves at <br />
                   the speed of <br />
@@ -681,9 +682,9 @@ export const CinematicHero: React.FC = () => {
             </div>
 
             {/* Right Flank: Anchored to Lower Third */}
-            <div className="flex flex-col justify-end pb-8 lg:pb-12 text-right">
-              <div className="js-editorial-right max-w-[340px] lg:max-w-[440px] ml-auto will-change-transform">
-                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-tight text-white leading-[0.95] drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] font-playfair">
+            <div className="flex flex-col justify-end pb-4 sm:pb-8 lg:pb-12 text-right">
+              <div className="js-editorial-right max-w-[200px] sm:max-w-[340px] lg:max-w-[440px] ml-auto will-change-transform">
+                <h2 className="text-2xl sm:text-4xl lg:text-6xl font-bold uppercase tracking-tight text-white leading-[0.98] sm:leading-[0.95] drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] font-playfair">
                   We’re the <br />
                   network layer <br />
                   of aviation ops
@@ -693,26 +694,26 @@ export const CinematicHero: React.FC = () => {
           </div>
 
           {/* Bottom Row: Narrative Description on Left, Scroll Pill on Right */}
-          <div className="flex items-end justify-between w-full pt-4">
-            <div className="js-bottom-telemetry max-w-[320px] sm:max-w-[400px]">
-              <p className="text-xs sm:text-sm text-white/75 font-normal leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-playfair">
+          <div className="flex items-end justify-between w-full pt-4 gap-4">
+            <div className="js-bottom-telemetry max-w-[240px] sm:max-w-[400px]">
+              <p className="text-[11px] sm:text-xs lg:text-sm text-white/75 font-normal leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-playfair">
                 The operating network of private aviation. Pilots, operators, flight departments, mechanics, and brokers — synchronized in real-time.
               </p>
             </div>
 
-            <div className="js-scroll-prompt flex items-center gap-3 bg-white/10 border border-white/20 px-5 py-2.5 rounded-full backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <span className="font-mono text-xs uppercase tracking-[0.25em] text-white font-bold">
+            <div className="js-scroll-prompt shrink-0 flex items-center gap-2 sm:gap-3 bg-white/10 border border-white/20 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+              <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white font-bold">
                 SCROLL DOWN
               </span>
               <div
-                className="w-5 h-5 rounded-full flex items-center justify-center"
+                className="w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center"
                 style={{
                   background: 'linear-gradient(135deg, #FFE27D 0%, #FFD700 60%, #F59E0B 100%)',
                   boxShadow: '0 0 12px rgba(255,215,0,0.7)',
                 }}
               >
                 <svg
-                  className="w-3 h-3 text-black animate-bounce"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-black animate-bounce"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -725,19 +726,19 @@ export const CinematicHero: React.FC = () => {
         </div>
 
         {/* ── LAYER 5 (z-35): ACT 2 ARRIVAL - PJP DIGITAL ID LIVE SPECIMEN ── */}
-        <div className="js-act2-headline pointer-events-none absolute inset-0 z-35 flex items-center justify-center px-6 sm:px-10 lg:px-16 opacity-0">
-          <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16">
+        <div className="js-act2-headline pointer-events-none absolute inset-0 z-35 flex items-center justify-center px-4 sm:px-10 lg:px-16 opacity-0 pt-12 lg:pt-0">
+          <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-6 lg:gap-16">
             
             {/* Left Column: Specimen Narrative & Editorial Typography */}
             <div className="js-badge-text pointer-events-auto flex-1 max-w-xl text-left will-change-transform">
-              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-[#CBB079]/10 border border-[#CBB079]/30 mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#E0CCA0] font-semibold">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#CBB079]/10 border border-[#CBB079]/30 mb-2 sm:mb-6">
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#FFD700] animate-pulse" />
+                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#E0CCA0] font-semibold">
                   PJP DIGITAL ID // LIVE SPECIMEN
                 </span>
               </div>
 
-              <h2 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-white leading-[1.08] mb-6 font-playfair">
+              <h2 className="text-2xl sm:text-4xl lg:text-[3.5rem] font-bold tracking-tight text-white leading-[1.08] mb-2 sm:mb-6 font-playfair">
                 A verified identity <br />
                 you can{' '}
                 <span
@@ -748,66 +749,66 @@ export const CinematicHero: React.FC = () => {
                     WebkitTextFillColor: 'transparent',
                     textDecoration: 'underline',
                     textDecorationColor: 'rgba(203, 176, 121, 0.4)',
-                    textUnderlineOffset: '8px',
+                    textUnderlineOffset: '6px',
                   }}
                 >
                   flash on the ramp.
                 </span>
               </h2>
 
-              <p className="text-sm sm:text-base text-white/70 leading-relaxed font-normal mb-8 max-w-lg font-playfair">
+              <p className="text-xs sm:text-base text-white/70 leading-relaxed font-normal mb-3 sm:mb-8 max-w-lg font-playfair line-clamp-2 sm:line-clamp-none">
                 Every PJP member gets a searchable, NFC-ready Digital ID. Scan the QR at any FBO — the badge goes live for 60 seconds with an illuminated clearance border, animated security hologram, and cryptographically-linked FAA credentials.
               </p>
 
               {/* Verified Checklist */}
-              <div className="space-y-3.5 mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-[#22c55e]/20 border border-[#22c55e] flex items-center justify-center flex-shrink-0">
-                    <svg className="w-2.5 h-2.5 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="space-y-2 sm:space-y-3.5 mb-4 sm:mb-8">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#22c55e]/20 border border-[#22c55e] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <span className="text-xs sm:text-sm text-white/80 font-mono tracking-wide">
+                  <span className="text-[11px] sm:text-sm text-white/80 font-mono tracking-wide">
                     Cross-checked against 589k pilots in the FAA Airmen Registry
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-[#CBB079]/20 border border-[#CBB079] flex items-center justify-center flex-shrink-0">
-                    <svg className="w-2.5 h-2.5 text-[#CBB079]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#CBB079]/20 border border-[#CBB079] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#CBB079]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <span className="text-xs sm:text-sm text-white/80 font-mono tracking-wide">
+                  <span className="text-[11px] sm:text-sm text-white/80 font-mono tracking-wide">
                     Real-time ramp status — FBOs scan you in and out
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-[#FFD700]/20 border border-[#FFD700] flex items-center justify-center flex-shrink-0">
-                    <svg className="w-2.5 h-2.5 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#FFD700]/20 border border-[#FFD700] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <span className="text-xs sm:text-sm text-white/80 font-mono tracking-wide">
+                  <span className="text-[11px] sm:text-sm text-white/80 font-mono tracking-wide">
                     NFC-ready — tap your phone to any reader
                   </span>
                 </div>
               </div>
 
               {/* Action Buttons styled with PJP design system tokens */}
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   style={{
                     background: 'linear-gradient(135deg, #FFE27D 0%, #FFD700 60%, #F59E0B 100%)',
                     boxShadow: '0 4px 20px rgba(255, 215, 0, 0.3)',
                   }}
-                  className="px-7 py-3 rounded-sm text-black font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all hover:scale-[1.02] active:scale-95"
+                  className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm text-black font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all hover:scale-[1.02] active:scale-95"
                 >
                   OPEN FULL BADGE ↗
                 </button>
                 <button
                   type="button"
-                  className="px-7 py-3 rounded-sm border border-[#CBB079]/30 hover:border-[#CBB079]/70 text-[#E0CCA0] font-mono text-xs uppercase tracking-[0.2em] transition-all hover:bg-white/[0.04]"
+                  className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm border border-[#CBB079]/30 hover:border-[#CBB079]/70 text-[#E0CCA0] font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] transition-all hover:bg-white/[0.04]"
                 >
                   GET YOUR PJP ID
                 </button>
@@ -815,19 +816,19 @@ export const CinematicHero: React.FC = () => {
             </div>
 
             {/* Right Column: Tactical Lanyard Hanging Ramp Specimen Badge */}
-            <div className="js-badge-card pointer-events-auto relative group will-change-transform" style={{ perspective: '1200px' }}>
+            <div className="js-badge-card pointer-events-auto relative group will-change-transform scale-[0.78] sm:scale-90 lg:scale-100 origin-top lg:origin-center mt-2 lg:mt-0" style={{ perspective: '1200px' }}>
               
               {/* Tactical Lanyard Strap & Clip Assembly */}
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none">
+              <div className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none">
                 <div
-                  className="w-7 h-9 border-x border-white/10"
+                  className="w-6 h-8 sm:w-7 sm:h-9 border-x border-white/10"
                   style={{
                     background: 'repeating-linear-gradient(45deg, #18191d, #18191d 3px, #0e1014 3px, #0e1014 6px)',
                     boxShadow: '0 4px 10px rgba(0,0,0,0.8)',
                   }}
                 />
-                <div className="w-9 h-2.5 bg-gradient-to-r from-[#2c2d30] via-[#52555b] to-[#2c2d30] rounded-xs border border-white/20 shadow-md" />
-                <div className="w-3 h-3 border-2 border-[#CBB079]/50 rounded-full -mt-0.5" />
+                <div className="w-8 h-2 sm:w-9 sm:h-2.5 bg-gradient-to-r from-[#2c2d30] via-[#52555b] to-[#2c2d30] rounded-xs border border-white/20 shadow-md" />
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 border-2 border-[#CBB079]/50 rounded-full -mt-0.5" />
               </div>
 
               {/* Restrained Obsidian & Champagne Aura */}
@@ -835,7 +836,7 @@ export const CinematicHero: React.FC = () => {
 
               {/* Physical Obsidian Smart Card Chassis */}
               <div
-                className="relative w-[330px] sm:w-[370px] bg-[#0A0D10]/95 rounded-2xl p-6 backdrop-blur-2xl transition-all duration-500 ease-out group-hover:[transform:rotateX(6deg)_rotateY(-6deg)]"
+                className="relative w-[300px] sm:w-[370px] bg-[#0A0D10]/95 rounded-2xl p-5 sm:p-6 backdrop-blur-2xl transition-all duration-500 ease-out group-hover:[transform:rotateX(6deg)_rotateY(-6deg)]"
                 style={{
                   border: '1.5px solid rgba(203, 176, 121, 0.4)',
                   boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(34, 197, 94, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.03)',
@@ -850,71 +851,71 @@ export const CinematicHero: React.FC = () => {
                 />
 
                 {/* Top Badge Lanyard Punch Hole */}
-                <div className="w-12 h-2.5 mx-auto -mt-2 mb-4 bg-black/90 border border-white/20 rounded-full flex items-center justify-center">
-                  <div className="w-7 h-1 bg-[#CBB079]/40 rounded-full" />
+                <div className="w-10 sm:w-12 h-2 sm:h-2.5 mx-auto -mt-2 mb-3 sm:mb-4 bg-black/90 border border-white/20 rounded-full flex items-center justify-center">
+                  <div className="w-6 sm:w-7 h-1 bg-[#CBB079]/40 rounded-full" />
                 </div>
 
                 {/* Header: Organization & Live Status Pill */}
-                <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#FFE27D] to-[#F59E0B] flex items-center justify-center font-bold text-[9px] text-black shadow-[0_0_10px_rgba(255,215,0,0.5)]">
+                <div className="flex items-center justify-between pb-2.5 sm:pb-3.5 border-b border-white/10 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-tr from-[#FFE27D] to-[#F59E0B] flex items-center justify-center font-bold text-[8px] sm:text-[9px] text-black shadow-[0_0_10px_rgba(255,215,0,0.5)]">
                       PJP
                     </div>
                     <div>
-                      <h4 className="font-mono text-[10px] tracking-[0.18em] uppercase text-white font-bold leading-none">
+                      <h4 className="font-mono text-[9px] sm:text-[10px] tracking-[0.16em] uppercase text-white font-bold leading-none">
                         PRIVATE JET PILOTS
                       </h4>
-                      <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-[#CBB079]">
+                      <span className="font-mono text-[7px] sm:text-[8px] tracking-[0.18em] uppercase text-[#CBB079]">
                         CREW VERIFICATION CARD
                       </span>
                     </div>
                   </div>
                   
                   {/* Live Ramp Active Beacon */}
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#22c55e]/15 border border-[#22c55e]/50">
-                    <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-ping" />
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-[#22c55e] font-bold">
+                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-[#22c55e]/15 border border-[#22c55e]/50">
+                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#22c55e] animate-ping" />
+                    <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-wider text-[#22c55e] font-bold">
                       RAMP ACTIVE
                     </span>
                   </div>
                 </div>
 
                 {/* Pilot Portrait + FAA Registry Metadata */}
-                <div className="flex gap-4 mb-4">
+                <div className="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
                   {/* Photo Frame with Crosshair Viewfinder */}
-                  <div className="relative w-24 h-28 rounded-lg overflow-hidden border border-white/15 bg-gradient-to-b from-[#14161c] to-[#0A0D10] flex-shrink-0 flex items-center justify-center">
-                    <div className="w-16 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                      <svg className="w-10 h-10 text-white/40" fill="currentColor" viewBox="0 0 24 24">
+                  <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-lg overflow-hidden border border-white/15 bg-gradient-to-b from-[#14161c] to-[#0A0D10] flex-shrink-0 flex items-center justify-center">
+                    <div className="w-14 h-16 sm:w-16 sm:h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white/40" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                       </svg>
                     </div>
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-black/90 font-mono text-[8px] text-[#22c55e] border border-[#22c55e]/50 font-bold whitespace-nowrap">
+                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded bg-black/90 font-mono text-[7px] sm:text-[8px] text-[#22c55e] border border-[#22c55e]/50 font-bold whitespace-nowrap">
                       ● PILOT
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-1.5 text-left">
+                  <div className="flex-1 space-y-1 sm:space-y-1.5 text-left">
                     <div>
-                      <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
                         MEMBER ID
                       </span>
-                      <span className="font-mono text-xs text-white font-bold tracking-wider">
+                      <span className="font-mono text-[11px] sm:text-xs text-white font-bold tracking-wider">
                         PJP-B-90001
                       </span>
                     </div>
                     <div>
-                      <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
                         FAA CERTIFICATE
                       </span>
-                      <span className="font-mono text-xs text-[#E0CCA0] font-bold">
+                      <span className="font-mono text-[11px] sm:text-xs text-[#E0CCA0] font-bold">
                         ATP 2822744
                       </span>
                     </div>
                     <div>
-                      <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
                         SECURITY CLEARANCE
                       </span>
-                      <span className="font-mono text-xs text-[#22c55e] font-semibold">
+                      <span className="font-mono text-[11px] sm:text-xs text-[#22c55e] font-semibold">
                         EXP: JUL 2027
                       </span>
                     </div>
@@ -922,48 +923,48 @@ export const CinematicHero: React.FC = () => {
                 </div>
 
                 {/* Pilot Name Banner */}
-                <div className="bg-white/[0.03] border border-white/10 rounded p-2.5 mb-4 text-left">
-                  <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#CBB079] block mb-0.5">
+                <div className="bg-white/[0.03] border border-white/10 rounded p-2 sm:p-2.5 mb-3 sm:mb-4 text-left">
+                  <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.25em] text-[#CBB079] block mb-0.5">
                     AUTHENTICATED FLIGHT CREW
                   </span>
-                  <div className="text-xl font-bold tracking-tight text-white uppercase font-playfair">
+                  <div className="text-base sm:text-xl font-bold tracking-tight text-white uppercase font-playfair">
                     MICHAEL COURSEY, JEFF
                   </div>
                 </div>
 
                 {/* Micro-Watermark Ribbon */}
-                <div className="overflow-hidden py-1 mb-4 border-y border-white/5 select-none opacity-40">
-                  <div className="font-mono text-[9px] uppercase tracking-[0.35em] text-white/40 whitespace-nowrap">
+                <div className="overflow-hidden py-1 mb-3 sm:mb-4 border-y border-white/5 select-none opacity-40">
+                  <div className="font-mono text-[8px] sm:text-[9px] uppercase tracking-[0.35em] text-white/40 whitespace-nowrap">
                     CREW • CREW • CREW • CREW • CREW • CREW
                   </div>
                 </div>
 
                 {/* Bottom Verification Section: Live QR Checksum */}
                 <div className="flex items-center justify-between pt-1">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 bg-white p-1 rounded border border-white/30 flex items-center justify-center">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white p-1 rounded border border-white/30 flex items-center justify-center">
                       <svg className="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h4v2h-4v-2zm4-2h2v2h-2v-2zm-6 2h2v2h-2v-2zm6-4h2v2h-2v-2z" />
                       </svg>
                     </div>
                     <div className="text-left">
-                      <span className="font-mono text-[8px] uppercase tracking-wider text-white/40 block">
+                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-wider text-white/40 block">
                         RAMP SHA-256
                       </span>
-                      <span className="font-mono text-[10px] text-white font-bold block">
+                      <span className="font-mono text-[9px] sm:text-[10px] text-white font-bold block">
                         VALIDATED
                       </span>
-                      <span className="font-mono text-[8px] text-[#22c55e]">
+                      <span className="font-mono text-[7px] sm:text-[8px] text-[#22c55e]">
                         0.04s FBO SYNC
                       </span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/40 block">
+                    <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
                       CYCLE
                     </span>
-                    <span className="text-2xl font-bold font-mono text-white tracking-wider">
+                    <span className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wider">
                       2027
                     </span>
                   </div>
