@@ -33,10 +33,6 @@ export default function App(): React.JSX.Element {
     canvasRef,
   } = useAvionicsAudio(reducedMotion);
 
-  /* Cockpit controls. These deliberately do not chirp: opening a panel is an
-     ordinary interaction, so it takes only the tactile key click the document
-     listener already plays. The instrument chirp stays an on-demand control
-     inside the cockpit console. */
   const handleOpenCockpit = () => {
     setHudModalOpen(true);
   };
@@ -65,16 +61,13 @@ export default function App(): React.JSX.Element {
         onToggleAudio={toggleAudio}
       />
 
-      {/* Editorial presentation — the seven-stage cinematic hero resolves the
-          full 0→100% narrative arc, then hands directly into the network
-          role selection. The luxury-charter brochure layer (FuselageScroller,
-          FleetBento, ConciergeProtocols) is retired. */}
-      <main className="relative z-10 flex flex-col gap-24 pb-12">
+      {/* Seamless vertical handoff from Stage 7 Hero -> Ecosystem Entry -> Apron Ticker */}
+      <main className="relative z-10 flex flex-col">
         <CinematicHero />
         <NetworkRoles />
       </main>
 
-      {/* Position B: Pre-Apron Approach Ribbon */}
+      {/* Pre-Apron Approach Ribbon */}
       <div className="relative z-20 w-full">
         <IcaoAvionicsTicker />
       </div>

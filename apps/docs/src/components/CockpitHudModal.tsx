@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 import { AudioTelemetrySynth } from './AudioTelemetrySynth';
 
@@ -14,13 +14,14 @@ interface CockpitHudModalProps {
   closeButtonRef: RefObject<HTMLButtonElement | null>;
 }
 
-const HUD_TELEMETRY = [
-  { label: 'PITCH / ROLL', value: '+2.4° // 00° LEVEL', tone: 'text-champagne font-bold' },
-  { label: 'MACH NO.', value: 'MACH 0.925', tone: 'text-champagne font-bold text-base' },
-  { label: 'INDICATED KTAS', value: '540 KTS TRUE', tone: 'text-on-surface font-semibold' },
-  { label: 'VSI CLIMB', value: '+2,400 FPM', tone: 'text-champagne font-semibold' },
-  { label: 'TRANSPONDER', value: 'SQUAWK 4217 (ENC)', tone: 'text-champagne font-bold' },
+const CAMERA_PERSPECTIVES = [
+  { label: '3D ORBIT', vector: 'VECTOR 090 // ORBITAL LOCK', pitch: '+2.4° // 00° LEVEL' },
+  { label: 'CHASE CAM', vector: 'VECTOR 220 // TAIL PURSUIT', pitch: '+3.1° // 02° BANK' },
+  { label: 'COCKPIT POV', vector: 'SYNTHETIC VISION // RWY 22L', pitch: '+2.0° // ILS LOCKED' },
+  { label: 'TOP-DOWN RADAR', vector: 'AZIMUTH 360° // PLANAR', pitch: '00.0° // NADIR SCAN' },
 ] as const;
+
+const RADAR_RANGES = ['25 NM', '50 NM', '150 NM', 'GLOBAL'] as const;
 
 const ENVELOPE_TELEMETRY = [
   { label: 'CABIN ALTITUDE', value: '2,840 FT', tone: 'text-champagne font-bold' },
@@ -30,10 +31,7 @@ const ENVELOPE_TELEMETRY = [
   { label: 'DIPLOMATIC CLEAR', value: '14 NATIONS', tone: 'text-champagne font-semibold' },
 ] as const;
 
-const CAMERA_PERSPECTIVES = ['3D ORBIT', 'CHASE CAM', 'COCKPIT POV', 'TOP-DOWN RADAR'] as const;
-const RADAR_RANGES = ['25 NM', '50 NM', '150 NM', 'GLOBAL'] as const;
-
-/** 7. Fullscreen Cockpit HUD — [O] toggles it, ESC closes it. */
+/** Fullscreen Cockpit HUD — [O] toggles it, ESC closes it. */
 export function CockpitHudModal({
   open,
   audioActive,
@@ -45,6 +43,19 @@ export function CockpitHudModal({
   closeButtonRef,
 }: CockpitHudModalProps) {
   const restoreRef = useRef<HTMLElement | null>(null);
+  const [cameraIdx, setCameraIdx] = useState<number>(0);
+  const [rangeIdx, setRangeIdx] = useState<number>(0);
+
+  const activeCamera = CAMERA_PERSPECTIVES[cameraIdx];
+  const activeRange = RADAR_RANGES[rangeIdx];
+
+  const primaryTelemetry = [
+    { label: 'PITCH / ROLL', value: activeCamera.pitch, tone: 'text-champagne font-bold' },
+    { label: 'MACH NO.', value: 'MACH 0.925', tone: 'text-champagne font-bold text-sm sm:text-base' },
+    { label: 'INDICATED KTAS', value: '540 KTS TRUE', tone: 'text-on-surface font-semibold' },
+    { label: 'RADAR SWEEP', value: `${activeRange} ACTIVE`, tone: 'text-champagne font-semibold' },
+    { label: 'TRANSPONDER', value: 'SQUAWK 4217 (ENC)', tone: 'text-champagne font-bold' },
+  ] as const;
 
   useEffect(() => {
     if (!open) {
@@ -77,67 +88,69 @@ export function CockpitHudModal({
       aria-hidden={!open}
       aria-labelledby="hud-modal-title"
       aria-modal="true"
-      className={`fixed inset-0 z-[100] bg-charcoal-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 md:p-6 transition-all duration-300${
+      className={`fixed inset-0 z-[100] bg-charcoal-black/95 backdrop-blur-2xl flex flex-col justify-between overflow-y-auto p-3 sm:p-5 md:p-6 transition-all duration-300${
         open ? ' opacity-100 pointer-events-auto' : ' opacity-0 pointer-events-none'
       }`}
       id="hud-modal"
       role="dialog"
     >
       {/* Top Cockpit HUD Navigation Bar */}
-      <header className="relative z-20 flex flex-wrap items-center justify-between gap-4 p-4 rounded-sm bg-surface-container-lowest/80 border border-champagne-hairline backdrop-blur-md">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-champagne" />
-            <span
-              className="font-headline-md text-headline-md tracking-wider text-primary font-bold uppercase"
-              id="hud-modal-title"
-            >
-              COCKPIT HUD SYSTEM // LIVE FLIGHT ENVELOPE
-            </span>
-          </div>
-          <span className="hidden sm:inline-block text-outline">|</span>
-          <div className="hidden sm:flex items-center gap-2 font-telemetry-sm text-telemetry-sm text-champagne">
-            <span className="w-1.5 h-1.5 rounded-full bg-champagne" />
-            <span>RADAR AZIMUTH: 360°</span>
+      <header className="relative z-20 flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-lg bg-surface-container-lowest/85 border border-champagne-hairline backdrop-blur-md shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-champagne shrink-0 shadow-[0_0_8px_#CBB079]" />
+          <span
+            className="font-mono text-xs sm:text-sm md:text-base tracking-[0.18em] text-primary font-bold uppercase truncate"
+            id="hud-modal-title"
+          >
+            COCKPIT HUD // FLIGHT ENVELOPE
+          </span>
+          <span className="hidden md:inline-block text-outline">|</span>
+          <div className="hidden md:flex items-center gap-2 font-telemetry-sm text-telemetry-sm text-champagne">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+            <span>SWEEP: {activeRange}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-auto">
           {/* Audio Synthesizer Quick State in HUD */}
           <button
             type="button"
             onClick={onToggleAudio}
             aria-pressed={audioActive}
-            className="audio-toggle-btn px-3 py-1.5 rounded-lg bg-surface-container-high/90 hover:bg-surface-container-highest border border-champagne-hairline text-champagne font-telemetry-sm text-[11px] uppercase flex items-center gap-2 active:scale-95 transition-all"
+            className="audio-toggle-btn px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-container-high/90 hover:bg-surface-container-highest border border-champagne-hairline text-champagne font-telemetry-sm text-[10px] sm:text-[11px] uppercase flex items-center gap-1.5 sm:gap-2 active:scale-95 transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined text-[16px] text-champagne">
               {audioActive ? 'volume_up' : 'volume_off'}
             </span>
-            <span>{audioActive ? 'AUDIO GUARD ACTIVE [M]' : 'AUDIO MUTED [M]'}</span>
+            <span className="hidden xs:inline sm:inline">
+              {audioActive ? 'AUDIO GUARD [M]' : 'AUDIO MUTED [M]'}
+            </span>
           </button>
 
-          <div className="hidden lg:flex items-center gap-3 text-telemetry-sm font-telemetry-sm text-outline border-r border-champagne-hairline pr-4">
-            <span className="text-champagne font-semibold">SATCOM KA-BAND // 450 MBPS ENCRYPTED</span>
+          <div className="hidden xl:flex items-center gap-3 text-telemetry-sm font-telemetry-sm text-outline border-r border-champagne-hairline pr-4">
+            <span className="text-champagne font-semibold">SATCOM KA-BAND // 450 MBPS</span>
             <span>•</span>
-            <span className="text-champagne">GPS: 40°38&apos;23&quot;N 73°46&apos;44&quot;W</span>
+            <span className="text-champagne">40°38&apos;23&quot;N 73°46&apos;44&quot;W</span>
           </div>
 
           {/* Exit HUD Button */}
           <button
             type="button"
             onClick={onClose}
-            className="hud-close-btn champagne-btn-solid rounded-full px-5 py-2.5 font-label-caps text-label-caps uppercase flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
+            className="hud-close-btn champagne-btn-solid rounded-full px-3.5 sm:px-5 py-2 font-mono text-[10px] sm:text-[11px] tracking-[0.18em] font-bold uppercase flex items-center gap-1.5 sm:gap-2 cursor-pointer active:scale-95 transition-all"
             ref={closeButtonRef}
           >
-            <span className="material-symbols-outlined text-[18px]">close_fullscreen</span>
-            <span>EXIT HUD MODE</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-lowest/20 font-telemetry-sm">ESC</span>
+            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">close_fullscreen</span>
+            <span>EXIT HUD</span>
+            <span className="hidden sm:inline-block text-[9px] px-1.5 py-0.5 rounded bg-surface-container-lowest/25 font-mono">
+              ESC
+            </span>
           </button>
         </div>
       </header>
 
       {/* Avionics audio console — oscilloscope, guard frequency, sound tests */}
-      <div className="relative z-20 pointer-events-auto w-full pt-6">
+      <div className="relative z-20 pointer-events-auto w-full pt-3 sm:pt-5 shrink-0">
         <AudioTelemetrySynth
           active={audioActive}
           canvasRef={canvasRef}
@@ -146,48 +159,51 @@ export function CockpitHudModal({
         />
       </div>
 
-      {/* Midsection: floating cockpit telemetry panels */}
-      <div className="relative z-20 flex-1 flex items-center justify-between pointer-events-none py-6 my-auto select-none">
+      {/* Midsection: responsive cockpit telemetry panels */}
+      <div className="relative z-20 flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-4 lg:gap-6 py-4 sm:py-6 my-auto select-none">
         {/* Left instrument ladder: pitch, airspeed, Mach, altimeter */}
-        <div className="glass-cockpit p-5 rounded-sm border border-champagne-hairline w-64 pointer-events-auto backdrop-blur-xl">
+        <div className="glass-cockpit p-4 sm:p-5 rounded-lg border border-champagne-hairline w-full lg:max-w-xs pointer-events-auto backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-3">
-            <span className="font-label-caps text-label-caps text-champagne uppercase tracking-wider">
+            <span className="font-mono text-[10px] sm:text-[11px] text-champagne uppercase tracking-[0.2em] font-semibold">
               PRIMARY FLIGHT VECTOR
             </span>
-            <span className="w-2 h-2 rounded-full bg-champagne" />
+            <span className="w-2 h-2 rounded-full bg-[#22c55e] shadow-[0_0_6px_#22c55e]" />
           </div>
-          {HUD_TELEMETRY.map((row, index) => (
+          {primaryTelemetry.map((row, index) => (
             <div
               key={row.label}
-              className={`flex items-center justify-between py-2 ${
-                index === HUD_TELEMETRY.length - 1 ? 'pt-2' : 'border-b border-outline-variant/20'
+              className={`flex items-center justify-between gap-2 py-2 ${
+                index === primaryTelemetry.length - 1 ? 'pt-2' : 'border-b border-outline-variant/20'
               }`}
             >
-              <span className="font-telemetry-sm text-outline">{row.label}</span>
-              <span className={`font-telemetry-sm ${row.tone}`}>{row.value}</span>
+              <span className="font-mono text-[10px] sm:text-[11px] text-outline">{row.label}</span>
+              <span className={`font-mono text-[11px] sm:text-xs text-right ${row.tone}`}>{row.value}</span>
             </div>
           ))}
         </div>
 
-        {/* Center reticle graphic (cockpit visualiser marker) */}
-        <div className="hidden md:flex flex-col items-center justify-center opacity-60 pointer-events-none">
-          <div className="w-24 h-24 rounded-full border border-champagne-hairline flex items-center justify-center relative">
-            <div className="w-16 h-16 rounded-full border border-champagne-hairline absolute" />
-            <div className="w-1 h-6 bg-champagne absolute -top-3" />
-            <div className="w-1 h-6 bg-champagne absolute -bottom-3" />
-            <div className="h-1 w-6 bg-champagne absolute -left-3" />
-            <div className="h-1 w-6 bg-champagne absolute -right-3" />
-            <div className="w-2 h-2 rounded-full bg-champagne" />
+        {/* Center reticle graphic (interactive camera + range visualizer) */}
+        <div className="hidden lg:flex flex-col items-center justify-center opacity-80 pointer-events-none">
+          <div className="w-28 h-28 rounded-full border border-champagne-hairline flex items-center justify-center relative">
+            <div className="w-18 h-18 rounded-full border border-champagne/40 absolute inset-4" />
+            <div className="w-0.5 h-6 bg-champagne absolute -top-3" />
+            <div className="w-0.5 h-6 bg-champagne absolute -bottom-3" />
+            <div className="h-0.5 w-6 bg-champagne absolute -left-3" />
+            <div className="h-0.5 w-6 bg-champagne absolute -right-3" />
+            <div className="w-2 h-2 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]" />
           </div>
-          <span className="font-telemetry-sm text-telemetry-sm text-champagne mt-2 tracking-widest uppercase">
-            ENVELOPE GUIDANCE // VECTOR 090
+          <span className="font-mono text-[10px] text-champagne mt-4 tracking-[0.22em] uppercase text-center">
+            {activeCamera.vector}
+          </span>
+          <span className="font-mono text-[9px] text-white/45 mt-1 tracking-[0.2em] uppercase">
+            MODE: {activeCamera.label} • RANGE: {activeRange}
           </span>
         </div>
 
         {/* Right systems ladder: aircraft envelope & systems */}
-        <div className="glass-cockpit p-5 rounded-sm border border-champagne-hairline w-64 pointer-events-auto backdrop-blur-xl">
+        <div className="glass-cockpit p-4 sm:p-5 rounded-lg border border-champagne-hairline w-full lg:max-w-xs lg:justify-self-end pointer-events-auto backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-3">
-            <span className="font-label-caps text-label-caps text-champagne uppercase tracking-wider">
+            <span className="font-mono text-[10px] sm:text-[11px] text-champagne uppercase tracking-[0.2em] font-semibold">
               AIRCRAFT ENVELOPE
             </span>
             <span className="w-2 h-2 rounded-full bg-champagne" />
@@ -195,64 +211,74 @@ export function CockpitHudModal({
           {ENVELOPE_TELEMETRY.map((row, index) => (
             <div
               key={row.label}
-              className={`flex items-center justify-between py-2 ${
+              className={`flex items-center justify-between gap-2 py-2 ${
                 index === ENVELOPE_TELEMETRY.length - 1 ? 'pt-2' : 'border-b border-outline-variant/20'
               }`}
             >
-              <span className="font-telemetry-sm text-outline">{row.label}</span>
-              <span className={`font-telemetry-sm ${row.tone}`}>{row.value}</span>
+              <span className="font-mono text-[10px] sm:text-[11px] text-outline">{row.label}</span>
+              <span className={`font-mono text-[11px] sm:text-xs text-right ${row.tone}`}>{row.value}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Bottom cockpit HUD dock */}
-      <footer className="relative z-20 flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-sm bg-surface-container-lowest/80 border border-champagne-hairline backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <span className="font-label-caps text-label-caps text-outline uppercase tracking-wider mr-2">
-            CAMERA PERSPECTIVE:
+      <footer className="relative z-20 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-surface-container-lowest/85 border border-champagne-hairline backdrop-blur-md shrink-0">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full lg:w-auto">
+          <span className="font-mono text-[10px] text-outline uppercase tracking-[0.18em] mr-1 w-full sm:w-auto">
+            CAMERA:
           </span>
-          {CAMERA_PERSPECTIVES.map((perspective, index) => (
-            <button
-              key={perspective}
-              type="button"
-              className={
-                index === 0
-                  ? 'px-3 py-1.5 rounded bg-champagne text-charcoal-black font-telemetry-sm text-telemetry-sm font-semibold active:scale-95 transition-all'
-                  : 'px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high border border-champagne-hairline text-on-surface font-telemetry-sm text-telemetry-sm active:scale-95 transition-all'
-              }
-            >
-              {perspective}
-            </button>
-          ))}
+          {CAMERA_PERSPECTIVES.map((perspective, index) => {
+            const isSelected = index === cameraIdx;
+            return (
+              <button
+                key={perspective.label}
+                type="button"
+                onClick={() => setCameraIdx(index)}
+                className={
+                  isSelected
+                    ? 'px-2.5 sm:px-3 py-1.5 rounded bg-champagne text-charcoal-black font-mono text-[10px] sm:text-[11px] font-bold tracking-wider active:scale-95 transition-all cursor-pointer'
+                    : 'px-2.5 sm:px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high border border-champagne-hairline text-on-surface font-mono text-[10px] sm:text-[11px] tracking-wider active:scale-95 transition-all cursor-pointer'
+                }
+              >
+                {perspective.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Center Radar Range Toggles */}
-        <div className="flex items-center gap-3">
-          <span className="font-telemetry-sm text-telemetry-sm text-outline">RADAR RANGE:</span>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span className="font-mono text-[10px] tracking-[0.18em] text-outline">RADAR RANGE:</span>
           <div className="inline-flex rounded-lg border border-champagne-hairline p-0.5 bg-surface-container">
-            {RADAR_RANGES.map((range, index) => (
-              <button
-                key={range}
-                type="button"
-                className={
-                  index === 0
-                    ? 'px-2 py-0.5 text-[11px] font-telemetry-sm text-champagne bg-surface-container-highest rounded'
-                    : 'px-2 py-0.5 text-[11px] font-telemetry-sm text-on-surface-variant hover:text-on-surface'
-                }
-              >
-                {range}
-              </button>
-            ))}
+            {RADAR_RANGES.map((range, index) => {
+              const isSelected = index === rangeIdx;
+              return (
+                <button
+                  key={range}
+                  type="button"
+                  onClick={() => setRangeIdx(index)}
+                  className={
+                    isSelected
+                      ? 'px-2.5 py-1 text-[10px] sm:text-[11px] font-mono font-bold text-champagne bg-surface-container-highest rounded cursor-pointer transition-colors'
+                      : 'px-2.5 py-1 text-[10px] sm:text-[11px] font-mono text-on-surface-variant hover:text-on-surface cursor-pointer transition-colors'
+                  }
+                >
+                  {range}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Status Readout */}
-        <div className="flex items-center gap-2 text-champagne font-telemetry-sm text-telemetry-sm">
-          <span className="w-2 h-2 rounded-full bg-champagne" />
-          <span>PRECISION FLIGHT PATH VECTORING ACTIVE</span>
+        <div className="flex items-center gap-2 text-champagne font-mono text-[10px] tracking-[0.18em]">
+          <span className="w-2 h-2 rounded-full bg-[#22c55e] shadow-[0_0_6px_#22c55e]" />
+          <span>PRECISION VECTORING ACTIVE</span>
         </div>
       </footer>
     </div>
   );
 }
+
+export default CockpitHudModal;
