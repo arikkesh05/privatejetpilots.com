@@ -530,3 +530,27 @@ Scope: `apps/docs/src/components/ExplodedAirframe.tsx` **service cards only** (`
 **Verification:**
 - `pnpm --filter @pjp/docs typecheck` → exit 0
 - `pnpm --filter @pjp/docs build` → exit 0
+
+---
+
+### 2026-10-29 — Sprint 2 Complete: Rolling Ramp Token & Auto-Flip Rotation
+
+**Scope:** `apps/docs/src/components/InteractiveLanyardBadge.tsx`, `apps/docs/src/components/RampBadgeModal.tsx`
+
+**Changes applied:**
+
+1. **30-Second Rolling Token Cycle:**
+   - `remainingSeconds = 30 - (Math.floor(Date.now() / 1000) % 30)` in both components
+   - `cycle = Math.floor(Date.now() / 30000)` for boundary detection
+   - Labels: `ROTATES IN {remainingSeconds}S` (badge telemetry ledger), `TOKEN CYCLE RESETS IN {remainingSeconds}s` and `Rotates in {remainingSeconds}S` (modal security card)
+   - Crypto checksum renders `tokenHash` (djb2-derived `0xXXXX...XXXX` chunk) instead of static `0x8A4F...91C0`
+
+2. **Autonomous 180-Degree Badge Auto-Flip:**
+   - `lastCycleRef = useRef<number>(Math.floor(Date.now() / 30000))` tracks previous cycle
+   - On each tick, `newCycle !== lastCycleRef.current` triggers `lastCycleRef.current = newCycle` + `setIsFlipped(prev => !prev)`
+   - Clean `setInterval(..., 1000)` with `clearInterval` unmount teardown
+   - Manual click flip preserved (same toggle function, no conflict)
+
+**Verification:**
+- `pnpm --filter @pjp/docs typecheck` → exit 0
+- `pnpm --filter @pjp/docs build` → exit 0
