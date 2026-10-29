@@ -17,7 +17,9 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
   const data = pilot ?? liveProfile ?? DEFAULT_PILOT_SPECIMEN;
   const [internalOpen, setInternalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [tokenTimer, setTokenTimer] = useState(58);
+  const [, setTick] = useState(0);
+
+  const remainingSeconds = 30 - (Math.floor(Date.now() / 1000) % 30);
 
   const isControlled = controlledIsOpen !== undefined;
   const show = isControlled ? controlledIsOpen : internalOpen;
@@ -55,16 +57,16 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKeyDown);
 
-    const timer = setInterval(() => {
-      setTokenTimer((prev) => (prev <= 1 ? 60 : prev - 1));
-    }, 1000);
-
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', onKeyDown);
-      clearInterval(timer);
     };
   }, [show]);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (!mounted || !show) return null;
 
@@ -200,7 +202,10 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
                     LIVE // {data.clearanceLevel}
                   </div>
                   <div className="font-badge-header text-[8px] tracking-[0.14em] text-[#8E887E] mt-1">
-                    Token cycle resets in <span className="text-[#CBB079] font-semibold">{tokenTimer}s</span>
+                    Token cycle resets in <span className="text-[#CBB079] font-semibold">{remainingSeconds}s</span>
+                  </div>
+                  <div className="font-badge-header text-[8px] tracking-[0.14em] text-[#8E887E] mt-1">
+                    Rotates in <span className="text-[#CBB079] font-semibold">{remainingSeconds}S</span>
                   </div>
                 </div>
               </div>
