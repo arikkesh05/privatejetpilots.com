@@ -426,3 +426,107 @@ Scope: `apps/docs/src/components/ExplodedAirframe.tsx` **service cards only** (`
 - **Judgment call.** `AirframeService.partName` and the `Record<string, AirframeService>` shape are unchanged, so the `CinematicHero` import and drawer keep compiling. Cards are `<div onClick>` — the pre-existing keyboard-inaccessible pattern — left as-is because converting them to `<button>` would alter the toggle mechanics explicitly placed out of scope.
 - **Verification.** Fresh `dist` CSS confirmed to contain `backdrop-blur-xl`, `bg-[#090b10]/75`, `border-white/[0.08]`, `hover:border-[#FFD700]/60`, `border-[#FFD700]/20|30|70`, `text-[#38bdf8]`, `tracking-[0.25em]`, `bg-emerald-400/70`; the `dist` JS bundle contains the chamfer `polygon(...)` string and both glow values. Confirmed `rounded-sm` no longer appears in the component, all 9 airframe `clipPath` polygons and all 11 `js-*` GSAP hooks are intact, and `onSelectService` / `activeServiceId` / `setHoveredPart` wiring is byte-identical.
 
+---
+### 2026-10-28 — Pilot Credential Realism Pass: JEFF COURSEY lanyard badge + modal header repair
+
+**Scope:** apps/docs/src/components/InteractiveLanyardBadge.tsx, apps/docs/src/components/RampBadgeModal.tsx, apps/docs/public/pilot-portrait.jpg
+
+**Changes applied:**
+
+1. **Pilot portrait asset.** Replaced apps/docs/public/pilot-portrait.jpg with the user-uploaded image from ~/Downloads/Image 2026-10-28 at 6.07.40 PM.jpeg (199KB, overwrote previous 8MB file).
+
+2. **Pilot identity.** Display name changed from Michael Coursey -> JEFF COURSEY (ATP Captain // G650ER • GLOBAL 7500).
+
+3. **Portrait proportions.** Front-face portrait viewport enlarged ~25%: w-28 h-28 -> w-36 h-36. Kill social-media green checkmark circle (✓ / bg-[#4ADE80]) replaced with a champagne gold #CBB079 micro-embossed FAA security badge stamp (border border-[#CBB079]/40, inner FAA text).
+
+4. **Lanyard suspension physics.** Woven ribbon SVG extended: viewBox 135 -> 160, height 96/135 -> 120/160, all lanyard fabric paths y2="92" -> y2="118", gold accent line and edge lines extended, lobster clasp + swivel ring moved down to match. Container margin changed from marginBottom: '-14px' to marginTop: '-6px', marginBottom: '-10px' so the ribbon physically drapes past the top container edge from an overhead suspension point.
+
+5. **Modal header repair.** Verified RampBadgeModal.tsx top title reads cleanly: FLIGHT CREW SPECIMEN // EXECUTIVE RAMP DOSSIER (no corruption — [Tap to flip credential] was not embedded in the title string). The ambient flip indicator (tap to flip credential with pulse dots) remains strictly underneath the badge pass as a centered footer hint in InteractiveLanyardBadge.tsx.
+
+6. **Scope honored.** CinematicHero.tsx untouched — no animation logic, ScrollTrigger timelines, or GSAP changes.
+
+**Verification:**
+- pnpm --filter @pjp/docs typecheck -> exit 0
+- pnpm --filter @pjp/docs build -> exit 0
+- Zero old tokens remaining: no text-white, text-emerald, #D4AF37, #E0CCA0, #C5A880, #E5D5BA, font-mono, #22c55e, #34d399, Chakra Petch, or Syne in either component file.---
+
+### 2026-10-28 — Graphic Overhaul: Digital ID Pass — Vivid Color, Flight Chevrons, Geometric Typography
+
+**Scope:** `apps/docs/src/index.css`, `apps/docs/src/components/InteractiveLanyardBadge.tsx`, `apps/docs/src/components/RampBadgeModal.tsx`
+
+**Changes applied:**
+
+1. **Typography (`index.css`):**
+   - Replaced @import with Inter (400-800), Mona Sans (600-900 italic), JetBrains Mono (500-700)
+   - `.font-badge-name`: Mona Sans, weight 800, letter-spacing -0.02em, uppercase
+   - `.font-badge-header`: Inter, weight 700, letter-spacing 0.12em, uppercase
+   - `.font-badge-mono`: JetBrains Mono, tnum + zero font features, tabular-nums
+   - Updated `.font-avionics` and `.font-hud-header` to use Inter with consistent tracking
+
+2. **Portrait — Vivid Natural Color (`InteractiveLanyardBadge.tsx`):**
+   - Removed ALL grayscale/contrast/saturate filters from `/pilot-portrait.jpg`
+   - Removed maskImage/WebkitMaskImage duotone vignette and foil tint overlays
+   - Removed emerald/gold rim glow
+   - Rendered in full vivid color: `saturate(1.2) contrast(1.1) brightness(1.05)`, `objectPosition: 'center 20%'`
+   - Framed in faceted hexagonal gold bezel: `clipPath: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)`
+   - Champagne gold pinline border `inset 0 0 0 1.5px #CBB079` with outer amber glow `0 0 40px rgba(203,176,121,0.35)`
+   - Repeating diagonal gold stripe pattern overlay inside hexagon
+
+3. **Front Face — Graphic Structure & Flight Chevrons (`InteractiveLanyardBadge.tsx`):**
+   - Added diagonal flight chevrons SVG behind portrait using `#121722` obsidian, `#0B0D12` deep navy/carbon, `#CBB079`/`#D4AF37` champagne gold foil
+   - Chevrons slice across card behind content with gradient mask fade top/bottom
+   - Name: `JEFF COURSEY` in `.font-badge-name text-[22px] font-extrabold text-white tracking-tight leading-tight`
+   - Role pill: `ATP CAPTAIN // G650ER • GLOBAL 7500` in `.font-badge-header text-[10px] tracking-[0.12em] text-white`
+   - Telemetry grid: 3 clean tabular boxes `bg-white/[0.03] border border-white/10 rounded-lg p-2` with `.font-badge-header` labels and `.font-badge-mono` values (FAA CERT: 2822744, MEDICAL: CLASS 1, PASS ID: B-90001)
+
+4. **Back Face — Magnetic Stripe, Barcode, NFC Active (`InteractiveLanyardBadge.tsx`):**
+   - Added crisp black magnetic flight crew stripe `h-3 bg-[#0B0D12] border-b border-[#1A1F2E]` across top
+   - Dual-tone spec table with `.font-badge-header` labels and `.font-badge-mono` values
+   - High-contrast optical barcode panel `h-10 bg-[#0A0C0F]` with repeating gold/white/black stripe pattern
+   - NFC ACTIVE indicator `bg-[#4ADE80]/10 border border-[#4ADE80]/30` with pulsing dot and `{tokenTimer}S` countdown
+   - SHA-256 SYNC header updated to `.font-badge-header`
+
+5. **Modal Harmonization (`RampBadgeModal.tsx`):**
+   - All section headers use `.font-badge-header` (Inter, weight 700, tracking 0.12em)
+   - All telemetry values use `.font-badge-mono` (JetBrains Mono, tabular nums)
+   - All type rating pills use `.font-badge-mono`
+   - Header title: `FLIGHT CREW SPECIMEN // EXECUTIVE RAMP DOSSIER` (clean, no corruption)
+   - ESC button and action buttons use `.font-badge-header`
+
+6. **Scope honored:** `CinematicHero.tsx` untouched — no animation logic or ScrollTrigger changes
+
+**Verification:**
+- `pnpm --filter @pjp/docs typecheck` → exit 0
+- `pnpm --filter @pjp/docs build` → exit 0
+- Zero grayscale filters on portrait image
+- Zero maskImage on portrait
+- No Chakra Petch, Syne, or Geist references in font imports
+
+---
+
+### 2026-10-29 — Supabase Live Telemetry Synchronized Across RampBadgeModal and InteractiveLanyardBadge
+
+**Scope:** `apps/docs/src/components/RampBadgeModal.tsx`
+
+**Changes applied:**
+
+1. **Live profile hook integration (`RampBadgeModal.tsx`):**
+   - Imported `usePilotProfile` from `../hooks/usePilotProfile`
+   - Component now calls `const { profile: liveProfile } = usePilotProfile()` to fetch live Supabase pilot telemetry
+   - Data resolution priority: `pilot` prop > `liveProfile` from hook > `DEFAULT_PILOT_SPECIMEN` fallback
+   - Changed `<InteractiveLanyardBadge mode="modal" pilot={pilot} />` to `pilot={data}` so the resolved live record is passed downstream
+
+2. **Telemetry fields safely consuming live record:**
+   - FAA Airmen Registry Telemetry: `certificateGrade`, `commercialPrivileges`, `faaCert`, `medicalClass`, `medicalStatus`
+   - Flight Time Breakdown Matrix: `hours.total`, `hours.picTurbine`, `hours.night`, `hours.instrument`
+   - Endorsed Type Ratings: `typeRatings` array with clean fallbacks
+   - Ramp Security Status: `clearanceLevel`, `isActive`
+
+3. **Mount synchronization:**
+   - `pjp:open-badge` CustomEvent listener in `CinematicHero.tsx` → `RampBadgeModal` now displays live-fetched pilot telemetry
+   - No hydration errors, no flash of undefined content (DEFAULT_PILOT_SPECIMEN fallback ensures immediate render)
+   - No broken prop types
+
+**Verification:**
+- `pnpm --filter @pjp/docs typecheck` → exit 0
+- `pnpm --filter @pjp/docs build` → exit 0

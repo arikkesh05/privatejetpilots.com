@@ -2,6 +2,8 @@ import React, { useRef, useLayoutEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ExplodedAirframe, AirframeService } from './ExplodedAirframe';
+import { InteractiveLanyardBadge } from './InteractiveLanyardBadge';
+import { usePilotProfile } from '../hooks/usePilotProfile';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,6 +11,9 @@ export const CinematicHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const [activeService, setActiveService] = useState<AirframeService | null>(null);
+
+  // Live Supabase pilot profile telemetry
+  const { profile: pilotProfile } = usePilotProfile();
 
   useLayoutEffect(() => {
     if (!containerRef.current || !pinRef.current) return;
@@ -803,6 +808,7 @@ export const CinematicHero: React.FC = () => {
                     boxShadow: '0 4px 20px rgba(255, 215, 0, 0.3)',
                   }}
                   className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm text-black font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all hover:scale-[1.02] active:scale-95"
+                  onClick={() => window.dispatchEvent(new CustomEvent('pjp:open-badge'))}
                 >
                   OPEN FULL BADGE ↗
                 </button>
@@ -815,162 +821,12 @@ export const CinematicHero: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Tactical Lanyard Hanging Ramp Specimen Badge */}
-            <div className="js-badge-card pointer-events-auto relative group will-change-transform scale-[0.78] sm:scale-90 lg:scale-100 origin-top lg:origin-center mt-2 lg:mt-0" style={{ perspective: '1200px' }}>
-              
-              {/* Tactical Lanyard Strap & Clip Assembly */}
-              <div className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none">
-                <div
-                  className="w-6 h-8 sm:w-7 sm:h-9 border-x border-white/10"
-                  style={{
-                    background: 'repeating-linear-gradient(45deg, #18191d, #18191d 3px, #0e1014 3px, #0e1014 6px)',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.8)',
-                  }}
-                />
-                <div className="w-8 h-2 sm:w-9 sm:h-2.5 bg-gradient-to-r from-[#2c2d30] via-[#52555b] to-[#2c2d30] rounded-xs border border-white/20 shadow-md" />
-                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 border-2 border-[#CBB079]/50 rounded-full -mt-0.5" />
-              </div>
-
-              {/* Restrained Obsidian & Champagne Aura */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-[#FFD700]/15 via-[#22c55e]/20 to-[#CBB079]/15 rounded-2xl blur-xl opacity-60 group-hover:opacity-90 transition-opacity" />
-
-              {/* Physical Obsidian Smart Card Chassis */}
-              <div
-                className="relative w-[300px] sm:w-[370px] bg-[#0A0D10]/95 rounded-2xl p-5 sm:p-6 backdrop-blur-2xl transition-all duration-500 ease-out group-hover:[transform:rotateX(6deg)_rotateY(-6deg)]"
-                style={{
-                  border: '1.5px solid rgba(203, 176, 121, 0.4)',
-                  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(34, 197, 94, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.03)',
-                }}
-              >
-                {/* Sweeping Holographic Foil Sheen */}
-                <div
-                  className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden opacity-35 group-hover:opacity-60 transition-opacity"
-                  style={{
-                    background: 'linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.12) 48%, rgba(203,176,121,0.2) 52%, transparent 65%)',
-                  }}
-                />
-
-                {/* Top Badge Lanyard Punch Hole */}
-                <div className="w-10 sm:w-12 h-2 sm:h-2.5 mx-auto -mt-2 mb-3 sm:mb-4 bg-black/90 border border-white/20 rounded-full flex items-center justify-center">
-                  <div className="w-6 sm:w-7 h-1 bg-[#CBB079]/40 rounded-full" />
-                </div>
-
-                {/* Header: Organization & Live Status Pill */}
-                <div className="flex items-center justify-between pb-2.5 sm:pb-3.5 border-b border-white/10 mb-3 sm:mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-tr from-[#FFE27D] to-[#F59E0B] flex items-center justify-center font-bold text-[8px] sm:text-[9px] text-black shadow-[0_0_10px_rgba(255,215,0,0.5)]">
-                      PJP
-                    </div>
-                    <div>
-                      <h4 className="font-mono text-[9px] sm:text-[10px] tracking-[0.16em] uppercase text-white font-bold leading-none">
-                        PRIVATE JET PILOTS
-                      </h4>
-                      <span className="font-mono text-[7px] sm:text-[8px] tracking-[0.18em] uppercase text-[#CBB079]">
-                        CREW VERIFICATION CARD
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Live Ramp Active Beacon */}
-                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-[#22c55e]/15 border border-[#22c55e]/50">
-                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#22c55e] animate-ping" />
-                    <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-wider text-[#22c55e] font-bold">
-                      RAMP ACTIVE
-                    </span>
-                  </div>
-                </div>
-
-                {/* Pilot Portrait + FAA Registry Metadata */}
-                <div className="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
-                  {/* Photo Frame with Crosshair Viewfinder */}
-                  <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-lg overflow-hidden border border-white/15 bg-gradient-to-b from-[#14161c] to-[#0A0D10] flex-shrink-0 flex items-center justify-center">
-                    <div className="w-14 h-16 sm:w-16 sm:h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white/40" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                      </svg>
-                    </div>
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded bg-black/90 font-mono text-[7px] sm:text-[8px] text-[#22c55e] border border-[#22c55e]/50 font-bold whitespace-nowrap">
-                      ● PILOT
-                    </div>
-                  </div>
-
-                  <div className="flex-1 space-y-1 sm:space-y-1.5 text-left">
-                    <div>
-                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
-                        MEMBER ID
-                      </span>
-                      <span className="font-mono text-[11px] sm:text-xs text-white font-bold tracking-wider">
-                        PJP-B-90001
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
-                        FAA CERTIFICATE
-                      </span>
-                      <span className="font-mono text-[11px] sm:text-xs text-[#E0CCA0] font-bold">
-                        ATP 2822744
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
-                        SECURITY CLEARANCE
-                      </span>
-                      <span className="font-mono text-[11px] sm:text-xs text-[#22c55e] font-semibold">
-                        EXP: JUL 2027
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pilot Name Banner */}
-                <div className="bg-white/[0.03] border border-white/10 rounded p-2 sm:p-2.5 mb-3 sm:mb-4 text-left">
-                  <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.25em] text-[#CBB079] block mb-0.5">
-                    AUTHENTICATED FLIGHT CREW
-                  </span>
-                  <div className="text-base sm:text-xl font-bold tracking-tight text-white uppercase font-playfair">
-                    MICHAEL COURSEY, JEFF
-                  </div>
-                </div>
-
-                {/* Micro-Watermark Ribbon */}
-                <div className="overflow-hidden py-1 mb-3 sm:mb-4 border-y border-white/5 select-none opacity-40">
-                  <div className="font-mono text-[8px] sm:text-[9px] uppercase tracking-[0.35em] text-white/40 whitespace-nowrap">
-                    CREW • CREW • CREW • CREW • CREW • CREW
-                  </div>
-                </div>
-
-                {/* Bottom Verification Section: Live QR Checksum */}
-                <div className="flex items-center justify-between pt-1">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white p-1 rounded border border-white/30 flex items-center justify-center">
-                      <svg className="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h4v2h-4v-2zm4-2h2v2h-2v-2zm-6 2h2v2h-2v-2zm6-4h2v2h-2v-2z" />
-                      </svg>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-wider text-white/40 block">
-                        RAMP SHA-256
-                      </span>
-                      <span className="font-mono text-[9px] sm:text-[10px] text-white font-bold block">
-                        VALIDATED
-                      </span>
-                      <span className="font-mono text-[7px] sm:text-[8px] text-[#22c55e]">
-                        0.04s FBO SYNC
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="font-mono text-[7px] sm:text-[8px] uppercase tracking-[0.2em] text-white/40 block">
-                      CYCLE
-                    </span>
-                    <span className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wider">
-                      2027
-                    </span>
-                  </div>
-                </div>
-
-              </div>
+            {/* Right Column: Interactive 3D Lanyard Hanging Ramp Specimen Badge */}
+            <div
+              className="js-badge-card pointer-events-auto relative will-change-transform scale-[0.78] sm:scale-90 lg:scale-100 origin-top lg:origin-center mt-2 lg:mt-0"
+              style={{ perspective: '1600px' }}
+            >
+              <InteractiveLanyardBadge mode="hero" pilot={pilotProfile ?? undefined} /> 
             </div>
 
           </div>
