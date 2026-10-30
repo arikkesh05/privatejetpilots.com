@@ -588,3 +588,17 @@ Scope: `apps/docs/src/components/ExplodedAirframe.tsx` **service cards only** (`
 **Verification:**
 - `pnpm --filter @pjp/docs typecheck` → exit 0
 - `pnpm --filter @pjp/docs build` → exit 0
+### 2026-10-29 — Sprint 4 Complete: Avionics Audio Synthesis and HUD Soundscape
+
+### Sprint 5 (Deterministic Resolution) — FBO Ramp Scan Simulator & Airframe Recovery
+- **FboScanModal.tsx Stabilization:**
+  - Removed bash execution wrapper artifacts (`cat << 'EOF' ... EOF`) that halted Vite AST parsing.
+  - Validated optical scanner reticle, 1.2s laser sweep, and telemetry badge payload decoding.
+  - Linked `pjp:open-fbo-scanner` custom event dispatch cleanly to the Act 2 action cluster.
+- **ExplodedAirframe.tsx Physics & Rendering:**
+  - Resolved GSAP jitter context syntax breaks (`duration` and `delay` arithmetic).
+  - Confirmed `/jet-exterior.png` and `/jet-blueprint.png` asset mapping across scroll stages.
+  - Verified smoked-gold service pod hover states, dynamic laser tethers, and responsive center airframe scaling.
+- **Runtime Verification:**
+  - Confirmed clean Vite startup on `http://localhost:5174/` without console errors.
+  - End-to-end browser walkthrough validated: window dive (Act 1), digital ID & FBO simulator (Act 2), and airframe separation (Act 3).
