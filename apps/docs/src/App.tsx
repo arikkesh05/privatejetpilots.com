@@ -5,6 +5,8 @@ import { CinematicHero } from './components/CinematicHero';
 import { NetworkRoles } from './components/NetworkRoles';
 import { ExecutiveFooter } from './components/ExecutiveFooter';
 import { CockpitHudModal } from './components/CockpitHudModal';
+import { FboScanModal } from './components/FboScanModal';
+import { RampBadgeModal } from './components/RampBadgeModal';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { useScrollReveals } from './hooks/useScrollReveals';
 import { useDeckHotkeys } from './hooks/useDeckHotkeys';
@@ -84,6 +86,9 @@ export default function App(): React.JSX.Element {
         onDatalink={datalink}
         onToggleAudio={toggleAudio}
       />
+
+      <RampBadgeModal />
+      <FboScanModal />
     </div>
   );
 }

@@ -49,3 +49,5 @@ jet-cinematic/
 # Editor environments
 .vscode/
 .cursor/
+.vercel
+.env*

@@ -3,16 +3,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAvionicsAudio } from '../hooks/useAvionicsAudio';
 
+interface PilotData {
+  name: string;
+  role: string;
+  faaCert: string;
+  medicalClass: string;
+  passId: string;
+  typeRatings: string[];
+  clearanceLevel: string;
+}
+
 interface ScanPayload {
-  pilot?: {
-    name: string;
-    role: string;
-    faaCert: string;
-    medicalClass: string;
-    passId: string;
-    typeRatings: string[];
-    clearanceLevel: string;
-  };
+  pilot?: PilotData;
   tokenHash?: string;
   cycle?: number;
 }
@@ -71,7 +73,7 @@ export const FboScanModal: React.FC = () => {
 
   if (!isOpen) return null;
 
-  const pilot = payload?.pilot ?? {
+  const pilot: PilotData = payload?.pilot ?? {
     name: 'JEFF COURSEY',
     role: 'ATP CAPTAIN // G650ER • GLOBAL 7500',
     faaCert: '2822744',
@@ -136,7 +138,7 @@ export const FboScanModal: React.FC = () => {
 
           {scanState === 'verified' && (
             <div className="flex flex-col items-center gap-1.5 text-center">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D2218] border border-[#6EE7B7]/40 text-[#6EE7B7] font-mono text-[10px] uppercase tracking-wider font-bold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D2218] border border-[#6EE7B7]/40 text-[#6EE7B7] font-mono text-x] uppercase tracking-wider font-bold">
                 <span className="w-2 h-2 rounded-full bg-[#4ADE80] animate-ping" />
                 SIGNATURE VERIFIED // VALID CYCLE
               </span>
@@ -191,7 +193,7 @@ export const FboScanModal: React.FC = () => {
               disabled={loggedArrival}
               className={`flex-1 py-3 rounded font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all select-none ${
                 loggedArrival
-                  ? 'bg-emerald-950/60 border border-emerald-500/50 text-emerald-300'
+                  ? 'bg-emald-950/60 border border-emerald-500/50 text-emerald-300'
                   : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_4px_20px_rgba(16,185,129,0.3)] cursor-pointer'
               }`}
             >

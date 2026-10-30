@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { PilotCredential, DEFAULT_PILOT_SPECIMEN } from '../types/credential';
+import { useAvionicsAudio } from '../hooks/useAvionicsAudio';
 
 export interface InteractiveLanyardBadgeProps {
   mode?: 'hero' | 'modal';
@@ -21,6 +22,8 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
   const [, setTick] = useState(0);
   const [isTransmitting, setIsTransmitting] = useState(false);
   const lastCycleRef = useRef<number>(Math.floor(Date.now() / 30000));
+
+  const audio = useAvionicsAudio(false);
 
   const deriveTokenHash = (cycle: number): string => {
     let hash = 5381;
@@ -43,10 +46,13 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
       if (newCycle !== lastCycleRef.current) {
         lastCycleRef.current = newCycle;
         setIsFlipped((prev) => !prev);
+        if (audio && typeof audio.chirp === 'function') {
+          audio.chirp();
+        }
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [audio]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -67,41 +73,39 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
   };
 
   const handleFlip = (e: React.MouseEvent) => {
-    // Do not flip if user clicked inside an interactive button
     const target = e.target as HTMLElement;
     if (target.closest('button') || target.closest('[data-no-flip="true"]')) {
       return;
     }
     e.stopPropagation();
+    e.preventDefault();
+    if (audio && typeof audio.chirp === 'function') {
+      audio.chirp();
+    }
     setIsFlipped((prev) => !prev);
   };
 
-  const chirp = () => {
-  /* NFC handshake chirp using Web Audio API */
-  if (typeof window === 'undefined' || !window.AudioContext) return;
-  const ctx = new AudioContext();
-  const oscillator = ctx.createOscillator();
-  const gain = ctx.createGain();
-  oscillator.type = 'triangle';
-  oscillator.frequency.setValueAtTime(880, ctx.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.1, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-  oscillator.connect(gain);
-  gain.connect(ctx.destination);
-  oscillator.start(ctx.currentTime);
-  oscillator.stop(ctx.currentTime + 0.12);
-};
-
-const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
+  const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isTransmitting) return;
+    if (audio && typeof audio.chirp === 'function') {
+      audio.chirp();
+    }
     setIsTransmitting(true);
-    chirp();  // NFC handshake chirp
     setTimeout(() => {
       setIsTransmitting(false);
     }, 1800);
+  };
+
+  const handleQrClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    window.dispatchEvent(
+      new CustomEvent('pjp:open-fbo-scanner', {
+        detail: { pilot: data, tokenHash, cycle },
+      })
+    );
   };
 
   const cardWidth = mode === 'modal' ? '356px' : '332px';
@@ -185,9 +189,7 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
           }}
         />
 
-        {/* ========================================================================= */}
-        {/* FRONT FACE                                                               */}
-        {/* ========================================================================= */}
+        {/* FRONT FACE */}
         <div
           className="absolute inset-0 rounded-[26px] p-6 flex flex-col justify-between overflow-hidden"
           style={{
@@ -317,14 +319,21 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
 
           {/* Bottom Dock: Dynamic Token & Scannable QR */}
           <div className="relative z-40 flex items-center justify-between w-full pt-2 mt-auto">
-            <div className="flex items-center gap-2.5 flex-shrink-0 pointer-events-none">
-              <div className="w-9 h-9 rounded-lg bg-white p-1 flex items-center justify-center shadow-md">
-                <svg className="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
+            <div
+              data-no-flip="true"
+              onClick={handleQrClick}
+              className="flex items-center gap-2.5 flex-shrink-0 cursor-pointer group"
+              title="Click QR code to simulate FBO Ramp Scan"
+            >
+              <div className="w-9 h-9 rounded-lg bg-white p-1 flex items-center justify-center shadow-md transition-transform group-hover:scale-105 active:scale-95">
+                <svg className="w-full h-full text-black pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h4v2h-4v-2zm4-2h2v2h-2v-2zm-6 2h2v2h-2v-2zm6-4h2v2h-2v-2z" />
                 </svg>
               </div>
-              <div className="text-left font-['JetBrains_Mono']">
-                <div className="text-[8px] uppercase tracking-[0.18em] text-[#8E887E]">SHA-256 SYNC</div>
+              <div className="text-left font-['JetBrains_Mono'] pointer-events-none">
+                <div className="text-[8px] uppercase tracking-[0.18em] text-[#8E887E] group-hover:text-[#CBB079] transition-colors">
+                  SHA-256 // SCAN ↗
+                </div>
                 <div className="text-[10px] text-[#EDE8DF] font-semibold">ROTATES IN {remainingSeconds}S</div>
               </div>
             </div>
@@ -362,9 +371,7 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* BACK FACE (180° FLIPPED — FULL VISIBILITY & CLEARANCE SPECS)              */}
-        {/* ========================================================================= */}
+        {/* BACK FACE */}
         <div
           className="absolute inset-0 rounded-[26px] p-6 flex flex-col justify-between overflow-hidden"
           style={{
@@ -377,7 +384,7 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
               '0 30px 80px -15px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.09), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 0 0 1px rgba(203,176,121,0.22)',
           }}
         >
-          {/* Top Magnetic Flight Crew Stripe */}
+          {/* Top Stripe */}
           <div className="pointer-events-none relative z-20">
             <div
               className="w-16 h-2.5 mx-auto rounded-full mb-4"
@@ -397,7 +404,7 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
             </div>
           </div>
 
-          {/* Telemetry Ledger Rows */}
+          {/* Telemetry Rows */}
           <div className="pointer-events-none relative z-20 my-auto space-y-3 font-['JetBrains_Mono'] text-left">
             <div className="flex items-center justify-between py-2 border-b border-white/[0.07]">
               <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">TOTAL PIC HOURS</span>
@@ -425,7 +432,7 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
             </div>
           </div>
 
-          {/* Bottom High-Density Optical Barcode Panel */}
+          {/* Barcode */}
           <div className="pointer-events-none relative z-20 space-y-2">
             <div className="w-full py-2.5 px-3 rounded-xl bg-black/50 border border-white/[0.08] flex items-center justify-between">
               <div
@@ -447,7 +454,7 @@ const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
         </div>
       </div>
 
-      {/* Ambient Flip Indicator Below Chassis */}
+      {/* Indicator */}
       <div className="pointer-events-none mt-3 flex items-center gap-2 font-['Inter'] text-[8px] uppercase tracking-[0.22em] text-[#8E887E]">
         <span className="w-1.5 h-1.5 rounded-full bg-[#CBB079] animate-pulse" />
         <span>CLICK BADGE TO FLIP 180°</span>

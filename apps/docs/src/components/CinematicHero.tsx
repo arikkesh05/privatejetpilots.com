@@ -818,6 +818,14 @@ export const CinematicHero: React.FC = () => {
                 >
                   <span className="pointer-events-none select-none">GET YOUR PJP ID</span>
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('pjp:open-fbo-scanner'))}
+                  className="px-4 py-2 sm:px-6 sm:py-3 rounded-sm border border-[#CBB079]/50 hover:border-[#FFD700] bg-black/60 text-[#FFD700] font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all hover:bg-[#FFD700]/10 active:scale-95 cursor-pointer select-none"
+                >
+                  <span className="pointer-events-none select-none">FBO TERMINAL SIMULATOR ↗</span>
+                </button>
               </div>
             </div>
 

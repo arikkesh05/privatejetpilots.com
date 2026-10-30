@@ -17,6 +17,7 @@
     "@pjp/ui": "workspace:*",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
+    "@supabase/supabase-js": "^2.118.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.20",
     "lucide-react": "^1.16.0",
