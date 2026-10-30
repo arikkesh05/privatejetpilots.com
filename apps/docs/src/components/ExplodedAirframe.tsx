@@ -156,6 +156,8 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
           return (
             <div
               key={service.id}
+              data-actionable
+              role="button"
               className={`js-floating-card relative group cursor-pointer transition-all duration-500 ease-out p-2.5 sm:p-4 lg:p-4.5 rounded-xl sm:rounded-2xl will-change-transform overflow-hidden ${
                 isSelected
                   ? 'smoked-gold-pod-active scale-[1.02] sm:scale-[1.03]'
@@ -383,6 +385,8 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
           return (
             <div
               key={service.id}
+              data-actionable
+              role="button"
               className={`js-floating-card relative group cursor-pointer transition-all duration-500 ease-out p-2.5 sm:p-4 lg:p-4.5 rounded-xl sm:rounded-2xl will-change-transform overflow-hidden ${
                 isSelected
                   ? 'smoked-gold-pod-active scale-[1.02] sm:scale-[1.03]'

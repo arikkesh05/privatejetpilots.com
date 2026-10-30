@@ -20,7 +20,7 @@ export const CinematicHero: React.FC = () => {
 
     const ctx = gsap.context(() => {
       // 1. Initial State Setup
-      gsap.set('.js-airframe-stage', { yPercent: 130, scale: 1.15, autoAlpha: 0 });
+      gsap.set('.js-airframe-stage', { yPercent: 130, scale: 1.15, autoAlpha: 0, pointerEvents: 'none' });
       gsap.set('.js-jet-shadow', { scale: 1.3, opacity: 0.05, filter: 'blur(30px)' });
       gsap.set('.js-solid-jet', { opacity: 1 });
       gsap.set('.js-blueprint-layer', { opacity: 0 });
@@ -60,7 +60,7 @@ export const CinematicHero: React.FC = () => {
         clipPath: 'inset(0% 100% 0% 0%)',
       });
 
-      // Window resting stage & typography (Strictly layered at z-35)
+      // Window resting stage & typography (Strictly layered at z-[35])
       gsap.set('.js-editorial-flanks', { autoAlpha: 1 });
       gsap.set('.js-editorial-left', { x: 0, autoAlpha: 1 });
       gsap.set('.js-editorial-right', { x: 0, autoAlpha: 1 });
@@ -70,7 +70,7 @@ export const CinematicHero: React.FC = () => {
       gsap.set('.js-window-stage', { scale: 1, autoAlpha: 1, xPercent: 0, z: 0 });
 
       // Act 2: Digital ID Live Specimen Choreography Initial States
-      gsap.set('.js-act2-headline', { autoAlpha: 0 });
+      gsap.set('.js-act2-headline', { autoAlpha: 0, pointerEvents: 'none' });
       gsap.set('.js-badge-text', { x: -60, autoAlpha: 0 });
       gsap.set('.js-badge-card', { y: -130, rotateZ: -6, scale: 0.9, autoAlpha: 0 });
       gsap.set('.js-corner-telemetry', { autoAlpha: 1 });
@@ -193,7 +193,7 @@ export const CinematicHero: React.FC = () => {
       // ── ACT 2: PJP DIGITAL ID ENTERS WITH LANYARD PHYSICS (0.31 -> 0.38) ──
       tl.to(
         '.js-act2-headline',
-        { autoAlpha: 1, duration: 0.02 },
+        { autoAlpha: 1, pointerEvents: 'auto', duration: 0.02 },
         0.31
       );
 
@@ -226,18 +226,19 @@ export const CinematicHero: React.FC = () => {
 
       tl.to(
         ['.js-act2-headline', '.js-corner-telemetry', '.js-bottom-telemetry'],
-        { autoAlpha: 0, duration: 0.03 },
+        { autoAlpha: 0, pointerEvents: 'none', duration: 0.03 },
         0.47
       );
 
       // ── ACT 2.8: UNCLUTTERED JET ARRIVAL & TOUCHDOWN (0.48 -> 0.62) ──
       tl.fromTo(
         '.js-airframe-stage',
-        { yPercent: 130, scale: 1.15, autoAlpha: 0 },
+        { yPercent: 130, scale: 1.15, autoAlpha: 0, pointerEvents: 'none' },
         {
           yPercent: 0,
           scale: 0.98,
           autoAlpha: 1,
+          pointerEvents: 'auto',
           duration: 0.16,
           ease: 'power2.out',
         },
@@ -341,7 +342,7 @@ export const CinematicHero: React.FC = () => {
       // ── ACT 4: SMOOTH RUNWAY EXIT INTO ECOSYSTEM SECTION (0.88 -> 1.00) ──
       tl.to(
         ['.js-flank-left', '.js-flank-right', '.js-airframe-stage'],
-        { autoAlpha: 0, y: -40, duration: 0.12, ease: 'power2.in' },
+        { autoAlpha: 0, y: -40, pointerEvents: 'none', duration: 0.12, ease: 'power2.in' },
         0.88
       );
     }, pinRef.current);
@@ -394,8 +395,8 @@ export const CinematicHero: React.FC = () => {
           />
         </div>
 
-        {/* ── LAYER 1 (z-15): THE HUD RADAR VECTOR SKY NARRATIVE ── */}
-        <div className="js-sky-narrative pointer-events-none absolute inset-0 z-15 flex flex-col justify-center px-4 sm:px-8 lg:px-20 max-w-7xl mx-auto overflow-hidden pt-14 sm:pt-0">
+        {/* ── LAYER 1 (z-[15]): THE HUD RADAR VECTOR SKY NARRATIVE ── */}
+        <div className="js-sky-narrative pointer-events-none absolute inset-0 z-[15] flex flex-col justify-center px-4 sm:px-8 lg:px-20 max-w-7xl mx-auto overflow-hidden pt-14 sm:pt-0">
           
           <div
             className="absolute inset-0 pointer-events-none opacity-15"
@@ -608,7 +609,7 @@ export const CinematicHero: React.FC = () => {
         </div>
 
         {/* ── LAYER 2 (z-20): EXPLODED AIRFRAME ASSEMBLY STAGE ── */}
-        <div className="js-airframe-stage pointer-events-auto absolute inset-0 z-20 flex items-center justify-center will-change-transform">
+        <div className="js-airframe-stage pointer-events-none absolute inset-0 z-20 flex items-center justify-center will-change-transform">
           <ExplodedAirframe
             activeServiceId={activeService?.id}
             onSelectService={(service) => setActiveService(service)}
@@ -664,10 +665,9 @@ export const CinematicHero: React.FC = () => {
           />
         </div>
 
-        {/* ── LAYER 4 (z-35): ASYMMETRIC JESKO-STYLE EDITORIAL TYPOGRAPHY & SCROLL PILL ── */}
+        {/* ── LAYER 4 (z-[35]): ASYMMETRIC JESKO-STYLE EDITORIAL TYPOGRAPHY & SCROLL PILL ── */}
         <div
-          className="js-editorial-flanks pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-8 lg:p-16 select-none"
-          style={{ zIndex: 35 }}
+          className="js-editorial-flanks pointer-events-none absolute inset-0 z-[35] flex flex-col justify-between p-4 sm:p-8 lg:p-16 select-none"
         >
           {/* Safe Nav Clearance */}
           <div className="h-14 sm:h-16" />
@@ -730,12 +730,12 @@ export const CinematicHero: React.FC = () => {
           </div>
         </div>
 
-        {/* ── LAYER 5 (z-35): ACT 2 ARRIVAL - PJP DIGITAL ID LIVE SPECIMEN ── */}
-        <div className="js-act2-headline pointer-events-none absolute inset-0 z-35 flex items-center justify-center px-4 sm:px-10 lg:px-16 opacity-0 pt-12 lg:pt-0">
+        {/* ── LAYER 5 (z-[38]): ACT 2 ARRIVAL - PJP DIGITAL ID LIVE SPECIMEN ── */}
+        <div className="js-act2-headline pointer-events-none absolute inset-0 z-[38] flex items-center justify-center px-4 sm:px-10 lg:px-16 opacity-0 pt-12 lg:pt-0">
           <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-6 lg:gap-16">
             
             {/* Left Column: Specimen Narrative & Editorial Typography */}
-            <div className="js-badge-text pointer-events-auto flex-1 max-w-xl text-left will-change-transform">
+            <div className="js-badge-text pointer-events-auto flex-1 max-w-xl text-left will-change-transform select-none">
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#CBB079]/10 border border-[#CBB079]/30 mb-2 sm:mb-6">
                 <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#FFD700] animate-pulse" />
                 <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#E0CCA0] font-semibold">
@@ -800,30 +800,30 @@ export const CinematicHero: React.FC = () => {
               </div>
 
               {/* Action Buttons styled with PJP design system tokens */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="relative z-50 flex flex-wrap items-center gap-3 pointer-events-auto">
                 <button
                   type="button"
                   style={{
                     background: 'linear-gradient(135deg, #FFE27D 0%, #FFD700 60%, #F59E0B 100%)',
                     boxShadow: '0 4px 20px rgba(255, 215, 0, 0.3)',
                   }}
-                  className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm text-black font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all hover:scale-[1.02] active:scale-95"
+                  className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm text-black font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
                   onClick={() => window.dispatchEvent(new CustomEvent('pjp:open-badge'))}
                 >
-                  OPEN FULL BADGE ↗
+                  <span className="pointer-events-none select-none">OPEN FULL BADGE ↗</span>
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm border border-[#CBB079]/30 hover:border-[#CBB079]/70 text-[#E0CCA0] font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] transition-all hover:bg-white/[0.04]"
+                  className="px-4 py-2 sm:px-7 sm:py-3 rounded-sm border border-[#CBB079]/30 hover:border-[#CBB079]/70 text-[#E0CCA0] font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] transition-all hover:bg-white/[0.04] cursor-pointer select-none"
                 >
-                  GET YOUR PJP ID
+                  <span className="pointer-events-none select-none">GET YOUR PJP ID</span>
                 </button>
               </div>
             </div>
 
             {/* Right Column: Interactive 3D Lanyard Hanging Ramp Specimen Badge */}
             <div
-              className="js-badge-card pointer-events-auto relative will-change-transform scale-[0.78] sm:scale-90 lg:scale-100 origin-top lg:origin-center mt-2 lg:mt-0"
+              className="js-badge-card pointer-events-auto relative z-50 will-change-transform scale-[0.78] sm:scale-90 lg:scale-100 origin-top lg:origin-center mt-2 lg:mt-0"
               style={{ perspective: '1600px' }}
             >
               <InteractiveLanyardBadge mode="hero" pilot={pilotProfile ?? undefined} /> 
@@ -848,7 +848,7 @@ export const CinematicHero: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setActiveService(null)}
-                  className="font-mono text-xs text-white/50 hover:text-white uppercase tracking-wider px-2 py-1 rounded hover:bg-white/5 transition-colors"
+                  className="font-mono text-xs text-white/50 hover:text-white uppercase tracking-wider px-2 py-1 rounded hover:bg-white/5 transition-colors cursor-pointer select-none"
                 >
                   [ CLOSE ✕ ]
                 </button>
@@ -877,13 +877,13 @@ export const CinematicHero: React.FC = () => {
             <div className="space-y-3 pt-6 border-t border-white/10">
               <button
                 onClick={handleScrollToEcosystem}
-                className="w-full py-3.5 bg-[#FFD700] hover:bg-[#ffe27d] text-black font-bold text-xs uppercase tracking-[0.2em] transition-all rounded-sm shadow-[0_4px_20px_rgba(255,215,0,0.3)] font-mono"
+                className="w-full py-3.5 bg-[#FFD700] hover:bg-[#ffe27d] text-black font-bold text-xs uppercase tracking-[0.2em] transition-all rounded-sm shadow-[0_4px_20px_rgba(255,215,0,0.3)] font-mono cursor-pointer select-none"
               >
                 Inspect Ecosystem Matrix ↓
               </button>
               <button
                 onClick={() => setActiveService(null)}
-                className="w-full py-2.5 bg-transparent hover:bg-white/5 text-white/60 hover:text-white font-mono text-[10px] uppercase tracking-[0.2em] transition-colors rounded-sm"
+                className="w-full py-2.5 bg-transparent hover:bg-white/5 text-white/60 hover:text-white font-mono text-[10px] uppercase tracking-[0.2em] transition-colors rounded-sm cursor-pointer select-none"
               >
                 Return to Airframe View
               </button>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mona+Sans:ital,wght@0,600;0,700;0,800;0,900;1,700&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,6 +40,35 @@
     outline: 2px solid #cbb079;
     outline-offset: 2px;
   }
+}
+
+/* =========================================================================
+   GLOBAL INTERACTIVE HIT-TARGET PROTECTION
+   Ensures child text/icons inside buttons never intercept clicks or show I-beam
+   ========================================================================= */
+
+button,
+[role="button"],
+a,
+[data-actionable],
+.js-act2-button,
+.js-flank-card,
+.js-airframe-card {
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+button *,
+[role="button"] *,
+a *,
+[data-actionable] *,
+.js-act2-button *,
+.js-flank-card *,
+.js-airframe-card * {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
 /* =========================================================================
@@ -192,6 +223,44 @@
 .font-telemetry-lg,
 .font-mono {
   font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   PJP // LUXURY AVIONICS TYPOGRAPHY
+   ========================================================================= */
+
+.font-badge-name {
+  font-family: 'Mona Sans', 'Inter', -apple-system, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-feature-settings: 'tnum' 1;
+}
+
+.font-badge-header {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.font-badge-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-avionics {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-hud-header {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: reduce) {

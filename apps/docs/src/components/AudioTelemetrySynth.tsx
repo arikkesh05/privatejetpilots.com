@@ -60,7 +60,7 @@ export function AudioTelemetrySynth({
 
         {/* Dual-waveform oscilloscope */}
         <div className="w-full lg:w-96 h-12 bg-charcoal-black/90 rounded border border-champagne-hairline relative overflow-hidden flex items-center px-3 py-1">
-          <canvas className="w-full h-full block" height={44} ref={canvasRef} width={380} />
+          <canvas className="w-full h-full block pointer-events-none" height={44} ref={canvasRef} width={380} />
           <div className="absolute right-2 bottom-1 font-telemetry-sm text-[9px] text-champagne/50 pointer-events-none">
             48 kHz PCM
           </div>

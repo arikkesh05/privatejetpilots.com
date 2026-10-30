@@ -19,6 +19,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 30, opacity: 0 });
   const [, setTick] = useState(0);
+  const [isTransmitting, setIsTransmitting] = useState(false);
   const lastCycleRef = useRef<number>(Math.floor(Date.now() / 30000));
 
   const deriveTokenHash = (cycle: number): string => {
@@ -66,8 +67,23 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
   };
 
   const handleFlip = (e: React.MouseEvent) => {
+    // Do not flip if user clicked inside an interactive button
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[data-no-flip="true"]')) {
+      return;
+    }
     e.stopPropagation();
     setIsFlipped((prev) => !prev);
+  };
+
+  const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isTransmitting) return;
+    setIsTransmitting(true);
+    setTimeout(() => {
+      setIsTransmitting(false);
+    }, 1800);
   };
 
   const cardWidth = mode === 'modal' ? '356px' : '332px';
@@ -115,24 +131,14 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
             </linearGradient>
           </defs>
 
-          {/* Left Ribbon */}
           <path d="M26 0H54L58 84H30L26 0Z" fill="url(#lanyardFabric)" />
-          {/* Right Ribbon Fold */}
           <path d="M62 0H34L30 84H58L62 0Z" fill="url(#lanyardFabric)" opacity="0.92" />
-          {/* Center Gold Embroidered Stripe */}
           <line x1="44" y1="0" x2="44" y2="84" stroke="url(#goldStitch)" strokeWidth="1.5" strokeDasharray="3 2" />
-          {/* Side Edges */}
           <line x1="30" y1="0" x2="30" y2="84" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
           <line x1="58" y1="0" x2="58" y2="84" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-
-          {/* Gunmetal Crimp Buckle */}
           <rect x="23" y="80" width="42" height="12" rx="3" fill="url(#gunmetalHardware)" stroke="#0E1015" strokeWidth="1" />
           <line x1="28" y1="86" x2="60" y2="86" stroke="#0A0B0E" strokeWidth="1.5" opacity="0.8" />
-
-          {/* Swivel D-Ring */}
           <path d="M35 91 C35 104, 53 104, 53 91" stroke="url(#gunmetalHardware)" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-
-          {/* Polycarbonate Retaining Tab */}
           <rect x="37.5" y="98" width="13" height="22" rx="4" fill="url(#gunmetalHardware)" stroke="#0A0B0E" strokeWidth="1" />
           <circle cx="44" cy="112" r="2.5" fill="#0A0C0F" />
         </svg>
@@ -169,12 +175,13 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
+            pointerEvents: isFlipped ? 'none' : 'auto',
             background: 'linear-gradient(170deg, #131720 0%, #0D0F15 50%, #07090D 100%)',
             boxShadow:
               '0 30px 80px -15px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.09), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 0 0 1px rgba(203,176,121,0.22)',
           }}
         >
-          {/* Dynamic Aeronautical Chevrons (Vector Graphics Layer) */}
+          {/* Dynamic Aeronautical Chevrons */}
           <div className="pointer-events-none absolute inset-0 z-0 opacity-40">
             <svg className="w-full h-full" viewBox="0 0 356 516" fill="none" preserveAspectRatio="none">
               <path d="M-40 180 L280 40 L390 90 L-40 280 Z" fill="url(#chevronNavy)" />
@@ -204,8 +211,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           />
 
           {/* Top Slot & Header Bar */}
-          <div className="relative z-20 flex flex-col items-center">
-            {/* Lanyard Hole Cutout */}
+          <div className="pointer-events-none relative z-20 flex flex-col items-center">
             <div
               className="w-16 h-2.5 rounded-full mb-4"
               style={{
@@ -235,16 +241,14 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           </div>
 
           {/* Centerpiece: Squircle Aviator Portrait with Gold Bezel */}
-          <div className="relative z-20 flex flex-col items-center text-center my-auto py-1">
+          <div className="pointer-events-none relative z-20 flex flex-col items-center text-center my-auto py-1">
             <div className="relative mb-4">
-              {/* Gold/Titanium Bezel Frame */}
               <div
                 className="w-36 h-36 rounded-2xl p-[2px] shadow-[0_12px_32px_rgba(0,0,0,0.85)]"
                 style={{
                   background: 'linear-gradient(135deg, #CBB079 0%, #4A3E25 45%, #CBB079 70%, #1A1710 100%)',
                 }}
               >
-                {/* Inner Recessed Image Container */}
                 <div className="w-full h-full rounded-[14px] overflow-hidden bg-[#0A0D11] relative">
                   <img
                     src={data.portraitUrl}
@@ -252,7 +256,6 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
                     className="w-full h-full object-cover"
                     style={{ objectPosition: 'center 15%' }}
                   />
-                  {/* Subtle edge vignette */}
                   <div
                     className="pointer-events-none absolute inset-0"
                     style={{
@@ -262,10 +265,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
                 </div>
               </div>
 
-              {/* Laser-Etched Gold FAA Ramp Seal */}
-              <div
-                className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-[#0E1117] border border-[#CBB079]/70 flex items-center gap-1 shadow-lg"
-              >
+              <div className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-[#0E1117] border border-[#CBB079]/70 flex items-center gap-1 shadow-lg">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#CBB079]" />
                 <span className="font-['JetBrains_Mono'] text-[8px] font-bold text-[#E5D5BA] tracking-wider">
                   FAA • ATP
@@ -273,7 +273,6 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
               </div>
             </div>
 
-            {/* Pilot Identity Typography */}
             <h3 className="font-['Mona_Sans',sans-serif] text-[23px] font-black tracking-[-0.02em] text-[#EDE8DF] uppercase leading-none">
               {data.name}
             </h3>
@@ -299,8 +298,8 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           </div>
 
           {/* Bottom Dock: Dynamic Token & Scannable QR */}
-          <div className="relative z-20 pt-3 border-t border-white/[0.08] flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+          <div className="relative z-40 flex items-center justify-between w-full pt-2 mt-auto">
+            <div className="flex items-center gap-2.5 flex-shrink-0 pointer-events-none">
               <div className="w-9 h-9 rounded-lg bg-white p-1 flex items-center justify-center shadow-md">
                 <svg className="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h4v2h-4v-2zm4-2h2v2h-2v-2zm-6 2h2v2h-2v-2zm6-4h2v2h-2v-2z" />
@@ -312,8 +311,35 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
               </div>
             </div>
 
-            <div className="px-3 py-1 rounded-full bg-white/[0.04] border border-[#CBB079]/30 font-['Inter'] text-[8px] font-semibold uppercase tracking-[0.2em] text-[#CBB079]">
-              NFC READY
+            <div
+              data-no-flip="true"
+              className="relative z-50 flex-shrink-0 pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {isTransmitting && (
+                <span className="absolute -inset-1 rounded-full bg-emerald-500/30 animate-ping pointer-events-none" />
+              )}
+              <button
+                type="button"
+                data-no-flip="true"
+                onClick={handleNfcTap}
+                onMouseDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleNfcTap(e);
+                  }
+                }}
+                className="relative z-10 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-full bg-[#0a0d14] border border-[#2a3441] hover:border-emerald-500/60 active:scale-95 transition-all cursor-pointer select-none shadow-md"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pointer-events-none" />
+                <span className="text-[10px] tracking-wider font-mono font-semibold text-slate-200 pointer-events-none">
+                  {isTransmitting ? 'TRANSMITTING...' : 'NFC READY'}
+                </span>
+              </button>
             </div>
           </div>
         </div>
@@ -326,6 +352,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
+            pointerEvents: isFlipped ? 'auto' : 'none',
             transform: 'rotateY(180deg)',
             background: 'linear-gradient(170deg, #131720 0%, #0D0F15 50%, #07090D 100%)',
             boxShadow:
@@ -333,7 +360,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           }}
         >
           {/* Top Magnetic Flight Crew Stripe */}
-          <div className="relative z-20">
+          <div className="pointer-events-none relative z-20">
             <div
               className="w-16 h-2.5 mx-auto rounded-full mb-4"
               style={{
@@ -353,7 +380,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           </div>
 
           {/* Telemetry Ledger Rows */}
-          <div className="relative z-20 my-auto space-y-3 font-['JetBrains_Mono'] text-left">
+          <div className="pointer-events-none relative z-20 my-auto space-y-3 font-['JetBrains_Mono'] text-left">
             <div className="flex items-center justify-between py-2 border-b border-white/[0.07]">
               <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">TOTAL PIC HOURS</span>
               <span className="text-xs text-[#EDE8DF] font-bold">{data.hours.total.toLocaleString()} HRS</span>
@@ -381,7 +408,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
           </div>
 
           {/* Bottom High-Density Optical Barcode Panel */}
-          <div className="relative z-20 space-y-2">
+          <div className="pointer-events-none relative z-20 space-y-2">
             <div className="w-full py-2.5 px-3 rounded-xl bg-black/50 border border-white/[0.08] flex items-center justify-between">
               <div
                 className="h-6 flex-1 mr-3 opacity-85"
@@ -403,7 +430,7 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
       </div>
 
       {/* Ambient Flip Indicator Below Chassis */}
-      <div className="mt-3 flex items-center gap-2 font-['Inter'] text-[8px] uppercase tracking-[0.22em] text-[#8E887E]">
+      <div className="pointer-events-none mt-3 flex items-center gap-2 font-['Inter'] text-[8px] uppercase tracking-[0.22em] text-[#8E887E]">
         <span className="w-1.5 h-1.5 rounded-full bg-[#CBB079] animate-pulse" />
         <span>CLICK BADGE TO FLIP 180°</span>
         <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse" />

@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { InteractiveLanyardBadge } from './InteractiveLanyardBadge';
 import { PilotCredential, DEFAULT_PILOT_SPECIMEN } from '../types/credential';
 import { usePilotProfile } from '../hooks/usePilotProfile';
+import { exportPassFile } from '../lib/walletPass';
 
 export interface RampBadgeModalProps {
   isOpen?: boolean;
@@ -17,6 +18,7 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
   const data = pilot ?? liveProfile ?? DEFAULT_PILOT_SPECIMEN;
   const [internalOpen, setInternalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [walletPreviewOpen, setWalletPreviewOpen] = useState(false);
   const [, setTick] = useState(0);
 
   const remainingSeconds = 30 - (Math.floor(Date.now() / 1000) % 30);
@@ -30,6 +32,10 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
     } else {
       setInternalOpen(false);
     }
+  };
+
+  const handleExportWallet = () => {
+    setWalletPreviewOpen(true);
   };
 
   useEffect(() => {
@@ -215,7 +221,7 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => alert('NFC Credential Pass exported to Apple Wallet')}
+                onClick={handleExportWallet}
                 className="font-badge-header flex-1 py-3 px-4 rounded-xl bg-[#4ADE80]/15 hover:bg-[#4ADE80]/25 border border-[#4ADE80]/50 text-[10px] text-[#EDE8DF] uppercase tracking-[0.12em] font-semibold transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4 text-[#EDE8DF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,6 +242,80 @@ export function RampBadgeModal({ isOpen: controlledIsOpen, onClose: controlledOn
             </div>
           </div>
         </div>
+
+        {/* Apple Wallet Pass Preview Sheet */}
+        {walletPreviewOpen && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[10000] flex items-end justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+          >
+            <div
+              className="relative w-full max-w-md rounded-2xl bg-[#0a0d11] border border-amber-500/30 p-6 shadow-2xl animate-in slide-in-from-bottom duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <span className="font-bold text-[#CBB079] text-xs uppercase tracking-[0.2em] block">PRIVATE JET PILOTS</span>
+                  <span className="font-semibold text-[#EDE8DF] text-sm">Executive Ramp Pass</span>
+                  <span className="font-mono text-[10px] text-[#8E887E] mt-1">{data.name}</span>
+                  <span className="font-mono text-[9px] text-[#CBB079]/70 mt-0.5">{data.role}</span>
+                </div>
+                <button
+                  onClick={() => setWalletPreviewOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.10] flex items-center justify-center text-[#EDE8DF] hover:bg-white/[0.10] transition-colors"
+                >
+                  <span className="text-[10px]">✕</span>
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
+                  <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">FAA CERT</span>
+                  <span className="font-mono text-xs text-[#EDE8DF]">{data.faaCert}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
+                  <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">MEDICAL CLASS</span>
+                  <span className="font-mono text-xs text-[#EDE8DF]">{data.medicalClass}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
+                  <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">HOME BASE</span>
+                  <span className="font-mono text-xs text-[#EDE8DF]">{data.homeBaseIcao}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
+                  <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">CLEARANCE LEVEL</span>
+                  <span className="font-mono text-xs text-[#6EE7B7]">{data.clearanceLevel}</span>
+                </div>
+              </div>
+
+              {/* Barcode */}
+              <div className="bg-black rounded-lg p-2 border border-white/[0.08] mb-6">
+                <div
+                  className="w-full h-10 flex items-center justify-between"
+                  style={{
+                    backgroundImage:
+                      'repeating-linear-gradient(90deg, #EDE8DF 0px, #EDE8DF 2px, transparent 2px, transparent 4px, #EDE8DF 4px, #EDE8DF 6px, transparent 6px, transparent 10px)',
+                  }}
+                >
+                  <span className="font-mono text-[9px] text-[#CBB079]">{data.passId}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-t border-white/[0.05]">
+                  <span className="text-[9px] uppercase tracking-wider text-[#8E887E]">CRYPTO CHECKSUM</span>
+                  <span className="font-mono text-[9px] text-[#8E887E]">0x8A4F...91C0</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  exportPassFile(data);
+                  setWalletPreviewOpen(false);
+                }}
+                className="w-full py-3 rounded-xl bg-[#4ADE80]/15 border border-[#4ADE80]/50 text-[#4ADE80] text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#4ADE80]/30 transition-all flex items-center justify-center gap-2"
+              >
+                <span className="text-[9px]">ADD TO APPLE WALLET</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>,
     document.body

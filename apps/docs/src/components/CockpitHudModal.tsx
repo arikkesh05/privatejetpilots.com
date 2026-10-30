@@ -162,7 +162,7 @@ export function CockpitHudModal({
       {/* Midsection: responsive cockpit telemetry panels */}
       <div className="relative z-20 flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-4 lg:gap-6 py-4 sm:py-6 my-auto select-none">
         {/* Left instrument ladder: pitch, airspeed, Mach, altimeter */}
-        <div className="glass-cockpit p-4 sm:p-5 rounded-lg border border-champagne-hairline w-full lg:max-w-xs pointer-events-auto backdrop-blur-xl">
+        <div className="glass-cockpit p-4 sm:p-5 rounded-lg border border-champagne-hairline w-full lg:max-w-xs pointer-events-none backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-3">
             <span className="font-mono text-[10px] sm:text-[11px] text-champagne uppercase tracking-[0.2em] font-semibold">
               PRIMARY FLIGHT VECTOR
@@ -172,7 +172,7 @@ export function CockpitHudModal({
           {primaryTelemetry.map((row, index) => (
             <div
               key={row.label}
-              className={`flex items-center justify-between gap-2 py-2 ${
+              className={`flex items-center justify-between gap-2 py-2 pointer-events-none ${
                 index === primaryTelemetry.length - 1 ? 'pt-2' : 'border-b border-outline-variant/20'
               }`}
             >
@@ -201,7 +201,7 @@ export function CockpitHudModal({
         </div>
 
         {/* Right systems ladder: aircraft envelope & systems */}
-        <div className="glass-cockpit p-4 sm:p-5 rounded-lg border border-champagne-hairline w-full lg:max-w-xs lg:justify-self-end pointer-events-auto backdrop-blur-xl">
+        <div className="glass-cockpit p-4 sm:p-5 rounded-lg border border-champagne-hairline w-full lg:max-w-xs lg:justify-self-end pointer-events-none backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-3">
             <span className="font-mono text-[10px] sm:text-[11px] text-champagne uppercase tracking-[0.2em] font-semibold">
               AIRCRAFT ENVELOPE
@@ -211,7 +211,7 @@ export function CockpitHudModal({
           {ENVELOPE_TELEMETRY.map((row, index) => (
             <div
               key={row.label}
-              className={`flex items-center justify-between gap-2 py-2 ${
+              className={`flex items-center justify-between gap-2 py-2 pointer-events-none ${
                 index === ENVELOPE_TELEMETRY.length - 1 ? 'pt-2' : 'border-b border-outline-variant/20'
               }`}
             >
