@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { PilotCredential, DEFAULT_PILOT_SPECIMEN } from '../types/credential';
 
 const DEFAULT_PILOT_UUID = 'eb90e6e9-88d0-4b2e-ad0a-1e4011a839ab';
@@ -16,6 +16,13 @@ export function usePilotProfile(explicitPilotId?: string) {
       try {
         setLoading(true);
         setError(null);
+
+        if (!isSupabaseConfigured) {
+          if (isMounted) {
+            setProfile(DEFAULT_PILOT_SPECIMEN);
+          }
+          return;
+        }
 
         // 1. Resolve target ID: Explicit prop -> Authenticated user -> Specimen fallback
         let targetId = explicitPilotId;
