@@ -1,3 +1,4 @@
+// apps/docs/src/components/ExplodedAirframe.tsx
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 
@@ -226,7 +227,7 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
         })}
       </div>
 
-      {/* ── CENTER AIRFRAME STAGE (Decoupled on mobile so it never gets crushed to 0px) ── */}
+      {/* ── CENTER AIRFRAME STAGE ── */}
       <div className="absolute lg:relative inset-0 lg:inset-auto z-20 flex-1 h-full lg:h-[85vh] max-h-[920px] max-w-[850px] mx-auto flex items-center justify-center scale-[0.80] sm:scale-90 lg:scale-100 transition-transform pointer-events-none lg:pointer-events-auto">
         {/* Dynamic Contact Ground Shadow */}
         <div
@@ -237,14 +238,14 @@ export const ExplodedAirframe: React.FC<ExplodedAirframeProps> = ({
           }}
         />
 
-        {/* Interior Cabin Blueprint (Illuminates on separation) */}
+        {/* Interior Cabin Blueprint */}
         <img
           src="/jet-blueprint.png"
           alt="Cabin Architecture Blueprint"
           className="js-blueprint-layer absolute inset-0 z-10 h-full w-full object-contain pointer-events-none opacity-0"
         />
 
-        {/* Solid Intact Jet (100% deep black during Act 2) */}
+        {/* Solid Intact Jet */}
         <img
           src="/jet-exterior.png"
           alt="PJP Executive Jet Solid Shell"
