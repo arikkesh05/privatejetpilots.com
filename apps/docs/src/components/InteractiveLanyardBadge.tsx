@@ -76,11 +76,29 @@ export const InteractiveLanyardBadge: React.FC<InteractiveLanyardBadgeProps> = (
     setIsFlipped((prev) => !prev);
   };
 
-  const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
+  const chirp = () => {
+  /* NFC handshake chirp using Web Audio API */
+  if (typeof window === 'undefined' || !window.AudioContext) return;
+  const ctx = new AudioContext();
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+  oscillator.type = 'triangle';
+  oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.12);
+  gain.gain.setValueAtTime(0.1, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.12);
+};
+
+const handleNfcTap = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isTransmitting) return;
     setIsTransmitting(true);
+    chirp();  // NFC handshake chirp
     setTimeout(() => {
       setIsTransmitting(false);
     }, 1800);

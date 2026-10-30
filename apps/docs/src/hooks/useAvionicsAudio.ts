@@ -37,6 +37,8 @@ const TACTILE_CLICK_HZ = 1480;
 /** Whisper-soft: felt rather than heard, so a page of links never turns talkative. */
 const TACTILE_CLICK_GAIN = 0.045;
 
+const AVIONICS_AUDIO_STORAGE_KEY = 'pjp-avionics-audio-active';
+
 const ACTIVE_TOAST = 'Interaction sound on';
 const MUTED_TOAST = 'Interaction sound muted';
 
@@ -62,7 +64,14 @@ function createAudioContext(): AudioContext | null {
 export function useAvionicsAudio(reducedMotion: boolean): AvionicsAudio {
   /* Sound is opt-in. The deck is silent on load and stays that way until the
      operator asks for the tactile click. */
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.localStorage.getItem(AVIONICS_AUDIO_STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [toast, setToast] = useState(ACTIVE_TOAST);
   const [toastVisible, setToastVisible] = useState(false);
 
@@ -233,6 +242,12 @@ export function useAvionicsAudio(reducedMotion: boolean): AvionicsAudio {
   const toggle = useCallback(() => {
     setActive((current) => {
       const next = !current;
+
+      try {
+        window.localStorage.setItem(AVIONICS_AUDIO_STORAGE_KEY, String(next));
+      } catch {
+        /* silent fail on storage restriction */
+      }
 
       if (next) {
         ensureContext();
