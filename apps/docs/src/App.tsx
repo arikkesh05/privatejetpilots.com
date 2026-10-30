@@ -1,17 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, lazy, Suspense } from 'react';
 import { IcaoAvionicsTicker } from '@pjp/ui';
 import { HudNavDock } from './components/HudNavDock';
 import { CinematicHero } from './components/CinematicHero';
 import { NetworkRoles } from './components/NetworkRoles';
 import { ExecutiveFooter } from './components/ExecutiveFooter';
-import { CockpitHudModal } from './components/CockpitHudModal';
-import { FboScanModal } from './components/FboScanModal';
-import { RampBadgeModal } from './components/RampBadgeModal';
 import { useSmoothScroll } from './hooks/useSmoothScroll';
 import { useScrollReveals } from './hooks/useScrollReveals';
 import { useDeckHotkeys } from './hooks/useDeckHotkeys';
 import { useAvionicsAudio } from './hooks/useAvionicsAudio';
 import { useReducedMotion } from './hooks/useReducedMotion';
+
+// Dynamic lazy imports for heavy off-canvas interactive modals
+const CockpitHudModal = lazy(() =>
+  import('./components/CockpitHudModal').then((m) => ({ default: m.CockpitHudModal }))
+);
+const FboScanModal = lazy(() =>
+  import('./components/FboScanModal').then((m) => ({ default: m.FboScanModal }))
+);
+const RampBadgeModal = lazy(() =>
+  import('./components/RampBadgeModal').then((m) => ({ default: m.RampBadgeModal }))
+);
 
 export default function App(): React.JSX.Element {
   const [hudModalOpen, setHudModalOpen] = useState(false);
@@ -76,19 +84,20 @@ export default function App(): React.JSX.Element {
 
       <ExecutiveFooter />
 
-      <CockpitHudModal
-        open={hudModalOpen}
-        audioActive={audioActive}
-        canvasRef={canvasRef}
-        closeButtonRef={closeButtonRef}
-        onChirp={chirp}
-        onClose={handleCloseCockpit}
-        onDatalink={datalink}
-        onToggleAudio={toggleAudio}
-      />
-
-      <RampBadgeModal />
-      <FboScanModal />
+      <Suspense fallback={null}>
+        <CockpitHudModal
+          open={hudModalOpen}
+          audioActive={audioActive}
+          canvasRef={canvasRef}
+          closeButtonRef={closeButtonRef}
+          onChirp={chirp}
+          onClose={handleCloseCockpit}
+          onDatalink={datalink}
+          onToggleAudio={toggleAudio}
+        />
+        <RampBadgeModal />
+        <FboScanModal />
+      </Suspense>
     </div>
   );
 }
