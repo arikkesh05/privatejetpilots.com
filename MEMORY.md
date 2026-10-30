@@ -554,3 +554,37 @@ Scope: `apps/docs/src/components/ExplodedAirframe.tsx` **service cards only** (`
 **Verification:**
 - `pnpm --filter @pjp/docs typecheck` → exit 0
 - `pnpm --filter @pjp/docs build` → exit 0
+
+---
+
+### 2026-10-29 — Sprint 3 Complete: Apple Wallet Export & NFC Security
+
+**Scope:** `apps/docs/src/lib/walletPass.ts`, `apps/docs/src/components/InteractiveLanyardBadge.tsx`, `apps/docs/src/components/RampBadgeModal.tsx`, `apps/docs/src/components/CinematicHero.tsx`, `apps/docs/src/components/ExplodedAirframe.tsx`, `apps/docs/src/components/CockpitHudModal.tsx`, `apps/docs/src/components/AudioTelemetrySynth.tsx`, `apps/docs/src/index.css`
+
+**Changes applied:**
+
+1. **Apple Wallet PassKit Generation (`walletPass.ts`, new):**
+   - `generateAppleWalletPass(pilot: PilotCredential): string` — standard Apple Wallet pass.json manifest (formatVersion: 1, passTypeIdentifier: "pass.com.privatejetpilots.ramp", organizationName: "Private Jet Pilots", description: "Executive Ramp Pass")
+   - `storeCard` fields: pilot name/role, FAA cert, medical class, home base ICAO, clearance level
+   - Dynamic QR barcode encoding pilot ID + FAA cert + pass ID
+   - `exportPassFile(pilot: PilotCredential): void` — client-side browser download named `${pilot.name}_Ramp_Pass.json`
+   - Wired "EXPORT TO APPLE WALLET" button in `RampBadgeModal.tsx` → opens visualizer preview sheet, "ADD TO APPLE WALLET" triggers download + dismisses sheet
+
+2. **Scoped NFC Pulse Transmission (`InteractiveLanyardBadge.tsx`):**
+   - `isTransmitting` boolean state: 1.8s toggle on click
+   - Pulsing emerald radar ring (`animate-ping`) around NFC indicator during transmission
+   - Text changes to "TRANSMITTING..." during handshake
+   - `handleNfcTap(e)`: `e.stopPropagation()` + `e.preventDefault()` to prevent card-flip leakage
+   - NFC wrapper: `relative z-50 pointer-events-auto`, `translateZ(40px)`, `flex-shrink-0`, `onClick={(e) => e.stopPropagation()}`
+   - Button: solid `bg-[#0a0d14]` fill, `border border-[#2a3441]`, inner `<span>` children all `pointer-events-none`
+
+3. **Systemic Pointer-Events Resolution (`CockpitHudModal.tsx`, `AudioTelemetrySynth.tsx`, `index.css`):**
+   - `CockpitHudModal.tsx`: `glass-cockpit` panels (lines 165, 204) changed from `pointer-events-auto` → `pointer-events-none`; telemetry rows (`border-outline-variant/20`) at lines 175, 214 gained `pointer-events-none`
+   - `AudioTelemetrySynth.tsx`: canvas oscilloscope (line 63) gained `pointer-events-none`
+   - `index.css`: extended global hit-target rules to `[data-actionable]`, `.js-act2-button`, `.js-flank-card`, `.js-airframe-card` with `cursor: pointer !important` + `user-select: none !important` and `pointer-events: none !important` on all descendants
+   - `ExplodedAirframe.tsx`: left/right flank cards gained `data-actionable role="button"`
+   - `CockpitHudModal.tsx`: modal wrapper toggles `pointer-events-none` when closed (already present)
+
+**Verification:**
+- `pnpm --filter @pjp/docs typecheck` → exit 0
+- `pnpm --filter @pjp/docs build` → exit 0
