@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAvionicsAudio } from '../hooks/useAvionicsAudio';
+import { useFboStation } from '../hooks/useFboStation';
 
 interface PilotData {
   name: string;
@@ -17,6 +18,8 @@ interface ScanPayload {
   pilot?: PilotData;
   tokenHash?: string;
   cycle?: number;
+  icao?: string;
+  tailNumber?: string;
 }
 
 export const FboScanModal: React.FC = () => {
@@ -26,6 +29,10 @@ export const FboScanModal: React.FC = () => {
   const [loggedArrival, setLoggedArrival] = useState(false);
 
   const audio = useAvionicsAudio(false);
+
+  const targetIcao = payload?.icao || 'KTEB';
+  const targetTail = payload?.tailNumber;
+  const { station, loading: stationLoading } = useFboStation(targetIcao, targetTail);
 
   const handleOpen = useCallback((e: Event) => {
     const customEvent = e as CustomEvent<ScanPayload>;
@@ -97,7 +104,7 @@ export const FboScanModal: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#FFD700] animate-pulse" />
             <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#FFD700] font-bold">
-              FBO TERMINAL // KTEB RAMP VERIFICATION
+              FBO TERMINAL // {station.icao} RAMP VERIFICATION
             </span>
           </div>
           <button
@@ -138,12 +145,12 @@ export const FboScanModal: React.FC = () => {
 
           {scanState === 'verified' && (
             <div className="flex flex-col items-center gap-1.5 text-center">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D2218] border border-[#6EE7B7]/40 text-[#6EE7B7] font-mono text-x] uppercase tracking-wider font-bold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D2218] border border-[#6EE7B7]/40 text-[#6EE7B7] font-mono text-xs uppercase tracking-wider font-bold">
                 <span className="w-2 h-2 rounded-full bg-[#4ADE80] animate-ping" />
-                SIGNATURE VERIFIED // VALID CYCLE
+                SIGNATURE VERIFIED // {station.tier}
               </span>
               <p className="font-mono text-[9px] uppercase tracking-wider text-white/40 mt-1">
-                FAA AIRMEN REGISTRY RECORD #591,842 MATCH
+                {station.name} // SPOT: {station.assignedSpot}
               </p>
             </div>
           )}
@@ -160,12 +167,18 @@ export const FboScanModal: React.FC = () => {
             <span className="text-[#E0CCA0] font-bold">ATP #{pilot.faaCert}</span>
           </div>
           <div className="flex items-center justify-between py-2 border-b border-white/[0.08]">
-            <span className="text-[#8E887E] text-[10px] uppercase tracking-wider">RATINGS</span>
-            <span className="text-white font-bold">{pilot.typeRatings.join(' • ')}</span>
+            <span className="text-[#8E887E] text-[10px] uppercase tracking-wider">ASSIGNED RAMP</span>
+            <span className="text-[#FFE27D] font-bold">{stationLoading ? 'QUERYING...' : station.assignedSpot}</span>
           </div>
           <div className="flex items-center justify-between py-2 border-b border-white/[0.08]">
             <span className="text-[#8E887E] text-[10px] uppercase tracking-wider">RAMP CLEARANCE</span>
             <span className="text-[#6EE7B7] font-bold">{pilot.clearanceLevel}</span>
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-white/[0.08]">
+            <span className="text-[#8E887E] text-[10px] uppercase tracking-wider">SERVICES STATUS</span>
+            <span className="text-white/80">
+              JET-A: {station.jetAAvailable ? 'READY' : 'OFFLINE'} • GPU: {station.gpuRequested ? 'STAGED' : 'STANDBY'}
+            </span>
           </div>
           {payload?.tokenHash && (
             <div className="flex items-center justify-between py-2">
@@ -193,7 +206,7 @@ export const FboScanModal: React.FC = () => {
               disabled={loggedArrival}
               className={`flex-1 py-3 rounded font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all select-none ${
                 loggedArrival
-                  ? 'bg-emald-950/60 border border-emerald-500/50 text-emerald-300'
+                  ? 'bg-emerald-950/60 border border-emerald-500/50 text-emerald-300'
                   : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_4px_20px_rgba(16,185,129,0.3)] cursor-pointer'
               }`}
             >

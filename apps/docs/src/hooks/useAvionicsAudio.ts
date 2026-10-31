@@ -108,7 +108,7 @@ export function useAvionicsAudio(reducedMotion: boolean): AvionicsAudio {
     }
 
     if (contextRef.current.state === 'suspended') {
-      void contextRef.current.resume();
+      contextRef.current.resume().catch(() => {});
     }
 
     return contextRef.current;

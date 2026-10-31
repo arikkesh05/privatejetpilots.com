@@ -1,5 +1,6 @@
 import React, { useState, useRef, lazy, Suspense } from 'react';
 import { IcaoAvionicsTicker } from '@pjp/ui';
+import { AuthProvider } from './contexts/AuthContext';
 import { HudNavDock } from './components/HudNavDock';
 import { CinematicHero } from './components/CinematicHero';
 import { NetworkRoles } from './components/NetworkRoles';
@@ -19,6 +20,9 @@ const FboScanModal = lazy(() =>
 );
 const RampBadgeModal = lazy(() =>
   import('./components/RampBadgeModal').then((m) => ({ default: m.RampBadgeModal }))
+);
+const AuthModal = lazy(() =>
+  import('./components/AuthModal').then((m) => ({ default: m.AuthModal }))
 );
 
 export default function App(): React.JSX.Element {
@@ -64,40 +68,43 @@ export default function App(): React.JSX.Element {
   });
 
   return (
-    <div className="relative min-h-screen bg-charcoal-black text-on-surface selection:bg-champagne selection:text-charcoal-black">
-      <HudNavDock
-        audioActive={audioActive}
-        onOpenCockpit={handleOpenCockpit}
-        onToggleAudio={toggleAudio}
-      />
-
-      {/* Seamless vertical handoff from Stage 7 Hero -> Ecosystem Entry -> Apron Ticker */}
-      <main className="relative z-10 flex flex-col">
-        <CinematicHero />
-        <NetworkRoles />
-      </main>
-
-      {/* Pre-Apron Approach Ribbon */}
-      <div className="relative z-20 w-full">
-        <IcaoAvionicsTicker />
-      </div>
-
-      <ExecutiveFooter />
-
-      <Suspense fallback={null}>
-        <CockpitHudModal
-          open={hudModalOpen}
+    <AuthProvider>
+      <div className="relative min-h-screen bg-charcoal-black text-on-surface selection:bg-champagne selection:text-charcoal-black">
+        <HudNavDock
           audioActive={audioActive}
-          canvasRef={canvasRef}
-          closeButtonRef={closeButtonRef}
-          onChirp={chirp}
-          onClose={handleCloseCockpit}
-          onDatalink={datalink}
+          onOpenCockpit={handleOpenCockpit}
           onToggleAudio={toggleAudio}
         />
-        <RampBadgeModal />
-        <FboScanModal />
-      </Suspense>
-    </div>
+
+        {/* Seamless vertical handoff from Stage 7 Hero -> Ecosystem Entry -> Apron Ticker */}
+        <main className="relative z-10 flex flex-col">
+          <CinematicHero />
+          <NetworkRoles />
+        </main>
+
+        {/* Pre-Apron Approach Ribbon */}
+        <div className="relative z-20 w-full">
+          <IcaoAvionicsTicker />
+        </div>
+
+        <ExecutiveFooter />
+
+        <Suspense fallback={null}>
+          <CockpitHudModal
+            open={hudModalOpen}
+            audioActive={audioActive}
+            canvasRef={canvasRef}
+            closeButtonRef={closeButtonRef}
+            onChirp={chirp}
+            onClose={handleCloseCockpit}
+            onDatalink={datalink}
+            onToggleAudio={toggleAudio}
+          />
+          <RampBadgeModal />
+          <FboScanModal />
+          <AuthModal />
+        </Suspense>
+      </div>
+    </AuthProvider>
   );
 }
