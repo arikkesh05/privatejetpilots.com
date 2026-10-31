@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HudNavDockProps {
   /** Interaction-sound state; drives the toggle icon and accessible label. */
@@ -33,6 +34,28 @@ const ICON_CONTROL =
 export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNavDockProps) {
   const [activeId, setActiveId] = useState<string>('flight-deck');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const { user, isGuestMode, signOut } = useAuth();
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setProfileMenuOpen(false);
+    }
+    if (profileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [profileMenuOpen]);
 
   useEffect(() => {
     let frame = 0;
@@ -66,44 +89,27 @@ export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNav
         }
       }
 
-      setActiveId((prev) => (prev === nextId ? prev : nextId));
+      setActiveId((current) => (current === nextId ? current : nextId));
     };
 
-    const request = (): void => {
-      if (frame === 0) frame = window.requestAnimationFrame(sync);
+    const handleScroll = (): void => {
+      if (frame === 0) {
+        frame = window.requestAnimationFrame(sync);
+      }
     };
 
+    window.addEventListener('scroll', handleScroll, { passive: true });
     sync();
-    window.addEventListener('scroll', request, { passive: true });
-    window.addEventListener('resize', request, { passive: true });
 
     return () => {
-      if (frame !== 0) window.cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', request);
-      window.removeEventListener('resize', request);
+      window.removeEventListener('scroll', handleScroll);
+      if (frame !== 0) {
+        window.cancelAnimationFrame(frame);
+      }
     };
   }, []);
 
-  // Close mobile drawer automatically on Escape or desktop resize
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMobileMenuOpen(false);
-    };
-    const onResize = () => {
-      if (window.innerWidth >= 1280) setMobileMenuOpen(false);
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('resize', onResize);
-    };
-  }, [mobileMenuOpen]);
-
-  const navigateToStage = (stage: NavStage) => {
+  const navigateToStage = (stage: NavStage): void => {
     setMobileMenuOpen(false);
 
     if (stage.targetType === 'selector' && stage.selector) {
@@ -129,6 +135,11 @@ export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNav
     const scrollableHeroSpan = Math.max(heroEl.offsetHeight - window.innerHeight, 0);
     const targetTop = heroEl.offsetTop + scrollableHeroSpan * stage.heroFraction;
     window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  };
+
+  const handleOpenAuth = (mode: 'signin' | 'signup' = 'signin') => {
+    setMobileMenuOpen(false);
+    window.dispatchEvent(new CustomEvent('pjp:open-auth', { detail: { mode } }));
   };
 
   const handleRequestFlight = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -278,7 +289,7 @@ export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNav
 
         {/* Right Controls */}
         <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2.5 shrink-0">
-          {/* Audio Beacon — hidden on compact mobile so it never reads as ellipsis */}
+          {/* Audio Beacon */}
           <span
             aria-hidden="true"
             className="hud-beacon hidden md:inline-flex"
@@ -315,9 +326,72 @@ export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNav
             <span className="material-symbols-outlined text-[17px] sm:text-[18px]">flight</span>
           </button>
 
+          {/* Airman Access / In-Dock Sliding Capsule */}
+          <div className="relative hidden lg:block" ref={profileMenuRef}>
+            {isGuestMode ? (
+              <button
+                type="button"
+                onClick={() => handleOpenAuth('signin')}
+                className="inline-flex items-center px-4 py-2 rounded-full border border-[#CBB079]/40 bg-[#0B0E14]/80 text-[#CBB079] hover:text-[#FFE57F] hover:border-[#FFD700]/70 font-mono text-[10px] uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer shadow-[0_4px_16px_rgba(0,0,0,0.6)] active:scale-95"
+              >
+                AIRMEN SIGN IN
+              </button>
+            ) : (
+              <div
+                className={'flex items-center h-9 rounded-full border transition-all duration-200 ease-out bg-[#07090E]/95 backdrop-blur-xl ' + (
+                  profileMenuOpen
+                    ? 'border-[#FFD700]/70 shadow-[0_0_16px_rgba(203,176,121,0.2)] px-2 gap-1.5'
+                    : 'border-[#CBB079]/35 hover:border-[#FFD700]/60 shadow-[0_0_10px_rgba(203,176,121,0.06)] px-3 gap-1.5'
+                )}
+              >
+                {/* Callsign / Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setProfileMenuOpen((prev) => !prev)}
+                  aria-expanded={profileMenuOpen}
+                  className="flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-white hover:text-[#FFE57F] cursor-pointer transition-colors active:scale-95 py-0.5"
+                >
+                  <span className="text-[#CBB079] text-xs">✦</span>
+                  <span className="font-semibold uppercase tracking-wider text-white/95">
+                    {user?.fullName?.split(' ')[0] || 'AIRMAN'}
+                  </span>
+                  <span
+                    className={'material-symbols-outlined text-[14px] text-[#CBB079]/70 transition-transform duration-200 ' + (
+                      profileMenuOpen ? 'rotate-90 text-[#FFD700]' : ''
+                    )}
+                  >
+                    chevron_right
+                  </span>
+                </button>
+
+                {/* Inline Machined Instrument Strip */}
+                {profileMenuOpen && (
+                  <div className="flex items-center gap-1.5 animate-in fade-in duration-150 pl-1 border-l border-white/10">
+                    <span className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-[#CBB079] font-mono text-[9px] tracking-widest uppercase font-semibold">
+                      {user?.primaryBase || 'KTEB'}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setProfileMenuOpen(false);
+                        await signOut();
+                      }}
+                      title="Disconnect Flight Deck Session"
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#180A0A] hover:bg-red-950/60 border border-red-500/40 hover:border-red-500/70 text-red-300 hover:text-white font-mono text-[9px] tracking-[0.12em] uppercase transition-all duration-150 cursor-pointer active:scale-95"
+                    >
+                      <span className="material-symbols-outlined text-[11px]">power_settings_new</span>
+                      <span>DISCONNECT</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Desktop / Tablet Primary Action */}
           <a
-            className="hidden sm:inline-flex champagne-btn-solid rounded-full px-4 py-2 font-mono text-[10px] tracking-[0.2em] font-bold uppercase whitespace-nowrap active:scale-[0.97] transition-all"
+            className="hidden sm:inline-flex champagne-btn-solid rounded-full px-4 py-2 font-mono text-[10px] tracking-[0.2em] font-bold uppercase whitespace-nowrap active:scale-[0.97] transition-all cursor-pointer"
             href="#roles"
             onClick={handleRequestFlight}
           >
@@ -349,7 +423,6 @@ export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNav
               FLIGHT DECK NAVIGATION
             </span>
             <span className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-widest text-[#22c55e]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-pulse" />
               ONLINE
             </span>
           </div>
@@ -368,40 +441,48 @@ export function HudNavDock({ audioActive, onOpenCockpit, onToggleAudio }: HudNav
                       : 'border-white/[0.06] bg-white/[0.02] text-white/80 hover:border-white/20 hover:text-white'
                   }`}
                 >
-                  <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
-                    {stage.label}
-                  </span>
-                  <span className="font-mono text-[9px] tracking-[0.2em] text-[#CBB079]/75">
-                    SEC // {stage.code}
-                  </span>
+                  <span className="font-mono text-xs uppercase tracking-wider">{stage.label}</span>
+                  <span className="font-mono text-[10px] text-white/40">{stage.code}</span>
                 </button>
               );
             })}
           </nav>
 
-          <div className="mt-3 pt-3 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <a
-              href="#roles"
-              onClick={handleRequestFlight}
-              className="champagne-btn-solid flex-1 rounded-xl py-2.5 px-4 text-center font-mono text-[11px] font-bold uppercase tracking-[0.22em]"
-            >
-              Request Flight Dispatch →
-            </a>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenCockpit();
-              }}
-              className="rounded-xl border border-[#CBB079]/35 bg-[#CBB079]/10 py-2.5 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-[#FFE57F] hover:bg-[#CBB079]/20 transition-colors"
-            >
-              Launch Cockpit HUD
-            </button>
+          <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
+            {isGuestMode ? (
+              <button
+                type="button"
+                onClick={() => handleOpenAuth('signin')}
+                className="w-full py-2.5 rounded-xl bg-white/5 border border-[#CBB079]/30 text-[#CBB079] font-mono text-xs uppercase tracking-widest hover:bg-[#CBB079]/10"
+              >
+                AIRMEN SIGN IN / REGISTER
+              </button>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10">
+                  <div className="truncate">
+                    <p className="font-mono text-xs font-bold text-white truncate">{user?.fullName}</p>
+                    <p className="font-mono text-[9px] text-white/50">{user?.primaryBase || 'KTEB'} • {user?.subscriptionTier || 'PRO'}</p>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-[#CBB079]/15 border border-[#CBB079]/30 text-[#FFE57F] font-mono text-[9px] uppercase">
+                    {user?.role || 'PILOT'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setMobileMenuOpen(false);
+                    await signOut();
+                  }}
+                  className="w-full py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 font-mono text-xs uppercase tracking-widest"
+                >
+                  SIGN OUT
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
     </header>
   );
 }
-
-export default HudNavDock;
